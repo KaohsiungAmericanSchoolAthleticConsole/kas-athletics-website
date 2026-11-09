@@ -11,9 +11,8 @@ import { createStore } from './lib/store.js';
 import { validateContent } from './lib/validate.js';
 import { migrate } from './lib/migrate.js';
 import { SCHEMA } from './schema.js';
-import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPage } from './render/pages.js';
-import { teamPage } from './render/team.js';
-import { scoresPage } from './render/scores.js';
+import { resolve, allPaths } from './render/router.js';
+import { notFoundPage } from './render/pages.js';
 import { brandCssText } from './app.js';
 import { toStatic, normalizeBase } from './lib/static.js';
 import { renderWithEdit } from './render/edit.js';
@@ -26,25 +25,17 @@ const dist = path.join(root, 'dist');
 const base = normalizeBase(process.env.BASE_PATH);
 const content = await createStore(path.join(root, 'data'), { normalize: (raw) => validateContent(SCHEMA, migrate(raw)).value }).load();
 
-const editablePages = [
-  ['', () => homePage(content)],
-  ['coaches/', () => coachesPage(content)],
-  ['contact/', () => contactPage(content)],
-  ...content.seasons.map((s) => [`${s.slug}/`, () => seasonPage(content, s)]),
-  ...content.seasons.flatMap((s) => (s.teams || []).filter((t) => t.slug).map((t) => [`${s.slug}/${t.slug}/`, () => teamPage(content, s, t)])),
-];
+function filePathFor(routePath) {
+  if (routePath === '/') return 'index.html';
+  if (routePath === '/404') return '404.html';
+  return `${routePath.replace(/^\/+/, '')}/index.html`;
+}
 
-const pages = [
-  ['index.html', homePage(content)],
-  ['events/index.html', eventsPage(content)],
-  ['coaches/index.html', coachesPage(content)],
-  ['contact/index.html', contactPage(content)],
-  ['404.html', notFoundPage(content)],
-  ['scores/index.html', scoresPage(content)],
-  ['scores/standings/index.html', scoresPage(content, { tab: 'standings' })],
-  ...content.seasons.map((s) => [`${s.slug}/index.html`, seasonPage(content, s)]),
-  ...content.seasons.flatMap((s) => (s.teams || []).filter((t) => t.slug).map((t) => [`${s.slug}/${t.slug}/index.html`, teamPage(content, s, t)])),
-];
+const routePaths = allPaths(content);
+const pages = routePaths.map((rp) => [filePathFor(rp), resolve(content, rp).render()]);
+pages.push(['404.html', notFoundPage(content)]);
+
+const editablePages = routePaths.map((rp) => [rp.replace(/^\/+/, '') ? `${rp.replace(/^\/+/, '')}/` : '', () => resolve(content, rp, { editing: true }).render()]);
 
 await fs.rm(dist, { recursive: true, force: true });
 for (const [file, htmlText] of pages) {

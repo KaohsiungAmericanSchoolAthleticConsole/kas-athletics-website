@@ -52,13 +52,14 @@ function themeMenu() {
 }
 
 export function navItems(content) {
+  const pages = content.pages || [];
+  const menuPages = pages.filter((p, i) => i > 0 && p.showInMenu);
   return [
     { href: '/', label: 'Home' },
     ...(content.seasons || []).map((s) => ({ href: `/${s.slug}`, label: s.title })),
     { href: '/scores', label: 'Scores' },
     { href: '/events', label: 'Schedule' },
-    { href: '/coaches', label: 'Coaches' },
-    { href: '/contact', label: 'Contact' },
+    ...menuPages.map((p) => ({ href: `/${p.slug}`, label: p.title })),
   ];
 }
 

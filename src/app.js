@@ -7,9 +7,7 @@ import { migrate } from './lib/migrate.js';
 import { createStore } from './lib/store.js';
 import { createAuth, verifyPassword, MIN_PASSWORD_LENGTH } from './lib/auth.js';
 import { saveImage, MAX_UPLOAD_BYTES } from './lib/uploads.js';
-import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPage } from './render/pages.js';
-import { teamPage, findTeam } from './render/team.js';
-import { scoresPage } from './render/scores.js';
+import { resolve } from './render/router.js';
 import { renderWithEdit } from './render/edit.js';
 import { setAssetVersion } from './lib/assetVersion.js';
 import { computeAssetVersion } from './lib/assetVersionNode.js';
@@ -229,18 +227,10 @@ export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logge
         'Content-Security-Policy': CSP.replace("frame-ancestors 'none'", "frame-ancestors 'self'"),
       }
       : { 'Cache-Control': 'no-cache', Vary: 'Cookie' };
-    const ok = (fn) => send(res, 200, renderWithEdit(editFrame, fn), undefined, headers);
-    const fixed = { '/': homePage, '/events': eventsPage, '/coaches': coachesPage, '/contact': contactPage };
-    if (fixed[p]) return ok(() => fixed[p](content));
-    if (p === '/scores' || p === '/scores/standings') {
-      const team = String(url.searchParams.get('team') || '').slice(0, 160);
-      return ok(() => scoresPage(content, { tab: p === '/scores' ? 'games' : 'standings', team }));
-    }
-    const season = (content.seasons || []).find((s) => `/${s.slug}` === p);
-    if (season) return ok(() => seasonPage(content, season));
-    const found = findTeam(content, p);
-    if (found) return ok(() => teamPage(content, found.season, found.team));
-    return send(res, 404, notFoundPage(content), undefined, headers);
+    const team = String(url.searchParams.get('team') || '').slice(0, 160);
+    const r = resolve(content, p, { team, editing: editFrame });
+    if (r.status === 404) return send(res, 404, r.render(), undefined, headers);
+    return send(res, 200, r.render(), undefined, headers);
   }
 
   async function brandCss(res) {

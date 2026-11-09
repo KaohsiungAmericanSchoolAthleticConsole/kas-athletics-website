@@ -91,9 +91,9 @@ test('writes without the CSRF token are refused', async () => {
 test('staff can edit content; text is escaped on the site; history is kept', async () => {
   const { cookie, csrf } = await signIn();
   const { json } = await req('GET', '/api/content', { cookie });
-  const originalTitle = json.content.home.heroTitle;
+  const originalTitle = json.content.pages[0].sections[0].title;
   const next = structuredClone(json.content);
-  next.home.heroTitle = 'Go <script>alert(1)</script> Dragons';
+  next.pages[0].sections[0].title = 'Go <script>alert(1)</script> Dragons';
   const save = await req('PUT', '/api/content', { cookie, csrf, body: { content: next } });
   assert.equal(save.status, 200);
 
@@ -104,7 +104,7 @@ test('staff can edit content; text is escaped on the site; history is kept', asy
   const hist = await req('GET', '/api/history', { cookie });
   assert.ok(hist.json.versions.length >= 1);
   const old = await req('GET', `/api/history/${hist.json.versions[0].id}`, { cookie });
-  assert.equal(old.json.content.home.heroTitle, originalTitle);
+  assert.equal(old.json.content.pages[0].sections[0].title, originalTitle);
   assert.equal((await req('GET', '/api/history/..%2fusers.json', { cookie })).status, 400);
 });
 
@@ -210,9 +210,8 @@ test('pages are only editable inside the admin preview frame', async () => {
   const staffDirect = await req('GET', '/fall-sports', { cookie });
   assert.doesNotMatch(staffDirect.text, /data-edit=|inline\.js/, 'staff browsing the public site see the normal page');
   const frame = await req('GET', '/?admin-edit=1', { cookie });
-  assert.match(frame.text, /data-edit="home\.heroTitle"/);
-  assert.match(frame.text, /data-edit-image="home\.heroImage"/);
-  assert.match(frame.text, /data-edit-list="seasons"/);
+  assert.match(frame.text, /data-edit="pages\[0\]\.sections\[0\]\.title"/);
+  assert.match(frame.text, /data-edit-image="pages\[0\]\.sections\[0\]\.image"/);
   assert.match(frame.text, /\/admin\/inline\.js/);
   assert.equal(frame.headers.get('x-frame-options'), 'SAMEORIGIN');
   assert.match(frame.headers.get('content-security-policy'), /frame-ancestors 'self'/);

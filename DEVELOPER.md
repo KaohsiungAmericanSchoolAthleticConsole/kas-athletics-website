@@ -363,7 +363,7 @@ To see or restore any version: `git log --oneline`, then
   `src/blocks.js` (section library). Not wired in yet.
 
 ### v1.9 (in progress) — 2026-11-10
-**Page builder foundation (tasks 1–3).** Wired `fieldkit.js` into `schema.js`;
+**Page builder foundation (tasks 1–4).** Wired `fieldkit.js` into `schema.js`;
 added `pages` (list of pages, each with `sections` of type `blocks`); added the
 `blocks` validator (unknown types dropped); updated reserved slugs; added a
 checkbox renderer in `fields.js`. Added `src/lib/migrate.js` (old content →
