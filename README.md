@@ -1,5 +1,7 @@
 # KAS Athletics website
 
+> Developers: start with **[DEVELOPER.md](DEVELOPER.md)**, which covers the goals, rules, architecture and the history of every version.
+
 The website for Kaohsiung American School Athletics, with a built-in **staff editor** at `/admin/`.
 
 Built to last decades:
