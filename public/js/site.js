@@ -105,4 +105,44 @@
     });
   });
 
+
+  // ---------- Motion extras ----------
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Fallback fade-ins for browsers without CSS scroll-driven animations.
+  if (!reduceMotion && !CSS.supports('animation-timeline: view()') && 'IntersectionObserver' in window) {
+    root.classList.add('io-motion');
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('.section, .event, .season-card, .team-card, .coach-card, .roster li, .gallery li, .mission__inner, .cta-band')
+      .forEach((el) => {
+        if (el.getBoundingClientRect().top < innerHeight) return; // already on screen: never hide it
+        el.dataset.motion = '';
+        io.observe(el);
+      });
+  }
+
+  // Numbers in the stat strip count up the first time they appear.
+  const COUNT_MS = 1400;
+  const counters = document.querySelectorAll('[data-count]');
+  if (!reduceMotion && counters.length && 'IntersectionObserver' in window) {
+    const countIo = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      countIo.unobserve(entry.target);
+      const el = entry.target;
+      const final = el.textContent;
+      const m = /^(\d+)(.*)$/.exec(final.trim());
+      if (!m) return;
+      const target = Number(m[1]);
+      const start = performance.now();
+      const tick = (t) => {
+        const p = Math.min(1, (t - start) / COUNT_MS);
+        el.textContent = `${Math.round(target * (1 - (1 - p) ** 3))}${m[2]}`;
+        if (p < 1) requestAnimationFrame(tick); else el.textContent = final;
+      };
+      requestAnimationFrame(tick);
+    }), { threshold: 0.6 });
+    counters.forEach((c) => countIo.observe(c));
+  }
 })();

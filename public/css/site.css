@@ -264,13 +264,7 @@ main:focus { outline: none; }
 .section__head { display: flex; align-items: end; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); flex-wrap: wrap; }
 .section__title { font-size: var(--text-2xl); }
 .section__title--sm { font-size: var(--text-xl); margin-bottom: var(--space-5); }
-/* Scroll reveal: pure CSS, tied to scroll position. Browsers without support simply show everything. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .section, .cta-band, .mission__inner { animation: rise-in linear both; animation-timeline: view(); animation-range: entry 0% entry 25%; }
-  }
-}
-@keyframes rise-in { from { opacity: 0; transform: translateY(40px); } }
+/* Scroll animations live in motion.css */
 
 /* Scoreboard-style event rows */
 .event-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }

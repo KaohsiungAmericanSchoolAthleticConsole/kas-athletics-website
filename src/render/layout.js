@@ -13,7 +13,7 @@ export const THEMES = [
 
 // Changes whenever the CSS/JS changes, so browsers never keep a stale copy after an update.
 const ASSET_VERSION = createHash('sha1')
-  .update(['css/site.css', 'js/site.js', 'js/theme-init.js'].map((f) => readFileSync(new URL(`../../public/${f}`, import.meta.url))).join(''))
+  .update(['css/site.css', 'css/motion.css', 'js/site.js', 'js/theme-init.js'].map((f) => readFileSync(new URL(`../../public/${f}`, import.meta.url))).join(''))
   .digest('hex').slice(0, 10);
 
 export function link(url, label, cls = '') {
@@ -68,6 +68,7 @@ function header(content, currentPath) {
   const { site } = content;
   return html`
     <header class="site-header">
+      <div class="scroll-progress" aria-hidden="true"></div>
       ${ticker(content)}
       <div class="masthead">
         <a class="brand" href="/">
@@ -154,6 +155,7 @@ ${page.image ? `<meta property="og:image" content="${esc(safeUrl(page.image))}">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,800&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/css/site.css?v=${ASSET_VERSION}">
+<link rel="stylesheet" href="/css/motion.css?v=${ASSET_VERSION}">
 <link rel="stylesheet" href="/brand.css">
 <script src="/js/site.js?v=${ASSET_VERSION}" defer></script>
 </head>

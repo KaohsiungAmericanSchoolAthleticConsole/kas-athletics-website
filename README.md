@@ -64,3 +64,23 @@ tests/                 node:test suites (npm test)
 **To add a new editable field:** add it to `src/schema.js`, then use it in a template under `src/render/`. The editor form and server validation pick it up automatically.
 
 Security: passwords are hashed with scrypt; sessions use HttpOnly + SameSite=Strict cookies plus a CSRF token; logins are rate-limited; uploads are checked by file signature; every page sends a strict Content-Security-Policy; all staff text is HTML-escaped and links are restricted to http(s)/mailto/tel/site paths.
+
+## Versions (git)
+
+The code and content are tracked with git, so any earlier version can come back.
+
+```bash
+git log --oneline                 # list saved versions
+git diff                          # see what changed since the last save
+git add -A && git commit -m "…"   # save a new version
+git restore <file>                # throw away unsaved changes to one file
+git switch -c try-old <commit>    # look at an old version on a side branch (safe)
+git switch main                   # go back to the latest
+git revert <commit>               # undo one saved version, keeping later ones
+```
+
+Staff edits made in the editor are saved to `data/content.json`; commit that file (and `data/uploads/`) now and then so content history lives in git too. The editor's own **Undo history** covers day-to-day mistakes.
+
+## Motion
+
+Scroll animations live in `public/css/motion.css`. They use the browser's built-in scroll-driven animations (no libraries) and switch off completely for anyone who has "reduce motion" turned on. Browsers without support get simple fade-ins instead.

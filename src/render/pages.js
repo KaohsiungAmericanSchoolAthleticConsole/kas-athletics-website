@@ -27,7 +27,7 @@ function hero(home) {
       </div>
       ${home.stats?.length ? html`
         <ul class="stat-strip" aria-label="KAS Athletics by the numbers">
-          ${home.stats.map((s) => html`<li><strong>${s.value}</strong><span>${s.label}</span></li>`)}
+          ${home.stats.map((s) => html`<li><strong data-count>${s.value}</strong><span>${s.label}</span></li>`)}
         </ul>` : ''}
     </section>`;
 }
@@ -66,6 +66,16 @@ function seasonGrid(seasons = []) {
           </li>`)}
       </ul>
     </section>`;
+}
+
+function marquee(content) {
+  const words = [content.site.tagline, 'Home of the Dragons', ...(content.seasons || []).map((s) => s.title)].filter(Boolean);
+  const line = (list) => html`${[...list, ...list, ...list].map((w) => html`<span>${w}</span><span class="marquee__star">✦</span>`)}`;
+  return html`
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__row marquee__row--solid">${line(words)}</div>
+      <div class="marquee__row marquee__row--outline">${line([...words].reverse())}</div>
+    </div>`;
 }
 
 function director(home) {
@@ -143,7 +153,7 @@ function newsletter(site) {
 
 export function homePage(content) {
   const { home, site } = content;
-  const body = html`${hero(home)}${upNext(content)}${seasonGrid(content.seasons)}${director(home)}${media(content)}${mission(home)}${calendar(home)}${newsletter(site)}`;
+  const body = html`${hero(home)}${upNext(content)}${seasonGrid(content.seasons)}${marquee(content)}${director(home)}${media(content)}${mission(home)}${calendar(home)}${newsletter(site)}`;
   return layout(content, { path: '/', body, image: home.heroImage, description: home.heroSubtitle });
 }
 
