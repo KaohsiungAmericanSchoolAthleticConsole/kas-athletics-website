@@ -164,7 +164,10 @@ main:focus { outline: none; }
 }
 
 /* ---------- Header ---------- */
-.site-header { position: sticky; top: 0; z-index: 50; background: color-mix(in oklab, var(--bg) 86%, transparent); backdrop-filter: saturate(1.4) blur(14px); transition: box-shadow var(--duration); }
+.site-header { position: sticky; top: 0; z-index: 50; transition: box-shadow var(--duration); }
+/* The frosted glass lives on a layer behind the header: a backdrop-filter on the header itself
+   would trap the fixed-position mobile menu inside it and make the page scroll sideways. */
+.site-header::before { content: ''; position: absolute; inset: 0; z-index: -1; background: color-mix(in oklab, var(--bg) 86%, transparent); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); }
 .site-header.is-scrolled { box-shadow: 0 1px 0 var(--line), 0 10px 30px -20px rgb(0 0 0 / 0.5); }
 .ticker {
   display: flex; align-items: center; gap: var(--space-4); padding: 0.55rem var(--gutter);
