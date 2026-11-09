@@ -3,10 +3,7 @@
 // save against it. To add a new editable field: add it here and use it in a
 // template under src/render/. Nothing else needs to change.
 
-const text = (key, label, opts = {}) => ({ key, label, type: 'text', max: 160, ...opts });
-const area = (key, label, opts = {}) => ({ key, label, type: 'textarea', max: 5000, ...opts });
-const url = (key, label, opts = {}) => ({ key, label, type: 'url', ...opts });
-const image = (key, label, opts = {}) => ({ key, label, type: 'image', ...opts });
+import { text, area, url, image, bool, select, list } from './fieldkit.js';
 
 const team = {
   type: 'group',
@@ -60,6 +57,19 @@ export const SCHEMA = {
         url('newsletterUrl', 'Newsletter sign-up link (e.g. a Google Form)'),
         text('footerNote', 'Footer note'),
       ],
+    },
+    {
+      key: 'pages', label: 'Pages', type: 'list', addLabel: 'Add a page', icon: 'pages', max: 60, titleKey: 'title',
+      help: 'Every page on the site. The first page is always the home page. Drag to reorder; pages with “Show in menu” appear in the nav.',
+      item: {
+        type: 'group',
+        fields: [
+          text('title', 'Page title', { required: true }),
+          { key: 'slug', label: 'Web address', type: 'slug', from: 'title', help: 'Fills in automatically from the title. Leave blank for the home page.' },
+          bool('showInMenu', 'Show in menu'),
+          { key: 'sections', label: 'Sections', type: 'blocks', max: 40, addLabel: 'Add a section' },
+        ],
+      },
     },
     {
       key: 'home', label: 'Home page', type: 'group', icon: 'home',

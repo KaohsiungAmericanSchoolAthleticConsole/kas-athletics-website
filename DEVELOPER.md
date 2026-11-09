@@ -362,6 +362,14 @@ To see or restore any version: `git log --oneline`, then
 - Started the page builder on branch `page-builder`: `src/fieldkit.js` and
   `src/blocks.js` (section library). Not wired in yet.
 
+### v1.9 (in progress) — 2026-11-10
+**Page builder foundation (tasks 1–2).** Wired `fieldkit.js` into `schema.js`;
+added `pages` (list of pages, each with `sections` of type `blocks`); added the
+`blocks` validator (unknown types dropped); updated reserved slugs; added a
+checkbox renderer in `fields.js`. Added `src/lib/migrate.js` (old content →
+`pages` of sections) with tests. Normalize now migrates before validating in
+`app.js`, `build.js`, `backend.js`.
+
 ### v1.8.2 — 2026-11-09
 **Match the school website's colors.** Set the default brand color and second
 school color in `data/content.json` to the primary red (`#d43429`) and blue

@@ -3,6 +3,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { SCHEMA } from './schema.js';
 import { validateContent } from './lib/validate.js';
+import { migrate } from './lib/migrate.js';
 import { createStore } from './lib/store.js';
 import { createAuth, verifyPassword, MIN_PASSWORD_LENGTH } from './lib/auth.js';
 import { saveImage, MAX_UPLOAD_BYTES } from './lib/uploads.js';
@@ -96,7 +97,7 @@ async function serveFile(res, root, relPath, cache) {
 export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logger = console }) {
   const publicDir = path.join(rootDir, 'public');
   const uploadDir = path.join(dataDir, 'uploads');
-  const store = createStore(dataDir, { normalize: (raw) => validateContent(SCHEMA, raw).value, logger });
+  const store = createStore(dataDir, { normalize: (raw) => validateContent(SCHEMA, migrate(raw)).value, logger });
   const auth = createAuth(path.join(dataDir, 'users.json'));
 
   function isSecure(req) {

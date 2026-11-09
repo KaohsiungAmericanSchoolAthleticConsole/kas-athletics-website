@@ -1,3 +1,5 @@
+import { blockSchema, BLOCKS } from '../blocks.js';
+
 // Validates and cleans content against src/schema.js.
 // Returns a brand-new object: unknown keys are dropped, strings trimmed,
 // and anything unsafe (bad URLs, odd colors) reported as an error.
@@ -7,7 +9,7 @@ const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 const COLOR_RE = /^#[0-9a-fA-F]{6}$/;
 const SCORE_RE = /^\d{1,4}$/;
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const RESERVED_SLUGS = new Set(['admin', 'api', 'uploads', 'css', 'js', 'img', 'events', 'coaches', 'contact', 'scores']);
+const RESERVED_SLUGS = new Set(['admin', 'api', 'uploads', 'css', 'js', 'img', 'events', 'scores', 'src']);
 const DEFAULT_MAX = 160;
 
 export function isSafeLink(value) {
@@ -71,15 +73,49 @@ function checkGroup(field, value, path, errors) {
   );
 }
 
+function checkBlocks(field, value, path, errors) {
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value)) {
+    errors.push({ path, message: `${field.label} must be a list.` });
+    return [];
+  }
+  if (field.max && value.length > field.max) {
+    errors.push({ path, message: `${field.label} can have at most ${field.max} items.` });
+  }
+  const out = [];
+  value.slice(0, field.max ?? value.length).forEach((item, i) => {
+    const type = item && typeof item === 'object' ? item.type : null;
+    const schema = type ? blockSchema(type) : null;
+    if (!schema) return; // drop unknown block types
+    const checked = checkGroup(schema, item, `${path}[${i}]`, errors);
+    out.push(checked);
+  });
+  return out;
+}
+
 function checkValue(field, value, path, errors) {
   if (field.type === 'group') return checkGroup(field, value, path, errors);
   if (field.type === 'list') return checkList(field, value, path, errors);
+  if (field.type === 'blocks') return checkBlocks(field, value, path, errors);
   if (field.type === 'boolean') return value === true;
   return checkString(field, value, path, errors);
 }
 
 function checkUniqueSlugs(content, errors) {
   const seen = new Set();
+  // Home page always lives at ''.
+  if (Array.isArray(content.pages) && content.pages.length) {
+    content.pages[0].slug = '';
+  }
+  (content.pages || []).forEach((p, i) => {
+    if (i === 0) return;
+    if (!p.slug) {
+      errors.push({ path: `pages[${i}].slug`, message: `This page needs a web address.` });
+      return;
+    }
+    if (seen.has(p.slug)) errors.push({ path: `pages[${i}].slug`, message: `Two pages use the address "${p.slug}".` });
+    seen.add(p.slug);
+  });
   (content.seasons || []).forEach((s, i) => {
     if (s.slug) {
       if (seen.has(s.slug)) errors.push({ path: `seasons[${i}].slug`, message: `Two pages use the address "${s.slug}".` });

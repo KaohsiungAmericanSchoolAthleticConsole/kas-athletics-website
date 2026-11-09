@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createStore } from './lib/store.js';
 import { validateContent } from './lib/validate.js';
+import { migrate } from './lib/migrate.js';
 import { SCHEMA } from './schema.js';
 import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPage } from './render/pages.js';
 import { teamPage } from './render/team.js';
@@ -20,7 +21,7 @@ import { renderWithEdit } from './render/edit.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
 const base = normalizeBase(process.env.BASE_PATH);
-const content = await createStore(path.join(root, 'data'), { normalize: (raw) => validateContent(SCHEMA, raw).value }).load();
+const content = await createStore(path.join(root, 'data'), { normalize: (raw) => validateContent(SCHEMA, migrate(raw)).value }).load();
 
 const editablePages = [
   ['', () => homePage(content)],
