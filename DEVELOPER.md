@@ -351,6 +351,11 @@ why. Version numbers are this project's own: minor = feature, patch = fix.
 To see or restore any version: `git log --oneline`, then
 `git switch -c look-at-old <commit>` (safe) or `git revert <commit>`.
 
+### v1.8.2 — 2026-11-09
+**Match the school website's colors.** Set the default brand color and second
+school color in `data/content.json` to the primary red (`#d43429`) and blue
+(`#1863dc`) used on kas.tw, so the athletics site feels like part of KAS.
+
 ### v1.8.1 — 2026-11-09
 **Fixes found by the first real publish from the GitHub-hosted editor** (which
 worked end to end: commit `11705b1`, made by staff in the editor).
