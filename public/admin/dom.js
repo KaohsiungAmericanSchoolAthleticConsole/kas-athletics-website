@@ -46,5 +46,10 @@ export function setIn(obj, path, value) {
   return { ...base, [key]: nextChild };
 }
 
+/** "seasons[0].teams[2].name" -> ['seasons', 0, 'teams', 2, 'name'] */
+export function parsePath(str) {
+  return String(str).split(/[.[\]]+/).filter(Boolean).map((k) => (/^\d+$/.test(k) ? Number(k) : k));
+}
+
 export const pathToString = (path) =>
   path.reduce((s, k) => (typeof k === 'number' ? `${s}[${k}]` : s ? `${s}.${k}` : k), '');

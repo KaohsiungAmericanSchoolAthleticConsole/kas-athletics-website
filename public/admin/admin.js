@@ -1,7 +1,8 @@
-import { h, icon, getIn, setIn, pathToString } from './dom.js';
+import { h, icon, getIn, setIn, pathToString, parsePath } from './dom.js';
 import { renderField } from './fields.js';
 import { prepareImage } from './images.js';
 import { renderHelp, renderAccounts } from './pages.js';
+import { renderVisual, visualFrame } from './visual.js';
 
 const $ = (sel) => document.querySelector(sel);
 const state = {
@@ -11,6 +12,11 @@ const state = {
 
 // Extra pages in the sidebar that are not part of the content schema.
 const EXTRA_PAGES = {
+  visual: {
+    label: 'Edit on the page', icon: 'pencil', top: true,
+    help: 'Click any outlined text to type, use “Change photo” on pictures, drag ⠿ to reorder. Then press Publish changes.',
+    render: () => renderVisual(state),
+  },
   accounts: { label: 'Staff accounts', icon: 'people', help: 'Who can sign in to this editor.', render: (api, ctx2) => renderAccounts(api, ctx2) },
   help: { label: 'Help', icon: 'link', help: 'A quick guide to updating the website.', render: () => renderHelp() },
 };
@@ -124,9 +130,11 @@ function renderNav() {
       icon(iconName), h('span', {}, label),
       hasErrors ? h('span', { class: 'dot', title: 'Needs attention' }, h('span', { class: 'sr-only' }, ' (needs attention)')) : null));
   $('#section-nav').replaceChildren(
+    ...Object.entries(EXTRA_PAGES).filter(([, p]) => p.top).map(([key, p]) => link(key, p.label, p.icon, false)),
+    h('li', { class: 'sidebar__sep', 'aria-hidden': 'true' }),
     ...sections().map((f) => link(f.key, f.label, f.icon || 'settings', [...state.errors.keys()].some(pathPrefix(f.key)))),
     h('li', { class: 'sidebar__sep', 'aria-hidden': 'true' }),
-    ...Object.entries(EXTRA_PAGES).map(([key, p]) => link(key, p.label, p.icon, false)),
+    ...Object.entries(EXTRA_PAGES).filter(([, p]) => !p.top).map(([key, p]) => link(key, p.label, p.icon, false)),
   );
 }
 
@@ -147,6 +155,27 @@ function renderEditor({ keepScroll = false } = {}) {
   }
   renderNav();
   if (keepScroll) window.scrollTo(0, y);
+}
+
+/** Re-render, except on the live preview where a re-render would reload the page being edited. */
+function refreshView(opts) {
+  if (state.section !== 'visual') renderEditor(opts);
+  else renderNav();
+}
+
+// Messages from the live preview frame ("Edit on the page").
+window.addEventListener('message', (e) => {
+  const frame = visualFrame();
+  if (e.origin !== location.origin || !frame || e.source !== frame.contentWindow) return;
+  const msg = e.data || {};
+  if (msg.source !== 'kas-preview') return;
+  if (msg.type === 'ready') frame.contentWindow.postMessage({ source: 'kas-editor', type: 'init', draft: state.draft }, location.origin);
+  if (msg.type === 'change') ctx.set(parsePath(msg.path), msg.value);
+  if (msg.type === 'publish') publish();
+});
+
+function sendErrorsToPreview() {
+  visualFrame()?.contentWindow.postMessage({ source: 'kas-editor', type: 'errors', paths: [...state.errors.keys()] }, location.origin);
 }
 
 function renderErrorSummary(errors, { title = 'Nothing was published yet. Please fix these:', action = null } = {}) {
@@ -173,12 +202,14 @@ async function publish() {
     const { content, version } = await api('PUT', '/api/content', { content: state.draft, version: state.version });
     Object.assign(state, { saved: content, draft: content, version, errors: new Map() });
     renderErrorSummary([]);
-    renderEditor({ keepScroll: true });
+    refreshView({ keepScroll: true });
+    sendErrorsToPreview();
     toast('Published! Your changes are live on the website.');
   } catch (err) {
     if (err.status === 422) {
       state.errors = new Map(err.data.errors.map((e) => [e.path, e.message]));
-      renderEditor({ keepScroll: true });
+      refreshView({ keepScroll: true });
+      sendErrorsToPreview();
       renderErrorSummary(err.data.errors);
     } else if (err.status === 409) {
       renderErrorSummary([], {
@@ -256,7 +287,7 @@ async function showApp() {
   const keepDraft = isDirty();
   Object.assign(state, keepDraft ? { schema } : { schema, saved: content, draft: content, version });
   if (keepDraft) toast('Welcome back — your unpublished changes are still here.');
-  state.section = location.hash.slice(1) || schema.fields[0].key;
+  state.section = location.hash.slice(1) || 'visual';
   $('#login-view').hidden = true;
   $('#app-view').hidden = false;
   $('#whoami').textContent = `(${state.username})`;

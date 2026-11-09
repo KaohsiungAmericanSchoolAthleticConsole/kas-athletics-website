@@ -74,7 +74,7 @@ export function renderAccounts(api, { toast, username }) {
 }
 
 const STEPS = [
-  ['Change something', 'Pick a section on the left (for example “Home page” or “Games & events”) and type into the boxes. Nothing is public yet.'],
+  ['Change something', 'Easiest: open “Edit on the page” (top of the sidebar), pick a page, then click any outlined text and type, or use “Change photo” on a picture. For games, scores and settings, use the other sections. Nothing is public yet.'],
   ['Add a photo', 'Press “Upload photo” or drag a picture onto the box. Large phone photos are made smaller automatically.'],
   ['Publish', 'Press the red “Publish changes” button at the top. Your changes appear on the website straight away. Ctrl + S (⌘ + S on Mac) does the same.'],
   ['Changed your mind?', '“Discard changes” throws away everything since you last published. Already published something wrong? Open “Undo history”, load an earlier version and publish it.'],

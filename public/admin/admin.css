@@ -195,3 +195,18 @@ fieldset.list > legend { padding: 0 0.4rem; }
 .help__tasks div { padding: 0.9rem 1rem; border-left: 3px solid var(--accent); background: var(--surface-2); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 .help__tasks dt { font-weight: 600; }
 .help__notes { margin: 0; padding-left: 1.2rem; color: var(--ink-2); display: grid; gap: 0.4rem; }
+
+/* Edit on the page (live preview) */
+.editor:has(.visual) { max-width: none; }
+.panel:has(.visual) { padding: 0; overflow: hidden; }
+.visual__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--line); background: var(--surface); }
+.visual__bar label { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+.visual__bar select { width: auto; min-width: 14rem; min-height: 2.4rem; padding: 0.35rem 0.75rem; }
+.segmented { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+.segmented button { min-height: 2rem; padding: 0 0.9rem; border: 0; border-radius: 999px; background: none; color: var(--ink-2); font: inherit; font-size: 0.85rem; cursor: pointer; }
+.segmented button[aria-pressed='true'] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.15); font-weight: 600; }
+.visual__hint { margin-left: auto; font-size: 0.85rem; color: var(--ink-2); }
+.visual__stage { display: flex; justify-content: center; padding: 1rem; background: var(--surface-2); }
+.visual__frame { display: block; width: 100%; height: calc(100vh - 15rem); min-height: 32rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; transition: width 300ms; }
+.visual--phone .visual__frame { width: 390px; }
+@media (max-width: 52rem) { .visual__hint { display: none; } .visual__frame { height: 70vh; } }

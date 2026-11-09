@@ -21,7 +21,7 @@ const TYPES = {
 const CSP = [
   "default-src 'self'", "script-src 'self'", "style-src 'self' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com", "img-src 'self' https: data: blob:",
-  'frame-src https://www.youtube-nocookie.com https://calendar.google.com', "connect-src 'self'",
+  "frame-src 'self' https://www.youtube-nocookie.com https://calendar.google.com", "connect-src 'self'",
   "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'",
 ].join('; ');
 
@@ -214,9 +214,18 @@ export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logge
     const content = await store.load();
     const p = url.pathname.replace(/\/+$/, '') || '/';
     // Signed-in staff get the same page plus click-to-edit markers; never cache those.
+    // Editing only ever happens inside /admin: the editor shows the page in a frame with
+    // ?admin-edit, and only then (and only for signed-in staff) are edit markers added.
+    // Opened directly, every page is the normal read-only page, for staff too.
     const staff = Boolean(auth.getSession(parseCookies(req.headers.cookie)[COOKIE]));
-    const headers = staff ? { 'Cache-Control': 'private, no-store', Vary: 'Cookie' } : { 'Cache-Control': 'no-cache', Vary: 'Cookie' };
-    const ok = (fn) => send(res, 200, renderWithEdit(staff, fn), undefined, headers);
+    const editFrame = staff && url.searchParams.has('admin-edit');
+    const headers = editFrame
+      ? {
+        'Cache-Control': 'private, no-store', Vary: 'Cookie', 'X-Frame-Options': 'SAMEORIGIN',
+        'Content-Security-Policy': CSP.replace("frame-ancestors 'none'", "frame-ancestors 'self'"),
+      }
+      : { 'Cache-Control': 'no-cache', Vary: 'Cookie' };
+    const ok = (fn) => send(res, 200, renderWithEdit(editFrame, fn), undefined, headers);
     const fixed = { '/': homePage, '/events': eventsPage, '/coaches': coachesPage, '/contact': contactPage };
     if (fixed[p]) return ok(() => fixed[p](content));
     if (p === '/scores' || p === '/scores/standings') {

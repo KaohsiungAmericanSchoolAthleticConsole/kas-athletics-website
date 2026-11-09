@@ -200,21 +200,24 @@ test('staff can add, reset and remove accounts, but not themselves', async () =>
   assert.equal((await req('DELETE', '/api/users/coach-sam', { cookie })).status, 403);
 });
 
-test('signed-in staff get click-to-edit markers; visitors get a clean page', async () => {
-  const visitor = await req('GET', '/');
-  assert.doesNotMatch(visitor.text, /data-edit=|inline\.js/);
+test('pages are only editable inside the admin preview frame', async () => {
+  const visitor = await req('GET', '/?admin-edit=1');
+  assert.doesNotMatch(visitor.text, /data-edit=|inline\.js/, 'visitors never get edit mode');
+  assert.equal(visitor.headers.get('x-frame-options'), 'DENY');
   const { cookie } = await signIn();
-  const staff = await req('GET', '/', { cookie });
-  assert.match(staff.text, /data-edit="home\.heroTitle"/);
-  assert.match(staff.text, /data-edit-image="home\.heroImage"/);
-  assert.match(staff.text, /data-edit-list="seasons"/);
-  assert.match(staff.text, /\/admin\/inline\.js/);
-  assert.match(staff.headers.get('cache-control'), /private, no-store/);
-  const season = await req('GET', '/fall-sports', { cookie });
-  assert.match(season.text, /data-edit-list="seasons\[0\]\.teams"/);
+  const staffDirect = await req('GET', '/fall-sports', { cookie });
+  assert.doesNotMatch(staffDirect.text, /data-edit=|inline\.js/, 'staff browsing the public site see the normal page');
+  const frame = await req('GET', '/?admin-edit=1', { cookie });
+  assert.match(frame.text, /data-edit="home\.heroTitle"/);
+  assert.match(frame.text, /data-edit-image="home\.heroImage"/);
+  assert.match(frame.text, /data-edit-list="seasons"/);
+  assert.match(frame.text, /\/admin\/inline\.js/);
+  assert.equal(frame.headers.get('x-frame-options'), 'SAMEORIGIN');
+  assert.match(frame.headers.get('content-security-policy'), /frame-ancestors 'self'/);
+  assert.match(frame.headers.get('cache-control'), /private, no-store/);
+  const season = await req('GET', '/fall-sports?admin-edit=1', { cookie });
   assert.match(season.text, /data-edit="seasons\[0\]\.teams\[1\]\.name"/);
-  const afterStaff = await req('GET', '/');
-  assert.doesNotMatch(afterStaff.text, /data-edit=/, 'edit flag must not leak into the next visitor');
+  assert.doesNotMatch((await req('GET', '/')).text, /data-edit=/, 'edit flag must not leak into the next visitor');
 });
 
 // Keep last: it locks out further logins from this IP for 15 minutes.

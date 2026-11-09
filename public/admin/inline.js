@@ -1,76 +1,16 @@
-// On-page ("click to edit") editor, loaded only for signed-in staff.
-// The server marks editable things with data-edit (text), data-edit-image
-// (photos) and data-edit-list (reorderable lists). Changes are collected in a
-// draft and published through the same API as the full editor.
-import { h, icon, getIn, setIn } from './dom.js';
+// Click-to-edit for the live preview INSIDE the staff editor (/admin → "Edit on the page").
+// It only runs when the page is shown in the editor's frame; the server only adds the
+// data-edit markers in that case, so public pages can never be edited.
+//
+// Markers: data-edit (text), data-edit-image (photos), data-edit-list (reorderable lists).
+// Every change is sent to the editor with postMessage; the editor keeps the draft and
+// its own "Publish changes" button publishes everything together.
+import { h, icon, getIn, setIn, parsePath } from './dom.js';
 import { prepareImage } from './images.js';
 
 const root = document.documentElement;
 const PLAINTEXT = (() => { const d = document.createElement('div'); d.contentEditable = 'plaintext-only'; return d.contentEditable === 'plaintext-only'; })();
-const state = { csrf: null, saved: null, draft: null, version: null, editing: false, saving: false };
-
-/** "seasons[0].teams[2].name" -> ['seasons', 0, 'teams', 2, 'name'] */
-export function parsePath(str) {
-  return String(str).split(/[.[\]]+/).filter(Boolean).map((k) => (/^\d+$/.test(k) ? Number(k) : k));
-}
-
-const isDirty = () => JSON.stringify(state.draft) !== JSON.stringify(state.saved);
-
-async function api(method, url, body) {
-  let res;
-  try {
-    res = await fetch(url, {
-      method, credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json', ...(state.csrf ? { 'X-CSRF-Token': state.csrf } : {}) },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
-  } catch {
-    throw Object.assign(new Error('Can’t reach the website right now. Check your connection and try again — your changes are still here.'), { status: 0 });
-  }
-  let data = {};
-  try { data = await res.json(); } catch { /* empty */ }
-  if (!res.ok) throw Object.assign(new Error(data.error || `Something went wrong (error ${res.status}).`), { status: res.status, data });
-  return data;
-}
-
-// ---------- Toolbar ----------
-const live = h('p', { class: 'kas-sr', 'aria-live': 'polite' });
-const statusEl = h('span', { class: 'kas-bar__status' });
-const editBtn = h('button', { type: 'button', class: 'kas-btn kas-btn--edit', onclick: () => (state.editing ? exitEdit() : enterEdit()) });
-const publishBtn = h('button', { type: 'button', class: 'kas-btn kas-btn--primary', onclick: publish }, 'Publish');
-const discardBtn = h('button', { type: 'button', class: 'kas-btn', onclick: discard }, 'Discard');
-const bar = h('div', { class: 'kas-bar', role: 'region', 'aria-label': 'Page editor' },
-  h('span', { class: 'kas-bar__badge' }, 'Staff'),
-  editBtn, statusEl, discardBtn, publishBtn,
-  h('a', { class: 'kas-btn kas-btn--link', href: `/admin/` }, 'Full editor'),
-  live);
-const toastEl = h('div', { class: 'kas-toast', role: 'status', hidden: true });
-
-let toastTimer;
-function toast(message, kind = 'ok') {
-  toastEl.textContent = message;
-  toastEl.dataset.kind = kind;
-  toastEl.hidden = false;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { toastEl.hidden = true; }, kind === 'error' ? 9000 : 4000);
-}
-
-function refreshBar() {
-  const dirty = isDirty();
-  editBtn.replaceChildren(icon(state.editing ? 'check' : 'pencil'), state.editing ? 'Done' : 'Edit this page');
-  editBtn.setAttribute('aria-pressed', String(state.editing));
-  statusEl.textContent = state.saving ? 'Publishing…' : dirty ? 'Unpublished changes' : state.editing ? 'Click any outlined text or photo' : '';
-  statusEl.classList.toggle('is-dirty', dirty);
-  publishBtn.hidden = !dirty;
-  publishBtn.disabled = state.saving;
-  discardBtn.hidden = !dirty || state.saving;
-}
-
-function update(path, value) {
-  state.draft = setIn(state.draft, parsePath(path), value);
-  document.querySelectorAll(`[data-edit="${CSS.escape(path)}"].kas-error`).forEach((el) => el.classList.remove('kas-error'));
-  refreshBar();
-}
+const state = { csrf: null, draft: null };
 
 /** "seasons[1].teams[0].name" -> "team name"; "home.heroTitle" -> "hero title" */
 function labelFor(path) {
@@ -80,6 +20,42 @@ function labelFor(path) {
   return `${owner}${last.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase()}`;
 }
 
+// ---------- Talking to the editor (parent window) ----------
+const toEditor = (message) => window.parent.postMessage({ source: 'kas-preview', ...message }, location.origin);
+
+function update(path, value) {
+  state.draft = setIn(state.draft, parsePath(path), value);
+  document.querySelectorAll(`[data-edit="${CSS.escape(path)}"].kas-error`).forEach((el) => el.classList.remove('kas-error'));
+  toEditor({ type: 'change', path, value });
+}
+
+async function uploadImage(file) {
+  if (!state.csrf) {
+    const session = await (await fetch('/api/session', { credentials: 'same-origin' })).json();
+    state.csrf = session.csrf;
+  }
+  const dataUrl = await prepareImage(file);
+  const res = await fetch('/api/upload', {
+    method: 'POST', credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': state.csrf },
+    body: JSON.stringify({ dataUrl }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'The photo could not be uploaded.');
+  return data.url;
+}
+
+const toastEl = h('div', { class: 'kas-toast', role: 'status', hidden: true });
+let toastTimer;
+function toast(message, kind = 'ok') {
+  toastEl.textContent = message;
+  toastEl.dataset.kind = kind;
+  toastEl.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toastEl.hidden = true; }, kind === 'error' ? 8000 : 3500);
+}
+const live = h('p', { class: 'kas-sr', 'aria-live': 'polite' });
+
 // ---------- Text ----------
 function readText(el) {
   const text = el.innerText.replace(/\r/g, '').replace(/ /g, ' ');
@@ -88,88 +64,86 @@ function readText(el) {
     : text.replace(/\s*\n\s*/g, ' ').trim();
 }
 
-function onTextInput(e) { update(e.currentTarget.dataset.edit, readText(e.currentTarget)); }
-function onTextKey(e) {
-  if (e.key === 'Escape') e.currentTarget.blur();
-  if (e.key === 'Enter' && !e.currentTarget.hasAttribute('data-edit-multiline')) { e.preventDefault(); e.currentTarget.blur(); }
-}
-function onTextPaste(e) {
-  if (PLAINTEXT) return; // the browser already pastes plain text
-  e.preventDefault();
-  document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
-}
-function onTextBlur(e) { if (!readText(e.currentTarget)) e.currentTarget.textContent = ''; } // lets the placeholder show again
-
-function setupText(on) {
+function setupText() {
   document.querySelectorAll('[data-edit]').forEach((el) => {
-    if (on) {
-      el.contentEditable = PLAINTEXT ? 'plaintext-only' : 'true';
-      el.spellcheck = true;
-      el.setAttribute('role', 'textbox');
-      el.setAttribute('aria-label', `Edit ${labelFor(el.dataset.edit)}`);
-      if (el.hasAttribute('data-edit-multiline')) el.setAttribute('aria-multiline', 'true');
-      el.addEventListener('input', onTextInput);
-      el.addEventListener('keydown', onTextKey);
-      el.addEventListener('paste', onTextPaste);
-      el.addEventListener('blur', onTextBlur);
+    el.contentEditable = PLAINTEXT ? 'plaintext-only' : 'true';
+    el.spellcheck = true;
+    el.setAttribute('role', 'textbox');
+    el.setAttribute('aria-label', `Edit ${labelFor(el.dataset.edit)}`);
+    if (el.hasAttribute('data-edit-multiline')) el.setAttribute('aria-multiline', 'true');
+    el.addEventListener('input', () => update(el.dataset.edit, readText(el)));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') el.blur();
+      if (e.key === 'Enter' && !el.hasAttribute('data-edit-multiline')) { e.preventDefault(); el.blur(); }
+    });
+    el.addEventListener('paste', (e) => {
+      if (PLAINTEXT) return; // the browser already pastes plain text
+      e.preventDefault();
+      document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
+    });
+    el.addEventListener('blur', () => { if (!readText(el)) el.textContent = ''; }); // lets the placeholder show
+  });
+}
+
+/** Show the editor's unpublished text and photos (the server rendered the published version). */
+function applyDraft() {
+  document.querySelectorAll('[data-edit]').forEach((el) => {
+    const value = getIn(state.draft, parsePath(el.dataset.edit));
+    if (typeof value !== 'string' || readText(el) === value) return;
+    if (el.hasAttribute('data-edit-multiline')) {
+      el.replaceChildren(...value.split(/\n\s*\n/).map((p) => h('p', {}, p)));
     } else {
-      el.removeAttribute('contenteditable');
-      ['role', 'aria-label', 'aria-multiline'].forEach((a) => el.removeAttribute(a));
-      el.removeEventListener('input', onTextInput);
-      el.removeEventListener('keydown', onTextKey);
-      el.removeEventListener('paste', onTextPaste);
-      el.removeEventListener('blur', onTextBlur);
+      el.textContent = value;
     }
+  });
+  document.querySelectorAll('img[data-edit-image]').forEach((img) => {
+    const value = getIn(state.draft, parsePath(img.dataset.editImage));
+    if (value && img.getAttribute('src') !== value) { img.removeAttribute('srcset'); img.src = value; }
   });
 }
 
 // ---------- Photos ----------
-const chipLayer = h('div', { class: 'kas-chips', 'aria-hidden': 'false' });
-let chips = []; // [{ el, chip }]
+const chipLayer = h('div', { class: 'kas-chips' });
+const chips = []; // [{ el, chip }]
 
-async function replacePhoto(target, file) {
+async function replacePhoto(entry, file) {
   if (!file) return;
-  const entry = chips.find((c) => c.el === target);
-  entry?.chip.classList.add('is-busy');
+  entry.chip.classList.add('is-busy');
   try {
-    const dataUrl = await prepareImage(file);
-    const { url } = await api('POST', '/api/upload', { dataUrl });
-    let el = target;
+    const url = await uploadImage(file);
+    let el = entry.el;
     if (el.tagName !== 'IMG') {
       const img = h('img', { class: [...el.classList].filter((c) => c !== 'photo-fallback' && c !== 'hero__bg--pattern').join(' '), alt: '', 'data-edit-image': el.dataset.editImage });
       el.replaceWith(img);
-      if (entry) entry.el = img;
+      entry.el = img;
       el = img;
     }
     el.removeAttribute('srcset');
     el.src = url;
     update(el.dataset.editImage, url);
-    toast('Photo replaced. Press Publish to put it on the website.');
+    toast('Photo replaced.');
   } catch (err) {
     toast(err.message, 'error');
   } finally {
-    entry?.chip.classList.remove('is-busy');
+    entry.chip.classList.remove('is-busy');
     positionChips();
   }
 }
 
-function setupPhotos(on) {
-  chips.forEach(({ chip }) => chip.remove());
-  chips = [];
-  if (!on) return;
+function setupPhotos() {
   document.querySelectorAll('[data-edit-image]').forEach((el) => {
     const input = h('input', { type: 'file', accept: 'image/*', hidden: true });
-    const chip = h('button', { type: 'button', class: 'kas-chip', hidden: true, 'aria-label': `Change photo: ${labelFor(el.dataset.editImage)}` }, icon('image'), h('span', {}, 'Change photo'), input);
+    const chip = h('button', { type: 'button', class: 'kas-chip', hidden: true, 'aria-label': `Change photo: ${labelFor(el.dataset.editImage)}` },
+      icon('image'), h('span', {}, 'Change photo'), input);
     const entry = { el, chip };
     chip.addEventListener('click', (e) => { if (e.target !== input) input.click(); });
-    input.addEventListener('change', () => { replacePhoto(entry.el, input.files[0]); input.value = ''; });
+    input.addEventListener('change', () => { replacePhoto(entry, input.files[0]); input.value = ''; });
     chip.addEventListener('dragover', (e) => { e.preventDefault(); chip.classList.add('is-drop'); });
     chip.addEventListener('dragleave', () => chip.classList.remove('is-drop'));
-    chip.addEventListener('drop', (e) => { e.preventDefault(); chip.classList.remove('is-drop'); replacePhoto(entry.el, e.dataTransfer.files[0]); });
+    chip.addEventListener('drop', (e) => { e.preventDefault(); chip.classList.remove('is-drop'); replacePhoto(entry, e.dataTransfer.files[0]); });
     chipLayer.append(chip);
     chips.push(entry);
   });
-  positionChips();
 }
 
 let chipFrame = 0;
@@ -182,7 +156,7 @@ function positionChips() {
       const top = Math.max(r.top + 12, headerBottom + 8);
       const visible = r.width > 40 && r.bottom - 44 > top && top < innerHeight - 40;
       chip.hidden = !visible;
-      if (visible) chip.style.transform = `translate(${Math.round(r.right - chip.offsetWidth - 12)}px, ${Math.round(top)}px)`; // measured after unhiding
+      if (visible) chip.style.transform = `translate(${Math.round(r.right - chip.offsetWidth - 12)}px, ${Math.round(top)}px)`;
     });
   });
 }
@@ -216,7 +190,7 @@ function commitOrder(list) {
   update(path, order.map((i) => current[i]));
   renumber(list);
   positionChips();
-  live.textContent = 'Order changed. Press Publish to save it.';
+  live.textContent = 'Order changed.';
 }
 
 function startDrag(e, item, list) {
@@ -249,130 +223,72 @@ function startDrag(e, item, list) {
   handle.addEventListener('pointercancel', up);
 }
 
-function onHandleKey(e, item, list) {
-  const back = ['ArrowUp', 'ArrowLeft'].includes(e.key);
-  const fwd = ['ArrowDown', 'ArrowRight'].includes(e.key);
-  if (!back && !fwd) return;
-  e.preventDefault();
-  if (back && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
-  else if (fwd && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
-  else return;
-  commitOrder(list);
-  e.currentTarget.focus();
-  live.textContent = `Moved to position ${[...list.children].indexOf(item) + 1} of ${list.children.length}.`;
-}
-
-function setupLists(on) {
-  document.querySelectorAll('.kas-handle').forEach((el) => el.remove());
+function setupLists() {
   document.querySelectorAll('[data-edit-list]').forEach((list) => {
-    list.classList.toggle('kas-sortable', on);
-    if (!on) return;
+    list.classList.add('kas-sortable');
     [...list.children].forEach((item, i) => {
       item.dataset.kasIndex = String(i);
-      const handle = h('button', {
-        type: 'button', class: 'kas-handle', title: 'Drag to reorder (or use the arrow keys)',
-        'aria-label': 'Reorder: press arrow keys to move',
-      }, h('span', { 'aria-hidden': 'true' }, '⠿'));
+      const handle = h('button', { type: 'button', class: 'kas-handle', title: 'Drag to reorder (or use the arrow keys)', 'aria-label': 'Reorder: press arrow keys to move' },
+        h('span', { 'aria-hidden': 'true' }, '⠿'));
       handle.addEventListener('pointerdown', (e) => startDrag(e, item, list));
-      handle.addEventListener('keydown', (e) => onHandleKey(e, item, list));
       handle.addEventListener('click', (e) => e.preventDefault());
+      handle.addEventListener('keydown', (e) => {
+        const back = ['ArrowUp', 'ArrowLeft'].includes(e.key);
+        const fwd = ['ArrowDown', 'ArrowRight'].includes(e.key);
+        if (!back && !fwd) return;
+        e.preventDefault();
+        if (back && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
+        else if (fwd && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
+        else return;
+        commitOrder(list);
+        handle.focus();
+        live.textContent = `Moved to position ${[...list.children].indexOf(item) + 1} of ${list.children.length}.`;
+      });
       item.prepend(handle);
     });
   });
 }
 
-// ---------- Edit mode ----------
-function pauseLinks(e) {
-  if (!state.editing) return;
-  const a = e.target.closest('a[href]');
-  if (a && !bar.contains(a)) {
-    e.preventDefault();
-    if (!e.target.closest('[data-edit]')) toast('Links are paused while editing. Press Done to browse the site.');
-  }
-}
-
-function enterEdit() {
-  state.editing = true;
+// ---------- Start (only inside the editor's frame) ----------
+function start(draft) {
+  state.draft = draft;
   root.dataset.editing = '';
-  setupText(true);
-  setupLists(true);
-  setupPhotos(true);
-  refreshBar();
-  try {
-    if (!localStorage.getItem('kas-edit-tip')) {
-      toast('Click any outlined text to change it, use “Change photo” on pictures, and drag ⠿ to reorder. Then press Publish.');
-      localStorage.setItem('kas-edit-tip', '1');
-    }
-  } catch { /* storage blocked: skip the one-time tip */ }
-}
+  applyDraft();
+  setupText();
+  setupLists();
+  setupPhotos();
+  document.body.append(chipLayer, toastEl, live);
+  positionChips();
 
-function exitEdit() {
-  state.editing = false;
-  delete root.dataset.editing;
-  setupText(false);
-  setupLists(false);
-  setupPhotos(false);
-  refreshBar();
-  if (isDirty()) toast('You still have unpublished changes. Press Publish to put them on the website.');
-}
-
-async function publish() {
-  if (!isDirty() || state.saving) return;
-  state.saving = true;
-  refreshBar();
-  try {
-    const { content, version } = await api('PUT', '/api/content', { content: state.draft, version: state.version });
-    Object.assign(state, { saved: content, draft: content, version });
-    document.querySelectorAll('.kas-error').forEach((el) => el.classList.remove('kas-error'));
-    toast('Published! Your changes are live.');
-  } catch (err) {
-    if (err.status === 422) {
-      const errors = err.data.errors || [];
-      const onPage = errors.filter((x) => {
-        const els = document.querySelectorAll(`[data-edit="${CSS.escape(x.path)}"]`);
-        els.forEach((el) => el.classList.add('kas-error'));
-        return els.length > 0;
-      });
-      const first = errors[0]?.message || err.message;
-      toast(onPage.length === errors.length ? `Not published yet: ${first}` : `Not published yet: ${first} (fix it in the Full editor)`, 'error');
-    } else {
-      toast(err.message, 'error');
-    }
-  } finally {
-    state.saving = false;
-    refreshBar();
-  }
-}
-
-function discard() {
-  if (!confirm('Throw away your unpublished changes on this page?')) return;
-  state.draft = state.saved;
-  location.reload();
-}
-
-// ---------- Start ----------
-(async () => {
-  try {
-    const session = await api('GET', '/api/session');
-    if (!session.authenticated) return;
-    state.csrf = session.csrf;
-    const { content, version } = await api('GET', '/api/content');
-    Object.assign(state, { saved: content, draft: content, version });
-  } catch {
-    return; // not signed in or offline: show nothing
-  }
-  document.body.append(bar, chipLayer, toastEl);
-  document.addEventListener('click', pauseLinks, true);
+  // Links would leave the page being edited; the editor's page picker does navigation.
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    e.preventDefault();
+    if (!e.target.closest('[data-edit]')) toast('Links are paused here. Use “Page” above to switch pages.');
+  }, true);
   addEventListener('scroll', positionChips, { passive: true });
   addEventListener('resize', positionChips);
-  addEventListener('beforeunload', (e) => { if (isDirty()) e.preventDefault(); });
-  document.addEventListener('dragenter', (e) => { if (state.editing && e.dataTransfer?.types.includes('Files')) root.classList.add('kas-files'); });
-  // A photo dropped beside its target must not make the browser open the file (that would lose unsaved edits).
+  // A photo dropped beside its target must not make the browser open the file.
+  document.addEventListener('dragenter', (e) => { if (e.dataTransfer?.types.includes('Files')) root.classList.add('kas-files'); });
   document.addEventListener('dragover', (e) => { if (e.dataTransfer?.types.includes('Files')) e.preventDefault(); });
   document.addEventListener('drop', (e) => { if (e.dataTransfer?.types.includes('Files')) e.preventDefault(); root.classList.remove('kas-files'); });
   document.addEventListener('dragend', () => root.classList.remove('kas-files'));
   document.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's' && isDirty()) { e.preventDefault(); publish(); }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); toEditor({ type: 'publish' }); }
   });
-  refreshBar();
-})();
+}
+
+if (window.parent !== window) {
+  addEventListener('message', (e) => {
+    if (e.origin !== location.origin || e.source !== window.parent) return;
+    const msg = e.data || {};
+    if (msg.source !== 'kas-editor') return;
+    if (msg.type === 'init' && !state.draft) start(msg.draft);
+    if (msg.type === 'errors') {
+      document.querySelectorAll('.kas-error').forEach((el) => el.classList.remove('kas-error'));
+      (msg.paths || []).forEach((p) => document.querySelectorAll(`[data-edit="${CSS.escape(p)}"]`).forEach((el) => el.classList.add('kas-error')));
+    }
+  });
+  toEditor({ type: 'ready' });
+}
