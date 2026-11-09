@@ -33,8 +33,8 @@
         "label": "Seasons a year"
       },
       {
-        "value": "TISSA · AISA",
-        "label": "Leagues"
+        "value": "2",
+        "label": "Leagues: TISSA and AISA"
       }
     ],
     "directorName": "Stella Chen",
@@ -43,6 +43,7 @@
     "directorMessage": "This recap represents all of our Dragons’ hard work in School Year 25–26. It was an important year — and a big turning point for every Dragon who took part in our athletic program.\n\nLet’s cheer, and be proud of our Dragons!",
     "videoTitle": "25–26 Season Recap",
     "videoUrl": "https://www.youtube.com/watch?v=2NVtI57TzK4",
+    "videoPoster": "/uploads/imported/jv-girls-volleyball/team.webp",
     "videoCaption": "Every point, every practice, every comeback. Thank you, Dragons.",
     "calendarEmbedUrl": "https://calendar.google.com/calendar/embed?src=c_92db8f053d040e85cb6272a0d1b69a13fcdc8092cf1827c8a62b728830e162a7%40group.calendar.google.com&ctz=Asia%2FTaipei",
     "missionTitle": "More than winning.",

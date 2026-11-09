@@ -1,28 +1,28 @@
 /* Staff editor — calm, roomy, big targets. Follows the device's light/dark setting. */
 :root {
-  --brand: #c8102e;
-  --bg: #f3f1ed; --surface: #ffffff; --surface-2: #f7f5f1; --ink: #17191d; --ink-2: #5b616b;
-  --line: #e2ddd4; --line-strong: #cfc8bc; --accent: var(--brand); --accent-ink: #fff;
+  --brand: #d7141f;
+  --bg: #f5f5f7; --surface: #ffffff; --surface-2: #f5f5f7; --ink: #1d1d1f; --ink-2: #6e6e73;
+  --line: #e5e5ea; --line-strong: #d2d2d7; --accent: var(--brand); --accent-ink: #fff;
   --accent-soft: color-mix(in oklab, var(--brand) 10%, transparent);
   --ok: #1d7a46; --danger: #b42318; --warn: #a15c00;
   --radius: 12px; --radius-sm: 8px;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.05), 0 8px 24px -12px rgb(0 0 0 / 0.2);
-  --font-display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
-  --font-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', Roboto, Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Roboto, Arial, sans-serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0e1013; --surface: #171a1f; --surface-2: #1d2127; --ink: #eceef1; --ink-2: #9ea4ae;
-    --line: #2a2f37; --line-strong: #3a414c; --accent: color-mix(in oklab, var(--brand) 75%, white); --accent-ink: #14060a;
+    --bg: #000000; --surface: #161617; --surface-2: #1d1d1f; --ink: #f5f5f7; --ink-2: #a1a1a6;
+    --line: #2c2c2e; --line-strong: #3a3a3c; --accent: color-mix(in oklab, var(--brand) 75%, white); --accent-ink: #14060a;
     --accent-soft: color-mix(in oklab, var(--brand) 20%, transparent); --ok: #4cc685; --danger: #ff8a80; --warn: #f0b155;
     color-scheme: dark;
   }
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 400 1rem/1.5 var(--font-body); }
-h1, h2 { font-family: var(--font-display); font-weight: 800; text-transform: uppercase; line-height: 1; margin: 0; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 1rem/1.47 var(--font-body); letter-spacing: -0.016em; -webkit-font-smoothing: antialiased; }
+h1, h2 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin: 0; }
 a { color: var(--accent); }
 .icon { width: 1.15em; height: 1.15em; flex: none; }
 .muted { color: var(--ink-2); }
@@ -53,13 +53,13 @@ code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; 
 .login { min-height: 100vh; display: grid; place-items: center; padding: 1rem;
   background: radial-gradient(50rem 30rem at 80% 0%, var(--accent-soft), transparent 70%), var(--bg); }
 .login__card { width: min(100%, 25rem); display: grid; gap: 1rem; padding: 2.25rem; background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--line); }
-.login__card h1 { font-size: 2.5rem; }
+.login__card h1 { font-size: 2rem; }
 .login__card p { margin: 0; }
 
 /* Layout */
 .app { display: grid; grid-template-columns: 16.5rem minmax(0, 1fr); min-height: 100vh; }
 .sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 1.5rem; padding: 1.25rem; background: var(--surface); border-right: 1px solid var(--line); overflow-y: auto; }
-.sidebar__brand { display: flex; gap: 0.7rem; align-items: center; color: var(--ink); text-decoration: none; font: 800 1.25rem/1 var(--font-display); text-transform: uppercase; }
+.sidebar__brand { display: flex; gap: 0.7rem; align-items: center; color: var(--ink); text-decoration: none; font: 600 1rem/1.2 var(--font-display); letter-spacing: -0.015em; }
 .sidebar__brand small { display: block; font: 500 0.8rem/1.4 var(--font-body); text-transform: none; color: var(--ink-2); }
 .sidebar__nav { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
 .sidebar__link { position: relative; display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.85rem; border-radius: var(--radius-sm); color: var(--ink-2); text-decoration: none; font-weight: 500; }
@@ -71,7 +71,7 @@ code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; 
 
 .workspace { min-width: 0; padding: 0 clamp(1rem, 3vw, 2.5rem) 6rem; }
 .topbar { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; padding: 1.25rem 0; background: color-mix(in oklab, var(--bg) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); margin-bottom: 1.5rem; }
-.topbar__title { font-size: clamp(1.8rem, 1.2rem + 2vw, 2.6rem); }
+.topbar__title { font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem); }
 .topbar__help { margin: 0.35rem 0 0; max-width: 60ch; }
 .topbar__actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
 .save-state { font-size: 0.875rem; color: var(--ok); display: inline-flex; align-items: center; gap: 0.4rem; }
@@ -144,7 +144,7 @@ fieldset.list > legend { padding: 0 0.4rem; }
 .dialog { width: min(100% - 2rem, 34rem); padding: 0; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 .dialog::backdrop { background: rgb(0 0 0 / 0.45); backdrop-filter: blur(3px); }
 .dialog__inner { display: grid; gap: 1rem; padding: 1.75rem; }
-.dialog__inner h2 { font-size: 2rem; }
+.dialog__inner h2 { font-size: 1.5rem; }
 .dialog__inner p { margin: 0; }
 .dialog__actions { display: flex; justify-content: flex-end; gap: 0.6rem; }
 .history-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; max-height: 50vh; overflow-y: auto; }

@@ -80,6 +80,7 @@ export const SCHEMA = {
         area('directorMessage', 'Director’s message'),
         text('videoTitle', 'Video title'),
         url('videoUrl', 'Recap video (YouTube link)'),
+        image('videoPoster', 'Video cover photo (shown before play)'),
         area('videoCaption', 'Video caption', { max: 1000 }),
         url('calendarEmbedUrl', 'Google Calendar embed link (optional)'),
         text('missionTitle', 'Mission title'),

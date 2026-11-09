@@ -1,10 +1,28 @@
 // A single team's page: /<season>/<team>, e.g. /fall-sports/varsity-swimming
 import { html, paragraphs, safeUrl } from '../lib/html.js';
 import { upcomingEvents, pastEvents } from '../lib/events.js';
-import { layout } from './layout.js';
-import { photo, eventRow, pageHero, initials } from './parts.js';
+import { layout, icon } from './layout.js';
+import { photo, eventRow, pageHero } from './parts.js';
 
 const lines = (text) => (text || '').split('\n').map((l) => l.trim()).filter(Boolean);
+
+function facts(team, season) {
+  const rows = [
+    ['Season', season.title],
+    ['Level', team.level],
+    ['Coaches', team.coach],
+    ['Practice', team.practice],
+    ['Players', lines(team.roster).length ? String(lines(team.roster).length) : ''],
+  ].filter(([, v]) => v);
+  return html`
+    <section class="section section--flush" aria-label="About the team">
+      <div class="container container--narrow">
+        <a class="more more--back" href="/${season.slug}">${icon('chevron')}All ${season.title}</a>
+        ${team.description ? html`<div class="team-about" data-reveal>${paragraphs(team.description)}</div>` : ''}
+        <dl class="specs" data-reveal>${rows.map(([k, v]) => html`<div><dt>${k}</dt><dd>${v}</dd></div>`)}</dl>
+      </div>
+    </section>`;
+}
 
 function schedule(content, team) {
   const mine = (content.events || []).filter((e) => e.sport && e.sport.trim().toLowerCase() === team.name.trim().toLowerCase());
@@ -12,10 +30,12 @@ function schedule(content, team) {
   const past = pastEvents(mine);
   if (!upcoming.length && !past.length) return '';
   return html`
-    <section class="section" aria-labelledby="team-schedule">
-      <h2 id="team-schedule" class="section__title section__title--sm">Schedule &amp; results</h2>
-      ${upcoming.length ? html`<ol class="event-list">${upcoming.map((e) => eventRow(e))}</ol>` : ''}
-      ${past.length ? html`<ol class="event-list event-list--past">${past.map((e) => eventRow(e, { showResult: true }))}</ol>` : ''}
+    <section class="section section--alt" aria-labelledby="team-schedule">
+      <div class="container container--narrow">
+        <h2 id="team-schedule" class="subhead">Schedule</h2>
+        ${upcoming.length ? html`<ol class="event-list">${upcoming.map((e) => eventRow(e))}</ol>` : ''}
+        ${past.length ? html`<ol class="event-list event-list--past">${past.map((e) => eventRow(e, { showResult: true }))}</ol>` : ''}
+      </div>
     </section>`;
 }
 
@@ -24,10 +44,10 @@ function roster(team) {
   if (!players.length) return '';
   return html`
     <section class="section" aria-labelledby="team-roster">
-      <h2 id="team-roster" class="section__title section__title--sm">Roster <span class="count">${players.length}</span></h2>
-      <ul class="roster">
-        ${players.map((p) => html`<li><span class="roster__badge" aria-hidden="true">${initials(p.replace(/[’'‘]\d{2}\b/, ''))}</span><span>${p}</span></li>`)}
-      </ul>
+      <div class="container container--narrow">
+        <h2 id="team-roster" class="subhead">Roster</h2>
+        <ul class="roster" data-reveal>${players.map((p) => html`<li>${p}</li>`)}</ul>
+      </div>
     </section>`;
 }
 
@@ -35,31 +55,26 @@ function gallery(team) {
   const photos = (team.gallery || []).filter((g) => g.image);
   if (!photos.length) return '';
   return html`
-    <section class="section" aria-labelledby="team-gallery">
-      <h2 id="team-gallery" class="section__title section__title--sm">Photos</h2>
-      <ul class="gallery">
-        ${photos.map((g, i) => html`
-          <li>
-            <a href="${safeUrl(g.image)}" target="_blank" rel="noopener">
-              ${photo(g.image, g.caption || `${team.name} photo ${i + 1}`, { width: 600, height: 400 })}
-            </a>
-            ${g.caption ? html`<p class="gallery__caption">${g.caption}</p>` : ''}
-          </li>`)}
-      </ul>
+    <section class="section section--alt" aria-labelledby="team-gallery">
+      <div class="container">
+        <h2 id="team-gallery" class="subhead">Photos</h2>
+        <ul class="gallery">
+          ${photos.map((g, i) => html`
+            <li data-reveal>
+              <a href="${safeUrl(g.image)}" target="_blank" rel="noopener">
+                ${photo(g.image, g.caption || `${team.name}, photo ${i + 1}`, { width: 600, height: 750 })}
+              </a>
+              ${g.caption ? html`<p class="gallery__caption">${g.caption}</p>` : ''}
+            </li>`)}
+        </ul>
+      </div>
     </section>`;
 }
 
 export function teamPage(content, season, team) {
   const body = html`
-    ${pageHero({ eyebrow: [season.title, team.level].filter(Boolean).join(' · '), title: team.name, image: team.image })}
-    <section class="section section--tight team-intro" aria-label="About the team">
-      <a class="text-link" href="/${season.slug}">← All ${season.title}</a>
-      <dl class="team-facts">
-        ${team.coach ? html`<div><dt>Coaches</dt><dd>${team.coach}</dd></div>` : ''}
-        ${team.practice ? html`<div><dt>Practice</dt><dd>${team.practice}</dd></div>` : ''}
-      </dl>
-      ${team.description ? html`<div class="team-intro__text">${paragraphs(team.description)}</div>` : ''}
-    </section>
+    ${pageHero({ eyebrow: team.level || season.title, title: team.name, image: team.image })}
+    ${facts(team, season)}
     ${schedule(content, team)}
     ${roster(team)}
     ${gallery(team)}`;
@@ -75,4 +90,3 @@ export function findTeam(content, pathname) {
   const team = season?.teams?.find((t) => t.slug === m[2]);
   return team ? { season, team } : null;
 }
-

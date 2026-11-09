@@ -8,39 +8,50 @@ export function initials(name = '') {
 }
 
 export function photo(src, alt, { cls = '', width = 800, height = 600, eager = false, fallback = '' } = {}) {
-  if (!src && !alt) return html`<div class="photo-fallback ${cls}" aria-hidden="true"><span>${fallback}</span></div>`;
+  if (!src && !alt) return html`<div class="photo-fallback ${cls}" aria-hidden="true"></div>`;
   if (!src) return html`<div class="photo-fallback ${cls}" role="img" aria-label="${alt}"><span>${fallback || initials(alt)}</span></div>`;
   return html`<img class="${cls}" src="${safeUrl(src)}" alt="${alt}" width="${width}" height="${height}" ${raw(eager ? 'fetchpriority="high"' : 'loading="lazy"')} decoding="async">`;
+}
+
+/** Centered section heading block, Apple style: eyebrow, headline, optional lead. */
+export function heading({ id, eyebrow, title, lead, level = 2 }) {
+  const tag = level === 1 ? 'h1' : 'h2';
+  return html`
+    <header class="headline" data-reveal>
+      ${eyebrow ? html`<p class="eyebrow">${eyebrow}</p>` : ''}
+      ${raw(`<${tag} id="${id}" class="headline__title">`)}${title}${raw(`</${tag}>`)}
+      ${lead ? html`<p class="headline__lead">${lead}</p>` : ''}
+    </header>`;
 }
 
 export function eventRow(e, { showResult = false, anchor = false } = {}) {
   const d = dateBadge(e.date);
   const venue = venueLabel(e.venue);
+  const meta = [formatTime(e.time) || 'All day', e.location].filter(Boolean).join(' · ');
   return html`
     <li class="event"${anchor ? raw(` id="event-${e.date}"`) : ''}>
-      <div class="event__date" aria-hidden="true"><span>${d.month}</span><strong>${d.day}</strong><span>${d.weekday}</span></div>
+      <div class="event__date" aria-hidden="true"><span>${d.month}</span><strong>${d.day}</strong></div>
       <div class="event__body">
-        ${e.sport ? html`<p class="event__sport">${e.sport}</p>` : ''}
         <h3 class="event__title">${e.title}</h3>
         <p class="event__meta">
-          <span class="visually-hidden">${d.weekday} ${d.month} ${d.day}, ${d.year}. </span>
-          ${[formatTime(e.time), e.location].filter(Boolean).join(' · ')}
+          <span class="visually-hidden">${d.weekday}, ${d.month} ${d.day}, ${d.year}. </span>
+          ${e.sport ? html`<span>${e.sport}</span>` : ''}<span>${d.weekday} · ${meta}</span>
         </p>
       </div>
       <div class="event__side">
-        ${venue ? html`<span class="tag tag--${e.venue}">${venue}</span>` : ''}
         ${showResult && e.result ? html`<span class="event__result">${e.result}</span>` : ''}
-        ${e.link ? link(e.link, html`${icon('play')}<span class="visually-hidden">Watch or details for ${e.title}</span>`, 'icon-btn') : ''}
+        ${venue ? html`<span class="event__venue">${venue}</span>` : ''}
+        ${e.link ? link(e.link, html`Watch${icon('chevron')}`, 'more') : ''}
       </div>
     </li>`;
 }
 
-export function videoFacade(url, title) {
+export function videoFacade(url, title, poster = '') {
   const id = youtubeId(url);
   if (!id) return '';
   return html`
     <div class="video" data-video="${id}">
-      <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" width="480" height="360" loading="lazy">
+      <img src="${poster ? safeUrl(poster) : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`}" alt="" width="1280" height="720" loading="lazy">
       <button class="video__play" type="button" data-video-play>
         ${icon('play')}<span class="visually-hidden">Play video: ${title}</span>
       </button>
@@ -49,13 +60,9 @@ export function videoFacade(url, title) {
 
 export function pageHero({ eyebrow, title, intro, image }) {
   return html`
-    <section class="page-hero${image ? ' page-hero--image' : ''}" aria-labelledby="page-title">
-      ${image ? photo(image, '', { cls: 'page-hero__bg', width: 1600, height: 700, eager: true }) : ''}
-      <div class="page-hero__inner">
-        ${eyebrow ? html`<p class="eyebrow">${eyebrow}</p>` : ''}
-        <h1 id="page-title" class="page-hero__title">${title}</h1>
-        ${intro ? html`<p class="page-hero__intro">${intro}</p>` : ''}
-      </div>
+    <section class="page-hero" aria-labelledby="page-title">
+      ${heading({ id: 'page-title', eyebrow, title, lead: intro, level: 1 })}
+      ${image ? html`<div class="hero-media" data-hero-media>${photo(image, '', { width: 1600, height: 900, eager: true })}</div>` : ''}
     </section>`;
 }
 
