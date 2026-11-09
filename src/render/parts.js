@@ -69,3 +69,21 @@ export function pageHero({ eyebrow, title, intro, image, edit = {} }) {
 export function emptyState(message) {
   return html`<p class="empty">${message}</p>`;
 }
+
+/**
+ * Breadcrumb trail. The last item is the current page and is not a link.
+ * @param {Array<{ href?: string, label: string }>} items
+ */
+export function crumbs(items = []) {
+  if (!items.length) return '';
+  return html`
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        ${items.map((item, i) => html`
+          <li>
+            ${item.href ? html`<a href="${item.href}">${item.label}</a>` : html`<span aria-current="page">${item.label}</span>`}
+            ${i < items.length - 1 ? html`<span class="crumbs__sep" aria-hidden="true">/</span>` : ''}
+          </li>`)}
+      </ol>
+    </nav>`;
+}

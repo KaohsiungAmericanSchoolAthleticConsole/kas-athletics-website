@@ -60,8 +60,8 @@ if (pagesRepo) {
   await fs.mkdir(path.join(srcDir, 'lib'), { recursive: true });
   const whitelist = [
     'schema.js', 'blocks.js', 'fieldkit.js',
-    ...['render/sections.js', 'render/router.js', 'render/edit.js', 'render/layout.js', 'render/pages.js', 'render/parts.js', 'render/team.js', 'render/scores.js'],
-    ...['lib/html.js', 'lib/events.js', 'lib/validate.js', 'lib/migrate.js', 'lib/static.js', 'lib/assetVersion.js'],
+    ...['render/sections.js', 'render/router.js', 'render/edit.js', 'render/layout.js', 'render/pages.js', 'render/parts.js', 'render/team.js', 'render/scores.js', 'render/captain.js'],
+    ...['lib/html.js', 'lib/events.js', 'lib/validate.js', 'lib/migrate.js', 'lib/static.js', 'lib/assetVersion.js', 'lib/sport.js', 'lib/seasonal.js'],
   ];
   for (const rel of whitelist) {
     const dest = path.join(srcDir, rel);

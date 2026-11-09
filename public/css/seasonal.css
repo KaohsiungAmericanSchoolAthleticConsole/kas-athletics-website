@@ -1,0 +1,161 @@
+/* =========================================================================
+   Festive themes (chosen in the editor: Site settings → Festive theme)
+   All decoration lives on one fixed layer behind the page content, so it never
+   covers words or links and never takes a click. `html[data-fx="off"]` turns it
+   off (the palette menu has a switch). Nothing moves for people who ask their
+   device for reduced motion.
+   ========================================================================= */
+
+body[data-seasonal]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-position: 0 0;
+}
+/* Keep every real thing above the decoration layer. */
+body[data-seasonal] > main,
+body[data-seasonal] > footer { position: relative; z-index: 1; }
+body[data-seasonal] > .skip-link { z-index: 200; }
+html[data-fx='off'] body[data-seasonal]::before { display: none; }
+/* High contrast means high contrast: no decoration behind the words. */
+:root[data-theme='contrast'] body[data-seasonal]::before,
+:root[data-theme='contrast'] body[data-seasonal='winter'] .site-footer::before { display: none; }
+:root[data-theme='contrast'] body[data-seasonal='halloween'] { --accent: #ffe500; --accent-ink: #000; --accent-soft: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-seasonal]::before { animation: none !important; }
+}
+
+/* ---------- Winter / Christmas: snow falling, snow on the ground ---------- */
+body[data-seasonal='winter']::before {
+  background-image:
+    radial-gradient(circle, rgb(255 255 255 / 0.95) 0 1.8px, transparent 2.3px),
+    radial-gradient(circle, rgb(255 255 255 / 0.8) 0 1.2px, transparent 1.7px),
+    radial-gradient(circle, rgb(120 166 208 / 0.55) 0 1.5px, transparent 2px),
+    radial-gradient(70rem 40rem at 70% -10%, rgb(160 205 245 / 0.18), transparent 70%);
+  background-size: 240px 240px, 360px 360px, 520px 520px, 100% 100%;
+  background-repeat: repeat, repeat, repeat, no-repeat;
+  animation: fx-snow 26s linear infinite;
+  opacity: 0.9;
+}
+/* A soft drift of snow along the bottom of the page. It is painted behind the
+   footer's text (and the small print keeps its own background), so the snow
+   never makes anything harder to read. */
+body[data-seasonal='winter'] .site-footer { position: relative; }
+body[data-seasonal='winter'] .site-footer::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 0;
+  height: 5.5rem;
+  pointer-events: none;
+  background-image:
+    radial-gradient(52% 100% at 12% 100%, #ffffff 0 68%, transparent 69%),
+    radial-gradient(38% 100% at 42% 100%, #ffffff 0 68%, transparent 69%),
+    radial-gradient(46% 100% at 74% 100%, #ffffff 0 68%, transparent 69%),
+    linear-gradient(to top, #ffffff 0 1.1rem, transparent 1.1rem);
+  background-repeat: repeat-x, repeat-x, repeat-x, no-repeat;
+  background-position: left bottom, left bottom, left bottom, bottom;
+  background-size: 34rem 4.5rem, 24rem 3.2rem, 40rem 5.2rem, 100% 1.1rem;
+}
+body[data-seasonal='winter'] .site-footer > * { position: relative; z-index: 1; }
+body[data-seasonal='winter'] .site-footer__base { background: var(--surface); }
+
+@keyframes fx-snow {
+  to {
+    background-position: 80px 240px, -130px 360px, 50px 520px, 0 0;
+  }
+}
+
+/* ---------- Halloween: flying ghosts, bats and pumpkin colors ---------- */
+body[data-seasonal='halloween'] {
+  --accent: #ff7a1a;
+  --accent-ink: #1a0a00;
+  --accent-soft: color-mix(in oklab, #ff7a1a 20%, transparent);
+}
+body[data-seasonal='halloween']::before {
+  background-image:
+    url('../img/fx/ghost.svg'),
+    url('../img/fx/bat.svg'),
+    radial-gradient(80rem 46rem at 50% -12%, rgb(120 40 160 / 0.28), transparent 72%),
+    radial-gradient(70rem 40rem at 50% 112%, rgb(255 122 26 / 0.2), transparent 70%);
+  background-size: 520px 360px, 260px 200px, 100% 100%, 100% 100%;
+  background-repeat: repeat, repeat, no-repeat, no-repeat;
+  animation: fx-ghosts 60s linear infinite;
+  opacity: 0.55;
+}
+
+
+@keyframes fx-ghosts {
+  to {
+    background-position: 520px -40px, -260px 60px, 0 0, 0 0;
+  }
+}
+
+/* ---------- Spring: blossom petals drifting ---------- */
+body[data-seasonal='spring']::before {
+  background-image:
+    url('../img/fx/petals.svg'),
+    radial-gradient(70rem 40rem at 20% -10%, rgb(247 201 221 / 0.35), transparent 70%),
+    radial-gradient(60rem 36rem at 90% 110%, rgb(207 232 196 / 0.3), transparent 70%);
+  background-size: 340px 340px, 100% 100%, 100% 100%;
+  background-repeat: repeat, no-repeat, no-repeat;
+  animation: fx-petals 34s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes fx-petals {
+  to {
+    background-position: -120px 340px, 0 0, 0 0;
+  }
+}
+
+/* ---------- New Year: confetti ---------- */
+body[data-seasonal='newyear']::before {
+  background-image:
+    url('../img/fx/confetti.svg'),
+    radial-gradient(70rem 40rem at 50% -10%, rgb(255 211 77 / 0.22), transparent 70%);
+  background-size: 320px 380px, 100% 100%;
+  background-repeat: repeat, no-repeat;
+  animation: fx-confetti 14s linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes fx-confetti {
+  to {
+    background-position: 60px 380px, 0 0;
+  }
+}
+
+/* ---------- Dragon spirit: rising embers ---------- */
+body[data-seasonal='dragon']::before {
+  background-image:
+    url('../img/fx/embers.svg'),
+    radial-gradient(70rem 40rem at 50% 110%, rgb(255 90 60 / 0.22), transparent 70%);
+  background-size: 260px 340px, 100% 100%;
+  background-repeat: repeat, no-repeat;
+  animation: fx-embers 18s linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes fx-embers {
+  to {
+    background-position: -40px -340px, 0 0;
+  }
+}
+
+/* ---------- Swatches in the palette menu ---------- */
+.swatch--winter { background: radial-gradient(circle at 30% 30%, #fff 0 22%, transparent 24%), linear-gradient(160deg, #cfe6f7, #6f9dc4); }
+.swatch--halloween { background: radial-gradient(circle at 50% 34%, #fff 0 26%, transparent 28%), linear-gradient(160deg, #6b2d8f, #ff7a1a); }
+.swatch--spring { background: radial-gradient(circle at 34% 34%, #f7c9dd 0 30%, transparent 32%), linear-gradient(160deg, #fde8f1, #b9dfae); }
+.swatch--newyear { background: conic-gradient(#ffd34d 0 25%, #d43429 0 50%, #1863dc 0 75%, #fff 0); }
+.swatch--dragon { background: radial-gradient(circle at 60% 60%, #ffb347 0 24%, transparent 26%), linear-gradient(160deg, #3a0b0b, #d43429); }
+.swatch--off { background: linear-gradient(160deg, #f4f1eb 50%, #0c0e11 50%); }
+
+@media print {
+  body[data-seasonal]::before,
+  body[data-seasonal='winter'] .site-footer::before { display: none; }
+}

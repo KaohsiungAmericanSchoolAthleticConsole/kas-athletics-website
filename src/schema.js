@@ -4,6 +4,8 @@
 // template under src/render/. Nothing else needs to change.
 
 import { text, area, url, image, bool, select, list } from './fieldkit.js';
+import { SEASONAL_OPTIONS } from './lib/seasonal.js';
+import { SPORT_OPTIONS } from './lib/sport.js';
 
 const team = {
   type: 'group',
@@ -17,6 +19,23 @@ const team = {
     area('description', 'About the team', { max: 2000 }),
     text('practice', 'Practice times', { placeholder: 'Mon / Wed / Fri · 3:30–5:00 PM' }),
     area('roster', 'Roster (one player per line)', { max: 4000, placeholder: 'Adam Chu ’26\nEric Su ’28' }),
+    {
+      key: 'captain', label: 'Team captain (the reveal at the top of the team page)', type: 'group',
+      help: 'Leave the name empty and the first player on the roster is shown instead — set it to be sure.',
+      fields: [
+        text('name', 'Captain’s name', { max: 80, placeholder: 'Adam Chu' }),
+        text('role', 'Role label', { max: 40, placeholder: 'Team captain' }),
+        text('number', 'Jersey number', { max: 4, placeholder: '10' }),
+        text('year', 'Class / year', { max: 40, placeholder: 'Class of 2026' }),
+        image('photo', 'Captain photo (portrait works best)'),
+        area('quote', 'A line from the captain', { max: 300, placeholder: 'We play for each other.' }),
+      ],
+    },
+    {
+      key: 'sport', label: 'Sport (for the team page animation)', type: 'select',
+      help: 'Works it out from the team name automatically. Change it if the animation looks wrong.',
+      options: SPORT_OPTIONS,
+    },
     {
       key: 'gallery', label: 'Photo gallery', type: 'list', addLabel: 'Add a photo', max: 40, titleKey: 'caption',
       item: { type: 'group', fields: [image('image', 'Photo', { required: true }), text('caption', 'Caption (optional)')] },
@@ -50,6 +69,11 @@ export const SCHEMA = {
             { value: 'dragon', label: 'Dragon (school colors)' },
             { value: 'contrast', label: 'High contrast' },
           ],
+        },
+        {
+          key: 'seasonal', label: 'Festive theme', type: 'select',
+          help: 'Decorates every page for the time of year — snow at Christmas, ghosts at Halloween. Automatic follows the calendar. Visitors can turn the effects off from the palette menu.',
+          options: SEASONAL_OPTIONS,
         },
         url('instagramUrl', 'Instagram link'),
         text('instagramHandle', 'Instagram handle', { placeholder: '@kas_athletic_council' }),

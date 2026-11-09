@@ -1,5 +1,6 @@
 import { html, raw, esc, safeUrl, isExternal } from '../lib/html.js';
 import { upcomingEvents, formatDate, formatTime } from '../lib/events.js';
+import { seasonalFor, seasonalLabel } from '../lib/seasonal.js';
 import { ed, editing } from './edit.js';
 import { assetVersion as getAssetVersion } from '../lib/assetVersion.js';
 
@@ -35,18 +36,25 @@ function ticker(content) {
     </a>`;
 }
 
-function themeMenu() {
+function themeMenu(seasonal) {
   return html`
     <div class="theme-switch" data-theme-switch>
-      <button class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="theme-menu" data-theme-toggle>
+      <button class="icon-btn" type="button" aria-expanded="false" aria-controls="theme-menu" data-theme-toggle>
         ${icon('palette')}<span class="visually-hidden">Change theme</span>
       </button>
-      <div class="theme-menu" id="theme-menu" role="radiogroup" aria-label="Theme" hidden>
-        ${THEMES.map((t) => html`
-          <button type="button" role="radio" aria-checked="false" aria-label="${t.label} theme: ${t.hint}" class="theme-menu__item" data-theme-choice="${t.id}">
-            <span class="swatch swatch--${t.id}" aria-hidden="true"></span>
-            <span><strong>${t.label}</strong><small>${t.hint}</small></span>
-          </button>`)}
+      <div class="theme-menu" id="theme-menu" role="group" aria-label="Appearance" hidden>
+        <div class="theme-menu__group" role="radiogroup" aria-label="Theme">
+          ${THEMES.map((t) => html`
+            <button type="button" role="radio" aria-checked="false" aria-label="${t.label} theme: ${t.hint}" class="theme-menu__item" data-theme-choice="${t.id}">
+              <span class="swatch swatch--${t.id}" aria-hidden="true"></span>
+              <span><strong>${t.label}</strong><small>${t.hint}</small></span>
+            </button>`)}
+        </div>
+        ${seasonal ? html`
+          <button type="button" role="switch" aria-checked="true" class="theme-menu__item theme-menu__item--switch" data-fx-toggle data-fx-label="${seasonalLabel(seasonal)}">
+            <span class="swatch swatch--${seasonal}" aria-hidden="true"></span>
+            <span><strong>Festive effects</strong><small data-fx-hint>${seasonalLabel(seasonal)} · turn off</small></span>
+          </button>` : ''}
       </div>
     </div>`;
 }
@@ -54,16 +62,35 @@ function themeMenu() {
 export function navItems(content) {
   const pages = content.pages || [];
   const menuPages = pages.filter((p, i) => i > 0 && p.showInMenu);
+  const seasons = (content.seasons || []).map((s) => ({ href: `/${s.slug}`, label: s.title }));
   return [
     { href: '/', label: 'Home' },
-    ...(content.seasons || []).map((s) => ({ href: `/${s.slug}`, label: s.title })),
+    ...(seasons.length ? [{ label: 'Sports', children: seasons }] : []),
     { href: '/scores', label: 'Scores' },
     { href: '/events', label: 'Schedule' },
     ...menuPages.map((p) => ({ href: `/${p.slug}`, label: p.title })),
   ];
 }
 
-function header(content, currentPath) {
+function navItem(n, currentPath) {
+  if (n.children) {
+    const active = n.children.some((c) => c.href === currentPath);
+    return html`
+      <li class="nav-group">
+        <details class="nav-group__box">
+          <summary class="nav-group__summary${active ? ' is-current' : ''}">
+            <span>${n.label}</span><span class="nav-group__caret" aria-hidden="true">${icon('down')}</span>
+          </summary>
+          <ul class="nav-group__menu">
+            ${n.children.map((c) => html`<li><a href="${c.href}"${c.href === currentPath ? raw(' aria-current="page"') : ''}>${c.label}</a></li>`)}
+          </ul>
+        </details>
+      </li>`;
+  }
+  return html`<li><a href="${n.href}"${n.href === currentPath ? raw(' aria-current="page"') : ''}>${n.label}</a></li>`;
+}
+
+function header(content, currentPath, seasonal) {
   const { site } = content;
   return html`
     <header class="site-header">
@@ -76,13 +103,13 @@ function header(content, currentPath) {
         </a>
         <nav class="main-nav" aria-label="Main" id="main-nav" data-nav>
           <ul>
-            ${navItems(content).map((n) => html`<li><a href="${n.href}"${n.href === currentPath ? raw(' aria-current="page"') : ''}>${n.label}</a></li>`)}
+            ${navItems(content).map((n) => navItem(n, currentPath))}
           </ul>
         </nav>
         <div class="masthead__tools">
-          ${themeMenu()}
+          ${themeMenu(seasonal)}
           <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" data-nav-toggle>
-            ${icon('menu')}<span class="visually-hidden">Menu</span>
+            ${icon('menu')}<span class="visually-hidden" data-nav-label>Menu</span>
           </button>
         </div>
       </div>
@@ -124,7 +151,10 @@ function footer(content) {
       </div>
       <div class="site-footer__base">
         <p>© ${year} ${site.schoolName || site.name}. <span${ed('site.footerNote', { placeholder: 'Footer note' })}>${site.footerNote}</span></p>
-        <a href="/admin/" class="staff-link">Staff sign in</a>
+        <p class="site-footer__links">
+          <a class="back-top" href="#top">Back to top ${icon('up')}</a>
+          <a href="/admin/" class="staff-link">Staff sign in</a>
+        </p>
       </div>
     </footer>`;
 }
@@ -137,6 +167,7 @@ export function layout(content, page) {
   const { site } = content;
   const title = page.title ? `${page.title} · ${site.name}` : `${site.name} — ${site.tagline}`;
   const description = page.description || site.tagline || '';
+  const seasonal = seasonalFor(site);
   return `<!doctype html>
 <html lang="en" data-theme-default="${esc(site.defaultTheme || 'auto')}">
 <head>
@@ -155,13 +186,15 @@ ${page.image ? `<meta property="og:image" content="${esc(safeUrl(page.image))}">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,800&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/css/site.css?v=${ASSET_VERSION()}">
 <link rel="stylesheet" href="/css/motion.css?v=${ASSET_VERSION()}">
+<link rel="stylesheet" href="/css/captain.css?v=${ASSET_VERSION()}">
+<link rel="stylesheet" href="/css/seasonal.css?v=${ASSET_VERSION()}">
 <link rel="stylesheet" href="/brand.css">
 <script src="/js/site.js?v=${ASSET_VERSION()}" defer></script>
 ${editing() ? `<link rel="stylesheet" href="/admin/inline.css?v=${ASSET_VERSION()}">\n<script type="module" src="/admin/inline.js?v=${ASSET_VERSION()}"></script>` : ''}
 </head>
-<body>
+<body id="top"${seasonal ? ` data-seasonal="${esc(seasonal)}"` : ''}>
 <a class="skip-link" href="#main">Skip to content</a>
-${header(content, page.path)}
+${header(content, page.path, seasonal)}
 <main id="main" tabindex="-1">
 ${page.body}
 </main>

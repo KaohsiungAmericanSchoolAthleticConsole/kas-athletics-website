@@ -1,7 +1,7 @@
 import { html, paragraphs } from '../lib/html.js';
 import { upcomingEvents, pastEvents } from '../lib/events.js';
 import { layout, icon, link } from './layout.js';
-import { photo, eventRow, videoFacade, pageHero, emptyState, initials } from './parts.js';
+import { photo, eventRow, videoFacade, pageHero, emptyState, initials, crumbs } from './parts.js';
 import { ed, edImg, edList, showWhenEditing } from './edit.js';
 
 function withAnchors(events, opts = {}) {
@@ -182,11 +182,17 @@ function teamCard(t, season, ti, si) {
 
 export function seasonPage(content, season) {
   const si = (content.seasons || []).indexOf(season);
+  const teamCount = (season.teams || []).length;
   const body = html`
+    ${crumbs([{ href: '/', label: 'Home' }, { label: season.title }])}
     ${pageHero({ eyebrow: season.dates || 'KAS Athletics', title: season.title, intro: season.intro, image: season.image,
       edit: { title: `seasons[${si}].title`, intro: `seasons[${si}].intro`, image: `seasons[${si}].image` } })}
-    <section class="section" aria-label="Teams">
-      ${season.teams?.length ? html`<ul class="team-grid"${edList(`seasons[${si}].teams`)}>${season.teams.map((t, ti) => teamCard(t, season, ti, si))}</ul>` : emptyState('Teams for this season will be announced soon.')}
+    <section class="section" aria-labelledby="season-teams">
+      <div class="section__head">
+        <h2 id="season-teams" class="section__title section__title--sm">Our teams${teamCount ? html` <span class="count">${teamCount}</span>` : ''}</h2>
+        <p class="section__intro">Every practice, every game, every Dragon. Pick a team and meet them.</p>
+      </div>
+      ${teamCount ? html`<ul class="team-grid"${edList(`seasons[${si}].teams`)}>${season.teams.map((t, ti) => teamCard(t, season, ti, si))}</ul>` : emptyState('Teams for this season will be announced soon — watch this space.')}
     </section>`;
   return layout(content, { path: `/${season.slug}`, title: season.title, description: season.intro, image: season.image, body });
 }
@@ -195,10 +201,12 @@ export function eventsPage(content) {
   const upcoming = upcomingEvents(content.events);
   const past = pastEvents(content.events).slice(0, 30);
   const body = html`
-    ${pageHero({ eyebrow: 'Games & events', title: 'Schedule', intro: 'Every home and away game for the Dragons. Come cheer us on!' })}
+    ${crumbs([{ href: '/', label: 'Home' }, { label: 'Schedule' }])}
+    ${pageHero({ eyebrow: 'Games & events', title: 'Schedule', intro: 'Home games, away trips and everything in between. Come cheer the Dragons on — we play louder with you there.' })}
     <section class="section" aria-labelledby="upcoming-title">
       <h2 id="upcoming-title" class="section__title section__title--sm">Upcoming</h2>
-      ${upcoming.length ? html`<ol class="event-list">${withAnchors(upcoming)}</ol>` : emptyState('No upcoming games yet.')}
+      <p class="section__intro">Put these in your calendar. The next one might be the best one.</p>
+      ${upcoming.length ? html`<ol class="event-list">${withAnchors(upcoming)}</ol>` : emptyState('No games on the board yet — the next season drops soon.')}
     </section>
     ${past.length ? html`
       <section class="section" aria-labelledby="past-title">

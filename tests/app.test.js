@@ -158,6 +158,36 @@ test('team pages render roster, gallery and team schedule; unknown teams 404', a
   assert.match(season.text, /href="\/fall-sports\/varsity-boys-soccer-tissa"/);
 });
 
+test('team pages have a captain’s moment, jump links, breadcrumbs and a team pager', async () => {
+  const r = await req('GET', '/fall-sports/varsity-boys-soccer-tissa');
+  assert.equal(r.status, 200);
+  assert.match(r.text, /class="captain"/);
+  assert.match(r.text, /data-sport="soccer"/);
+  assert.match(r.text, /Adam Chu/);
+  assert.match(r.text, /Class of 2026/);
+  assert.match(r.text, /data-captain-replay hidden/);
+  assert.match(r.text, /class="jump-nav"/);
+  assert.match(r.text, /class="crumbs"/);
+  assert.match(r.text, /class="team-pager"/);
+  assert.match(r.text, /aria-label="On this page"/);
+  // The play only starts when site.js adds .is-live; the page itself stays still.
+  assert.doesNotMatch(r.text, /class="captain is-live"/);
+
+  // Teams without a captain set still get their sport's moment.
+  const swimming = await req('GET', '/fall-sports/varsity-swimming');
+  assert.match(swimming.text, /data-sport="swimming"/);
+  assert.match(swimming.text, /Captain to be announced/);
+});
+
+test('the editor preview can load the new page modules', async () => {
+  for (const p of ['/admin/src/render/captain.js', '/admin/src/lib/sport.js', '/admin/src/lib/seasonal.js', '/admin/src/lib/assetVersion.js']) {
+    const r = await req('GET', p);
+    assert.equal(r.status, 200, p);
+    assert.match(r.headers.get('content-type'), /javascript/);
+  }
+  assert.equal((await req('GET', '/admin/src/lib/nope.js')).status, 404);
+});
+
 test('brand.css carries both school colors', async () => {
   const r = await req('GET', '/brand.css');
   assert.match(r.text, /--brand:#[0-9a-f]{6};--brand-2:#[0-9a-f]{6}/i);

@@ -8,4 +8,6 @@
   var resolved = choice === 'auto' ? (more ? 'contrast' : dark ? 'dark' : 'light') : choice;
   root.setAttribute('data-theme', resolved);
   root.setAttribute('data-theme-choice', choice);
+  // Visitors who turned the festive effects off keep them off (no flash of snow).
+  try { if (localStorage.getItem('kas-fx') === 'off') root.setAttribute('data-fx', 'off'); } catch (e) { /* storage blocked */ }
 })();

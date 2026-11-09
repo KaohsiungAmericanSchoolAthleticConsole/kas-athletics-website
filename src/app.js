@@ -260,7 +260,7 @@ export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logge
       // allow render/*.js and lib/{html,events,validate,migrate,static}.js
       const ok = allowed.includes(rel)
         || /^render\/[A-Za-z0-9_-]+\.js$/.test(rel)
-        || /^lib\/(html|events|validate|migrate|static)\.js$/.test(rel);
+        || /^lib\/(html|events|validate|migrate|static|assetVersion|sport|seasonal)\.js$/.test(rel);
       if (!ok) return send(res, 404, 'Not found');
       const rootAbs = path.resolve(publicDir, '..', 'src');
       const file = path.resolve(rootAbs, rel);

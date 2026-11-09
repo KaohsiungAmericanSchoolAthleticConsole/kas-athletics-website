@@ -79,6 +79,10 @@ The **next upcoming game** in *Games & events* appears automatically in the red 
 **Scores** (`/scores`) is a live scoreboard built from *Games & events*. For each game, fill in **Opponent** (and optionally a logo), then the **KAS score** and **Opponent score** once it's over. The game turns to *Final*, the winner is marked, and the **Standings** tab updates its win/loss records automatically. Set **Status** to *Live now* during a game; the page refreshes itself every minute while games are on. For meets and tournaments, leave Opponent empty and use **Result note** (e.g. “2nd of 6”).
 Visitors can switch between **Auto, Light, Dark, Dragon (school colors) and High contrast** themes with the palette button. The school color and the default theme are set in *Site settings*.
 
+**Team pages have a captain’s moment.** Every team page opens with a short animation for that sport (a footballer kicks a ball, a volleyball player spikes one) and then shows the captain’s photo and name. In **Sports pages → a team → Team captain**, set the name, role, number, class, photo and an optional quote. If the captain’s name is left empty, the first player on the roster and the team photo are shown instead, so the page is never blank. The **Sport** field controls which animation plays; it is worked out from the team name automatically.
+
+**Festive themes** are in *Site settings → Festive theme*: **Automatic** decorates the site at the right time of year (snow at Christmas, ghosts at Halloween, petals in spring), or choose one theme, or **None**. Visitors can turn the effects off with the palette menu; the choice is remembered on their device.
+
 Accounts: create or reset one with `npm run set-password -- <username>` on the server. Staff can change their own password in the editor.
 
 ## For developers

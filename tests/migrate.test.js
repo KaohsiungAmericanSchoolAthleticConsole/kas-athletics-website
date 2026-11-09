@@ -28,6 +28,15 @@ test('migrate is idempotent', () => {
   assert.deepEqual(m2.pages[0].sections.map((s) => s.type), m.pages[0].sections.map((s) => s.type));
 });
 
+test('migrate fills the festive theme default and leaves the input alone', () => {
+  const m = migrate(seed);
+  assert.equal(m.site.seasonal, 'auto');
+  assert.equal(seed.site.seasonal, undefined);
+  assert.equal(migrate(m), m); // already set: no new object needed
+  const chosen = migrate({ ...m, site: { ...m.site, seasonal: 'halloween' } });
+  assert.equal(chosen.site.seasonal, 'halloween');
+});
+
 test('migrate drops nothing from the rest of the content', () => {
   const m = migrate(seed);
   assert.equal(m.events.length, seed.events.length);

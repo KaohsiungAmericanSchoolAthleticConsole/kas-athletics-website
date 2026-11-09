@@ -75,8 +75,14 @@ function homeSections(home, content) {
 
 export function migrate(raw) {
   if (!raw || typeof raw !== 'object') return raw;
-  if (Array.isArray(raw.pages) && raw.pages.length) return raw; // already migrated
+  if (Array.isArray(raw.pages) && raw.pages.length) {
+    // Already migrated: only fill in fields added later (without changing the input).
+    if (raw.site?.seasonal) return raw;
+    return { ...raw, site: { seasonal: 'auto', ...(raw.site || {}) } };
+  }
   const content = structuredClone(raw);
+  // Newer setting: the site decorates itself at the right time of year by default.
+  content.site = { seasonal: 'auto', ...(content.site || {}) };
   const pages = [];
   // Home page
   pages.push({
