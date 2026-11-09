@@ -6,7 +6,7 @@ import { createGithubBackend, utf8ToBase64, base64ToUtf8 } from '../public/admin
 import { SCHEMA } from '../src/schema.js';
 import { validateContent } from '../src/lib/validate.js';
 
-const seed = JSON.parse(readFileSync(new URL('../data/content.json', import.meta.url), 'utf8'));
+const seed = JSON.parse(readFileSync(new URL('./fixtures/content.json', import.meta.url), 'utf8'));
 
 function fakeGithub({ push = true } = {}) {
   let n = 0;

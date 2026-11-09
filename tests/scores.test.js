@@ -45,7 +45,7 @@ test('standings count wins, losses, ties and recent form; ignore live and meets'
 });
 
 test('scoreboard renders home team second, marks the winner and escapes names', () => {
-  const content = JSON.parse(readFileSync(new URL('../data/content.json', import.meta.url), 'utf8'));
+  const content = JSON.parse(readFileSync(new URL('./fixtures/content.json', import.meta.url), 'utf8'));
   content.events = [game({ opponent: '<b>Evil</b>', kasScore: '61', opponentScore: '55' })];
   const out = scoresPage(content, { now: NOW });
   assert.match(out, /&lt;b&gt;Evil&lt;\/b&gt;/);
@@ -58,7 +58,7 @@ test('scoreboard renders home team second, marks the winner and escapes names', 
 });
 
 test('scores must be whole numbers', () => {
-  const content = JSON.parse(readFileSync(new URL('../data/content.json', import.meta.url), 'utf8'));
+  const content = JSON.parse(readFileSync(new URL('./fixtures/content.json', import.meta.url), 'utf8'));
   content.events = [game({ kasScore: '3-1' })];
   const paths = validateContent(SCHEMA, content).errors.map((e) => e.path);
   assert.ok(paths.includes('events[0].kasScore'));

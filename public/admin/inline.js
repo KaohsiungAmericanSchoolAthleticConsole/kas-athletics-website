@@ -58,11 +58,22 @@ function toast(message, kind = 'ok') {
 const live = h('p', { class: 'kas-sr', 'aria-live': 'polite' });
 
 // ---------- Text ----------
+/**
+ * The text as stored, not as displayed. (innerText would apply CSS such as
+ * text-transform: uppercase and save headlines in capitals.)
+ */
+function plainText(node) {
+  if (node.nodeType === Node.TEXT_NODE) return node.nodeValue;
+  if (node.nodeName === 'BR') return '\n';
+  const inner = [...node.childNodes].map(plainText).join('');
+  return /^(P|DIV|LI)$/.test(node.nodeName) ? `${inner}\n\n` : inner;
+}
+
 function readText(el) {
-  const text = el.innerText.replace(/\r/g, '').replace(/ /g, ' ');
+  const text = [...el.childNodes].map(plainText).join('').replace(/\r/g, '').replace(/\u00a0/g, ' ');
   return el.hasAttribute('data-edit-multiline')
     ? text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim()
-    : text.replace(/\s*\n\s*/g, ' ').trim();
+    : text.replace(/\s*\n\s*/g, ' ').replace(/\s{2,}/g, ' ').trim();
 }
 
 function setupText() {

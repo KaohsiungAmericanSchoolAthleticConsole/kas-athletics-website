@@ -7,7 +7,7 @@ import { upcomingEvents, pastEvents, formatTime, formatDate, todayInSchoolZone }
 import { detectImageType } from '../src/lib/uploads.js';
 import { SCHEMA } from '../src/schema.js';
 
-const seed = JSON.parse(readFileSync(new URL('../data/content.json', import.meta.url), 'utf8'));
+const seed = JSON.parse(readFileSync(new URL('./fixtures/content.json', import.meta.url), 'utf8'));
 
 test('esc neutralises markup characters', () => {
   assert.equal(esc('<script>"x"&\'y\''), '&lt;script&gt;&quot;x&quot;&amp;&#39;y&#39;');
@@ -39,9 +39,14 @@ test('youtubeId handles common URL shapes', () => {
   assert.equal(youtubeId('https://www.youtube.com/@thescoreKAS'), null);
 });
 
-test('seed content passes validation', () => {
-  const { errors } = validateContent(SCHEMA, seed);
-  assert.deepEqual(errors, []);
+test('test fixture content passes validation', () => {
+  assert.deepEqual(validateContent(SCHEMA, seed).errors, []);
+});
+
+// The safety net: content published from the editor must be valid, or the site isn't rebuilt.
+test('the live website content (data/content.json) is valid', () => {
+  const live = JSON.parse(readFileSync(new URL('../data/content.json', import.meta.url), 'utf8'));
+  assert.deepEqual(validateContent(SCHEMA, live).errors, []);
 });
 
 test('validation drops unknown keys and returns a new object', () => {

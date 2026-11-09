@@ -33,7 +33,8 @@ async function signIn() {
 
 before(async () => {
   dataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'kas-test-'));
-  await fs.copyFile(path.join(rootDir, 'data', 'content.json'), path.join(dataDir, 'content.json'));
+  // A frozen copy of the content, so staff edits to data/content.json can never break these tests.
+  await fs.copyFile(path.join(rootDir, 'tests', 'fixtures', 'content.json'), path.join(dataDir, 'content.json'));
   await createAuth(path.join(dataDir, 'users.json')).setPassword('stella', 'correct-horse-battery');
   server = http.createServer(createApp({ rootDir, dataDir, logger: silent }));
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
@@ -90,6 +91,7 @@ test('writes without the CSRF token are refused', async () => {
 test('staff can edit content; text is escaped on the site; history is kept', async () => {
   const { cookie, csrf } = await signIn();
   const { json } = await req('GET', '/api/content', { cookie });
+  const originalTitle = json.content.home.heroTitle;
   const next = structuredClone(json.content);
   next.home.heroTitle = 'Go <script>alert(1)</script> Dragons';
   const save = await req('PUT', '/api/content', { cookie, csrf, body: { content: next } });
@@ -102,7 +104,7 @@ test('staff can edit content; text is escaped on the site; history is kept', asy
   const hist = await req('GET', '/api/history', { cookie });
   assert.ok(hist.json.versions.length >= 1);
   const old = await req('GET', `/api/history/${hist.json.versions[0].id}`, { cookie });
-  assert.equal(old.json.content.home.heroTitle, 'Home of the Dragons');
+  assert.equal(old.json.content.home.heroTitle, originalTitle);
   assert.equal((await req('GET', '/api/history/..%2fusers.json', { cookie })).status, 400);
 });
 

@@ -78,6 +78,12 @@ Breaking one needs a very good reason, written in the version history.
   failure blocks publishing.
 - **Write a test for every bug you fix and every feature you add** (`node:test`,
   files in `tests/`).
+- **Tests must never depend on the live content.** Use the frozen copy in
+  `tests/fixtures/content.json`. Staff edit `data/content.json` from the
+  editor, and CI runs the tests before every publish, so a test that reads live
+  content can block staff from publishing (it happened once; see v1.8.1). The
+  only test that reads `data/content.json` checks that it is *valid*, on
+  purpose.
 - **Files stay small and focused** (roughly under 400 lines; `site.css` is the
   exception).
 - **Accessibility:** semantic HTML, a visible keyboard focus, labels on every
@@ -167,7 +173,8 @@ Live URLs:
 | `data/users.json` | Staff password hashes. **Not in git** |
 | `data/history/` | Server-mode undo history. **Not in git** |
 | `scripts/set-password.js` | `npm run set-password` creates/resets a staff account |
-| `tests/` | `node:test` suites (50 tests) |
+| `tests/` | `node:test` suites (51 tests) |
+| `tests/fixtures/content.json` | Frozen content the tests run against (never edited by staff) |
 | `.github/workflows/pages.yml` | Test → build → deploy to GitHub Pages on push to `main` |
 
 ---
@@ -284,6 +291,11 @@ content), a nav entry in `navItems()` in `layout.js`, and **add its URL to
   out further logins from 127.0.0.1.
 - **Server-mode sessions live in memory**: restarting the server signs staff
   out. The editor keeps their unpublished draft and restores it after sign-in.
+- **Never read edited text with `innerText`.** It applies CSS such as
+  `text-transform: uppercase`, so headlines got saved in capitals (v1.8.1).
+  `inline.js` walks the DOM text instead (`plainText()`).
+- **Staff publish on GitHub** creates commits there; a local `git push` will
+  be refused until you `git pull --rebase`.
 - **Count-up numbers** in the stats strip are skipped in the editor preview so
   they don't overwrite text being edited.
 
@@ -315,8 +327,6 @@ Content (staff can fix in the editor):
 - 11 teams have no photo; no team has a description or practice times.
 
 Not yet verified:
-- A real sign-in and publish on the GitHub-hosted editor with a real editor key
-  (it was tested against a simulated GitHub API and a fake key).
 - Drag-to-reorder with a finger on a real phone; Firefox (it has no
   scroll-driven animations, so it gets simple fade-ins by design).
 
@@ -340,6 +350,18 @@ Newest first. Each entry: **version — date — commit(s)**, then what changed 
 why. Version numbers are this project's own: minor = feature, patch = fix.
 To see or restore any version: `git log --oneline`, then
 `git switch -c look-at-old <commit>` (safe) or `git revert <commit>`.
+
+### v1.8.1 — 2026-11-09
+**Fixes found by the first real publish from the GitHub-hosted editor** (which
+worked end to end: commit `11705b1`, made by staff in the editor).
+- *Edit on the page* saved headlines in CAPITALS: `inline.js` read text with
+  `innerText`, which applies `text-transform`. It now reads the real text and
+  keeps paragraph breaks.
+- That publish was **not deployed**, because a test compared against the live
+  home title, which the edit had changed. All tests now use
+  `tests/fixtures/content.json`; one test checks that the live content is valid.
+- Restored the home title to "Home of the Dragons" (the edit had saved
+  "HOME OF THE DRA", cut off mid-edit).
 
 ### v1.8 — 2026-11-09 — DEVELOPER.md
 - Added this developer guide: goals, rules, architecture, how-tos, gotchas,
