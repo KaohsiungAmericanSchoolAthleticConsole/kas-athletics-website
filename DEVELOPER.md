@@ -7,7 +7,8 @@ built by, how it works, how to change it safely, and a record of every version.
 > [Version history](#version-history) below, in the same commit as the change.
 
 `README.md` is the short guide for running the site and for staff. This file is
-the long guide for developers.
+the long guide for developers. **`HANDOFF.md`** is the latest status and the
+unfinished work; read it first.
 
 ---
 
@@ -344,12 +345,22 @@ Decisions to revisit:
 
 ---
 
+> **Unfinished work:** a Canva-like page builder is in progress on branch
+> `page-builder`. See **`HANDOFF.md` section 6** for the full spec and task list.
+
 ## Version history
 
 Newest first. Each entry: **version — date — commit(s)**, then what changed and
 why. Version numbers are this project's own: minor = feature, patch = fix.
 To see or restore any version: `git log --oneline`, then
 `git switch -c look-at-old <commit>` (safe) or `git revert <commit>`.
+
+### v1.8.3 — 2026-11-10 — handoff docs
+- Added `HANDOFF.md` (full status, the owner's decisions, accounts, and the
+  complete spec and task list for the unfinished page builder) and `CLAUDE.md`
+  (pointer for AI assistants).
+- Started the page builder on branch `page-builder`: `src/fieldkit.js` and
+  `src/blocks.js` (section library). Not wired in yet.
 
 ### v1.8.2 — 2026-11-09
 **Match the school website's colors.** Set the default brand color and second
