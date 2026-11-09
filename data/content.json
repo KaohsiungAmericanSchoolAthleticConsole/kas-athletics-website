@@ -1,0 +1,648 @@
+{
+  "site": {
+    "name": "KAS Athletics",
+    "tagline": "Fight Like a Dragon",
+    "schoolName": "Kaohsiung American School",
+    "logo": "/uploads/imported/kas-seal.png",
+    "phone": "+886 7 586 3370",
+    "email": "",
+    "address": "Kaohsiung American School\nKaohsiung, Taiwan",
+    "brandColor": "#d7141f",
+    "defaultTheme": "auto",
+    "instagramUrl": "https://www.instagram.com/kas_athletic_council",
+    "instagramHandle": "@kas_athletic_council",
+    "youtubeUrl": "https://www.youtube.com/@thescoreKAS",
+    "newsletterUrl": "",
+    "footerNote": "Home of the Dragons.",
+    "brandColor2": "#0b1440"
+  },
+  "home": {
+    "heroEyebrow": "Kaohsiung American School",
+    "heroTitle": "Home of the Dragons",
+    "heroSubtitle": "Developing the mind, body and spirit of every student-athlete — on the court, on the field and beyond.",
+    "heroImage": "/uploads/imported/home-hero.webp",
+    "heroCtaLabel": "See this week’s games",
+    "heroCtaLink": "/events",
+    "stats": [
+      {
+        "value": "21",
+        "label": "Teams"
+      },
+      {
+        "value": "3",
+        "label": "Seasons a year"
+      },
+      {
+        "value": "TISSA · AISA",
+        "label": "Leagues"
+      }
+    ],
+    "directorName": "Stella Chen",
+    "directorRole": "Athletic Director",
+    "directorPhoto": "/uploads/imported/stella-chen.webp",
+    "directorMessage": "This recap represents all of our Dragons’ hard work in School Year 25–26. It was an important year — and a big turning point for every Dragon who took part in our athletic program.\n\nLet’s cheer, and be proud of our Dragons!",
+    "videoTitle": "25–26 Season Recap",
+    "videoUrl": "https://www.youtube.com/watch?v=2NVtI57TzK4",
+    "videoCaption": "Every point, every practice, every comeback. Thank you, Dragons.",
+    "calendarEmbedUrl": "https://calendar.google.com/calendar/embed?src=c_92db8f053d040e85cb6272a0d1b69a13fcdc8092cf1827c8a62b728830e162a7%40group.calendar.google.com&ctz=Asia%2FTaipei",
+    "missionTitle": "More than winning.",
+    "missionBody": "KAS Athletics is committed to developing the mind, body, and spirit of our student-athletes. Through teamwork, dedication, discipline, and sportsmanship, we provide students with opportunities to grow both on and off the court.\n\nOur goal is to help every student-athlete build confidence, develop leadership skills, overcome challenges, and learn the value of working together. We believe athletics is not only about competition and winning, but also about building character, creating lasting relationships, and becoming responsible and well-rounded individuals."
+  },
+  "events": [
+    {
+      "date": "2026-09-18",
+      "time": "",
+      "sport": "Varsity Swimming",
+      "title": "TISSA High School Swimming",
+      "venue": "away",
+      "location": "Morrison Academy Taichung",
+      "result": "",
+      "link": ""
+    },
+    {
+      "date": "2026-09-18",
+      "time": "",
+      "sport": "Varsity Boys Volleyball (AISA)",
+      "title": "TAS Invitational",
+      "venue": "away",
+      "location": "Taipei American School",
+      "result": "",
+      "link": ""
+    },
+    {
+      "date": "2026-09-22",
+      "time": "16:30",
+      "sport": "Varsity Boys Soccer (TISSA)",
+      "title": "KAS vs. MAC (Friendly)",
+      "venue": "away",
+      "location": "Morrison Academy Taichung",
+      "result": "",
+      "link": ""
+    },
+    {
+      "date": "2026-10-02",
+      "time": "16:30",
+      "sport": "Varsity Girls Volleyball",
+      "title": "KAS vs. AST (Qualifier)",
+      "venue": "away",
+      "location": "American School in Taichung",
+      "result": "",
+      "link": ""
+    },
+    {
+      "date": "2026-10-15",
+      "time": "",
+      "sport": "Varsity Boys Volleyball (AISA)",
+      "title": "AISA Tournament",
+      "venue": "neutral",
+      "location": "Senri & Osaka International Schools, Osaka, Japan",
+      "result": "",
+      "link": ""
+    }
+  ],
+  "seasons": [
+    {
+      "title": "Fall Sports",
+      "slug": "fall-sports",
+      "dates": "",
+      "intro": "",
+      "image": "/uploads/imported/seasons/fall.webp",
+      "teams": [
+        {
+          "name": "Varsity Boys Volleyball (AISA)",
+          "slug": "varsity-boys-volleyball-aisa",
+          "level": "High School · Varsity · AISA",
+          "coach": "",
+          "image": "/uploads/imported/varsity-boys-volleyball-aisa/team.webp",
+          "description": "",
+          "practice": "",
+          "roster": "Adam ’25\nDuncan ’25\nOliver ’25\nAiden ’25\nEason ’25\nOwen ’25\nBenjamin ’25\nJason ’25\nSavi ’25\nClifford ’25\nKevin ’25\nStanley ’25",
+          "gallery": [
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/01.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/02.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/03.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/04.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/05.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/06.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/07.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/08.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/09.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/10.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/11.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-volleyball-aisa/12.webp",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "name": "Varsity Swimming",
+          "slug": "varsity-swimming",
+          "level": "High School · Varsity · TISSA",
+          "coach": "",
+          "image": "/uploads/imported/home-hero.webp",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "Varsity Girls Volleyball",
+          "slug": "varsity-girls-volleyball",
+          "level": "High School · Varsity",
+          "coach": "Angela Hsu (Head Coach) · Kaitlyn Osborne (Assistant Coach)",
+          "image": "/uploads/imported/varsity-girls-volleyball/team.webp",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "Varsity Boys Soccer (TISSA)",
+          "slug": "varsity-boys-soccer-tissa",
+          "level": "High School · Varsity · TISSA",
+          "coach": "Coach Sam · Coach Dave",
+          "image": "/uploads/imported/varsity-boys-soccer-tissa/team.webp",
+          "description": "",
+          "practice": "",
+          "roster": "Adam Chu ’26\nEric Su ’28\nJessie Kwok ’25\nLucas Lan ’25\nYuju Cheon ’27\nAlex Jenkins ’25\nIvan Kao ’28\nRex Chiang ’28\nYuki Shibata ’27\nBernie Wu ’25\nJack Hu ’26\nJessie Taffere ’25\nRyan Lin ’25\nCharles Chung ’27\nJae Chia ’28\nJosh Wu ’27\nSteve Shang ’25",
+          "gallery": [
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/01.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/02.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/03.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/04.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/05.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/06.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/07.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/08.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/09.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/10.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/11.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/12.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/13.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/14.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/15.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/16.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/17.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/18.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/19.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-soccer-tissa/20.webp",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "name": "JV Girls Volleyball",
+          "slug": "jv-girls-volleyball",
+          "level": "High School · Junior Varsity",
+          "coach": "",
+          "image": "/uploads/imported/jv-girls-volleyball/team.webp",
+          "description": "",
+          "practice": "",
+          "roster": "Anna ’25\nEmma ’25\nTiffany ’25\nZoe ’25\nAnnabelle ’25\nLilian ’25\nVenus ’25\nApple ’25\nMakayla ’25\nWing ’25\nBella ’25\nNaomi ’25\nSophia ’25",
+          "gallery": [
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/01.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/02.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/03.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/04.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/05.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/06.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/07.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/08.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/09.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/10.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/11.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/12.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/13.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/jv-girls-volleyball/14.webp",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "name": "Cross Country",
+          "slug": "cross-country",
+          "level": "High School",
+          "coach": "",
+          "image": "/uploads/imported/cross-country/team.webp",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "Tennis",
+          "slug": "tennis",
+          "level": "High School",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "Ultimate Frisbee",
+          "slug": "ultimate-frisbee",
+          "level": "High School",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        }
+      ]
+    },
+    {
+      "title": "Winter Sports",
+      "slug": "winter-season",
+      "dates": "",
+      "intro": "",
+      "image": "/uploads/imported/seasons/winter.webp",
+      "teams": [
+        {
+          "name": "Varsity Boys Basketball",
+          "slug": "varsity-boys-basketball",
+          "level": "High School · Varsity",
+          "coach": "",
+          "image": "/uploads/imported/varsity-boys-basketball/team.webp",
+          "description": "",
+          "practice": "",
+          "roster": "Aiden Chen ’25\nTravis Chang ’25\nBryant Lin ’25\nAnson Huang ’25\nJan Rychlewicsz ’25\nCasper Lee ’25\nBryce Tsai ’25\nJonathan Yu ’25\nClifford Lee ’25\nEason Lin ’25\nRay Yang ’25",
+          "gallery": [
+            {
+              "image": "/uploads/imported/varsity-boys-basketball/01.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-basketball/02.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-basketball/03.webp",
+              "caption": ""
+            },
+            {
+              "image": "/uploads/imported/varsity-boys-basketball/04.webp",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "name": "Varsity Girls Basketball",
+          "slug": "varsity-girls-basketball",
+          "level": "High School · Varsity",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "JV Boys Basketball",
+          "slug": "jv-boys-basketball",
+          "level": "High School · Junior Varsity",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "JV Girls Basketball",
+          "slug": "jv-girls-basketball",
+          "level": "High School · Junior Varsity",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        }
+      ]
+    },
+    {
+      "title": "Spring Sports",
+      "slug": "spring-season",
+      "dates": "",
+      "intro": "",
+      "image": "/uploads/imported/seasons/spring.webp",
+      "teams": [
+        {
+          "name": "Varsity Girls Soccer (AISA)",
+          "slug": "varsity-girls-soccer-aisa",
+          "level": "High School · Varsity · AISA",
+          "coach": "",
+          "image": "/uploads/imported/varsity-girls-soccer-aisa/team.webp",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "Varsity Boys Soccer (AISA)",
+          "slug": "varsity-boys-soccer-aisa",
+          "level": "High School · Varsity · AISA",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "Varsity Boys Volleyball (TISSA)",
+          "slug": "varsity-boys-volleyball-tissa",
+          "level": "High School · Varsity · TISSA",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "JV Boys Volleyball",
+          "slug": "jv-boys-volleyball",
+          "level": "High School · Junior Varsity",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "HS Badminton",
+          "slug": "hs-badminton",
+          "level": "High School",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        }
+      ]
+    },
+    {
+      "title": "Middle School",
+      "slug": "middle-school",
+      "dates": "",
+      "intro": "",
+      "image": "",
+      "teams": [
+        {
+          "name": "Middle School Soccer",
+          "slug": "middle-school-soccer",
+          "level": "Middle School",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "Middle School Volleyball",
+          "slug": "middle-school-volleyball",
+          "level": "Middle School",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "Middle School Basketball",
+          "slug": "middle-school-basketball",
+          "level": "Middle School",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        },
+        {
+          "name": "ES/MS Swimming",
+          "slug": "es-ms-swimming",
+          "level": "Elementary & Middle School",
+          "coach": "",
+          "image": "",
+          "description": "",
+          "practice": "",
+          "roster": "",
+          "gallery": []
+        }
+      ]
+    }
+  ],
+  "coaches": [
+    {
+      "name": "Stella Chen",
+      "role": "Athletic Director",
+      "sport": "All sports",
+      "photo": "/uploads/imported/stella-chen.webp",
+      "email": "",
+      "bio": ""
+    },
+    {
+      "name": "Angela Hsu",
+      "role": "Head Coach",
+      "sport": "Varsity Girls Volleyball",
+      "photo": "/uploads/imported/coaches/angela-hsu.webp",
+      "email": "",
+      "bio": ""
+    },
+    {
+      "name": "Kaitlyn Osborne",
+      "role": "Assistant Coach",
+      "sport": "Varsity Girls Volleyball",
+      "photo": "/uploads/imported/coaches/kaitlyn-osborne.webp",
+      "email": "",
+      "bio": ""
+    },
+    {
+      "name": "Coach Sam",
+      "role": "Coach",
+      "sport": "Varsity Boys Soccer (TISSA)",
+      "photo": "",
+      "email": "",
+      "bio": ""
+    },
+    {
+      "name": "Coach Dave",
+      "role": "Coach",
+      "sport": "Varsity Boys Soccer (TISSA)",
+      "photo": "",
+      "email": "",
+      "bio": ""
+    }
+  ],
+  "contact": {
+    "title": "Contact us",
+    "intro": "Questions about tryouts, schedules or game-day? We’re happy to help.",
+    "people": [
+      {
+        "name": "Stella Chen",
+        "role": "Athletic Director",
+        "email": "",
+        "phone": ""
+      }
+    ]
+  },
+  "links": [
+    {
+      "label": "Watch games",
+      "url": "https://www.youtube.com/@thescoreKAS"
+    },
+    {
+      "label": "Travel & health forms",
+      "url": "https://docs.google.com/forms/d/e/1FAIpQLSe2gUzb532LeqFV9LyqE8YjETq0ToigrX4aDaEm-obSg01jqw/viewform"
+    },
+    {
+      "label": "Coaches",
+      "url": "/coaches"
+    },
+    {
+      "label": "Contact us",
+      "url": "/contact"
+    }
+  ]
+}

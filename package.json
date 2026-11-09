@@ -1,0 +1,15 @@
+{
+  "name": "kas-athletics",
+  "version": "1.0.0",
+  "description": "KAS Athletics website — zero-dependency Node.js site with a built-in staff editor.",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test --experimental-test-coverage \"tests/*.test.js\"",
+    "build": "node src/build.js",
+    "set-password": "node scripts/set-password.js"
+  }
+}

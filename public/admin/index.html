@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Staff Editor · KAS Athletics</title>
+<link rel="icon" href="/img/crest.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/admin/admin.css">
+<script type="module" src="/admin/admin.js"></script>
+</head>
+<body>
+
+<!-- Sign in -->
+<main class="login" id="login-view" hidden>
+  <form class="login__card" id="login-form" novalidate>
+    <img src="/img/crest.svg" alt="" width="64" height="64">
+    <h1>Staff editor</h1>
+    <p class="muted">Sign in to update the KAS Athletics website.</p>
+    <div class="notice notice--info" id="setup-notice" hidden>
+      <strong>No staff accounts yet.</strong> On the server, run <code>npm run set-password</code> to create the first one.
+    </div>
+    <label class="field"><span class="field__label">Username</span>
+      <input name="username" autocomplete="username" required autocapitalize="off" spellcheck="false"></label>
+    <label class="field"><span class="field__label">Password</span>
+      <input name="password" type="password" autocomplete="current-password" required></label>
+    <p class="form-error" id="login-error" role="alert" hidden></p>
+    <button class="btn btn--primary btn--block" type="submit">Sign in</button>
+    <a class="muted small" href="/">← Back to the website</a>
+  </form>
+</main>
+
+<!-- Editor -->
+<div class="app" id="app-view" hidden>
+  <aside class="sidebar" aria-label="Sections">
+    <a class="sidebar__brand" href="/" target="_blank" rel="noopener">
+      <img src="/img/crest.svg" alt="" width="36" height="36"><span>KAS Athletics<small>Staff editor</small></span>
+    </a>
+    <nav><ul class="sidebar__nav" id="section-nav"></ul></nav>
+    <div class="sidebar__foot">
+      <button class="link-btn" type="button" id="history-btn">Undo history</button>
+      <button class="link-btn" type="button" id="password-btn">Change password</button>
+      <button class="link-btn" type="button" id="logout-btn">Sign out <span id="whoami"></span></button>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div>
+        <h1 class="topbar__title" id="section-title"></h1>
+        <p class="topbar__help muted" id="section-help"></p>
+      </div>
+      <div class="topbar__actions">
+        <span class="save-state" id="save-state" aria-live="polite"></span>
+        <a class="btn btn--ghost" href="/" target="_blank" rel="noopener">View site</a>
+        <button class="btn btn--primary" type="button" id="save-btn" disabled>Publish changes</button>
+      </div>
+    </header>
+    <div class="notice notice--error" id="error-summary" role="alert" tabindex="-1" hidden></div>
+    <form class="editor" id="editor" novalidate></form>
+  </div>
+</div>
+
+<dialog class="dialog" id="history-dialog">
+  <form method="dialog" class="dialog__inner">
+    <h2>Undo history</h2>
+    <p class="muted">Every time someone publishes, the version before is kept here. Pick one to load it into the editor, then publish to bring it back.</p>
+    <ol class="history-list" id="history-list"></ol>
+    <div class="dialog__actions"><button class="btn btn--ghost" value="cancel">Close</button></div>
+  </form>
+</dialog>
+
+<dialog class="dialog" id="password-dialog">
+  <form class="dialog__inner" id="password-form" novalidate>
+    <h2>Change password</h2>
+    <label class="field"><span class="field__label">Current password</span><input type="password" name="current" autocomplete="current-password" required></label>
+    <label class="field"><span class="field__label">New password (10+ characters)</span><input type="password" name="next" autocomplete="new-password" minlength="10" required></label>
+    <p class="form-error" id="password-error" role="alert" hidden></p>
+    <div class="dialog__actions">
+      <button class="btn btn--ghost" type="button" data-close>Cancel</button>
+      <button class="btn btn--primary" type="submit">Change password</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
