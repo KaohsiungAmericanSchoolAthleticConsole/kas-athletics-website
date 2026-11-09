@@ -121,3 +121,18 @@ test('duplicate team addresses within a season are rejected', () => {
   const paths = validateContent(SCHEMA, bad).errors.map((e) => e.path);
   assert.ok(paths.includes('seasons[0].teams[1].slug'));
 });
+
+test('static export prefixes site links for a sub-folder and drops server-only parts', async () => {
+  const { toStatic, normalizeBase } = await import('../src/lib/static.js');
+  assert.equal(normalizeBase('kas/'), '/kas');
+  assert.equal(normalizeBase('/'), '');
+  const page = '<a href="/fall-sports">x</a><img src="/uploads/a.webp"><link href="//cdn.example.com/x"><a href="https://x.com">y</a><a href="/admin/" class="staff-link">Staff sign in</a><form class="sb-filter" method="get"><select></select></form><meta property="og:image" content="/uploads/b.webp">';
+  const out = toStatic(page, '/kas');
+  assert.match(out, /href="\/kas\/fall-sports"/);
+  assert.match(out, /src="\/kas\/uploads\/a\.webp"/);
+  assert.match(out, /content="\/kas\/uploads\/b\.webp"/);
+  assert.match(out, /href="\/\/cdn\.example\.com\/x"/);
+  assert.match(out, /href="https:\/\/x\.com"/);
+  assert.doesNotMatch(out, /Staff sign in|sb-filter/);
+  assert.equal(toStatic('<a href="/x">', ''), '<a href="/x">');
+});

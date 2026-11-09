@@ -1,6 +1,8 @@
-// Optional: export the public site as plain HTML files into dist/.
+// Export the public site as plain HTML files into dist/.
 // Useful as a permanent archive or to host on any static web host.
-//   npm run build
+//   npm run build                                   → site at the domain root
+//   BASE_PATH=/kas-athletics-website npm run build  → site in a sub-folder (GitHub Pages)
+// The staff editor needs the Node server, so it is not part of the export.
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,9 +13,11 @@ import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPag
 import { teamPage } from './render/team.js';
 import { scoresPage } from './render/scores.js';
 import { brandCssText } from './app.js';
+import { toStatic, normalizeBase } from './lib/static.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
+const base = normalizeBase(process.env.BASE_PATH);
 const content = await createStore(path.join(root, 'data'), { normalize: (raw) => validateContent(SCHEMA, raw).value }).load();
 
 const pages = [
@@ -31,9 +35,10 @@ const pages = [
 await fs.rm(dist, { recursive: true, force: true });
 for (const [file, htmlText] of pages) {
   await fs.mkdir(path.dirname(path.join(dist, file)), { recursive: true });
-  await fs.writeFile(path.join(dist, file), htmlText);
+  await fs.writeFile(path.join(dist, file), toStatic(htmlText, base));
 }
 for (const dir of ['css', 'js', 'img']) await fs.cp(path.join(root, 'public', dir), path.join(dist, dir), { recursive: true });
 await fs.cp(path.join(root, 'data', 'uploads'), path.join(dist, 'uploads'), { recursive: true });
 await fs.writeFile(path.join(dist, 'brand.css'), brandCssText(content.site));
-process.stdout.write(`Exported ${pages.length} pages to dist/\n`);
+await fs.writeFile(path.join(dist, '.nojekyll'), ''); // tell GitHub Pages to serve files as-is
+process.stdout.write(`Exported ${pages.length} pages to dist/${base ? ` (for ${base}/)` : ''}\n`);

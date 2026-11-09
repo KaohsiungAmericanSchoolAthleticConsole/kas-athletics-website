@@ -34,6 +34,12 @@ Make sure `data/` is on **persistent** storage and is backed up.
 
 > WP Engine only hosts WordPress, so it can't run this site. Point the domain at the new host when you switch over.
 
+### Preview copy on GitHub Pages
+
+Every push to `main` publishes the **public** site to GitHub Pages automatically (`.github/workflows/pages.yml`): tests run first, then `npm run build` exports plain files with the right sub-folder prefix. The staff editor is not included there (it needs the Node server), so Pages shows exactly what was last committed in `data/content.json`. To publish edits made in the editor to Pages, commit `data/` and push.
+
+Build it yourself for a sub-folder with `BASE_PATH=/repo-name npm run build`.
+
 ## Staff guide (for coaches and the athletics office)
 
 **All editing happens inside `/admin`.** The public website is always read-only, even for signed-in staff.
