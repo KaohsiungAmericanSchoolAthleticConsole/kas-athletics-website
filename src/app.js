@@ -11,6 +11,9 @@ import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPag
 import { teamPage, findTeam } from './render/team.js';
 import { scoresPage } from './render/scores.js';
 import { renderWithEdit } from './render/edit.js';
+import { setAssetVersion } from './lib/assetVersion.js';
+import { computeAssetVersion } from './lib/assetVersionNode.js';
+setAssetVersion(computeAssetVersion());
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',

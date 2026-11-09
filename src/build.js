@@ -17,6 +17,9 @@ import { scoresPage } from './render/scores.js';
 import { brandCssText } from './app.js';
 import { toStatic, normalizeBase } from './lib/static.js';
 import { renderWithEdit } from './render/edit.js';
+import { setAssetVersion } from './lib/assetVersion.js';
+import { computeAssetVersion } from './lib/assetVersionNode.js';
+setAssetVersion(computeAssetVersion());
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
