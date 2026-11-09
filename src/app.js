@@ -9,6 +9,7 @@ import { saveImage, MAX_UPLOAD_BYTES } from './lib/uploads.js';
 import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPage } from './render/pages.js';
 import { teamPage, findTeam } from './render/team.js';
 import { scoresPage } from './render/scores.js';
+import { renderWithEdit } from './render/edit.js';
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -212,19 +213,21 @@ export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logge
   async function page(req, res, url) {
     const content = await store.load();
     const p = url.pathname.replace(/\/+$/, '') || '/';
+    // Signed-in staff get the same page plus click-to-edit markers; never cache those.
+    const staff = Boolean(auth.getSession(parseCookies(req.headers.cookie)[COOKIE]));
+    const headers = staff ? { 'Cache-Control': 'private, no-store', Vary: 'Cookie' } : { 'Cache-Control': 'no-cache', Vary: 'Cookie' };
+    const ok = (fn) => send(res, 200, renderWithEdit(staff, fn), undefined, headers);
     const fixed = { '/': homePage, '/events': eventsPage, '/coaches': coachesPage, '/contact': contactPage };
-    const pageCache = { 'Cache-Control': 'no-cache' };
-    if (fixed[p]) return send(res, 200, fixed[p](content), undefined, pageCache);
+    if (fixed[p]) return ok(() => fixed[p](content));
     if (p === '/scores' || p === '/scores/standings') {
       const team = String(url.searchParams.get('team') || '').slice(0, 160);
-      const html = scoresPage(content, { tab: p === '/scores' ? 'games' : 'standings', team });
-      return send(res, 200, html, undefined, pageCache);
+      return ok(() => scoresPage(content, { tab: p === '/scores' ? 'games' : 'standings', team }));
     }
     const season = (content.seasons || []).find((s) => `/${s.slug}` === p);
-    if (season) return send(res, 200, seasonPage(content, season), undefined, pageCache);
+    if (season) return ok(() => seasonPage(content, season));
     const found = findTeam(content, p);
-    if (found) return send(res, 200, teamPage(content, found.season, found.team), undefined, pageCache);
-    return send(res, 404, notFoundPage(content));
+    if (found) return ok(() => teamPage(content, found.season, found.team));
+    return send(res, 404, notFoundPage(content), undefined, headers);
   }
 
   async function brandCss(res) {

@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { html, raw, esc, safeUrl, isExternal } from '../lib/html.js';
 import { upcomingEvents, formatDate, formatTime } from '../lib/events.js';
+import { ed, editing } from './edit.js';
 
 export const THEMES = [
   { id: 'auto', label: 'Auto', hint: 'Match device' },
@@ -13,7 +14,7 @@ export const THEMES = [
 
 // Changes whenever the CSS/JS changes, so browsers never keep a stale copy after an update.
 const ASSET_VERSION = createHash('sha1')
-  .update(['css/site.css', 'css/motion.css', 'js/site.js', 'js/theme-init.js'].map((f) => readFileSync(new URL(`../../public/${f}`, import.meta.url))).join(''))
+  .update(['css/site.css', 'css/motion.css', 'js/site.js', 'js/theme-init.js', 'admin/inline.js', 'admin/inline.css'].map((f) => readFileSync(new URL(`../../public/${f}`, import.meta.url))).join(''))
   .digest('hex').slice(0, 10);
 
 export function link(url, label, cls = '') {
@@ -74,7 +75,7 @@ function header(content, currentPath) {
       <div class="masthead">
         <a class="brand" href="/">
           <img class="brand__logo" src="${safeUrl(site.logo || '/img/crest.svg')}" alt="" width="48" height="48">
-          <span class="brand__text"><span class="brand__name">${site.name}</span><span class="brand__tagline">${site.tagline}</span></span>
+          <span class="brand__text"><span class="brand__name"${ed('site.name')}>${site.name}</span><span class="brand__tagline"${ed('site.tagline')}>${site.tagline}</span></span>
         </a>
         <nav class="main-nav" aria-label="Main" id="main-nav" data-nav>
           <ul>
@@ -125,7 +126,7 @@ function footer(content) {
         </section>
       </div>
       <div class="site-footer__base">
-        <p>© ${year} ${site.schoolName || site.name}. ${site.footerNote}</p>
+        <p>© ${year} ${site.schoolName || site.name}. <span${ed('site.footerNote', { placeholder: 'Footer note' })}>${site.footerNote}</span></p>
         <a href="/admin/" class="staff-link">Staff sign in</a>
       </div>
     </footer>`;
@@ -159,6 +160,7 @@ ${page.image ? `<meta property="og:image" content="${esc(safeUrl(page.image))}">
 <link rel="stylesheet" href="/css/motion.css?v=${ASSET_VERSION}">
 <link rel="stylesheet" href="/brand.css">
 <script src="/js/site.js?v=${ASSET_VERSION}" defer></script>
+${editing() ? `<link rel="stylesheet" href="/admin/inline.css?v=${ASSET_VERSION}">\n<script type="module" src="/admin/inline.js?v=${ASSET_VERSION}"></script>` : ''}
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>

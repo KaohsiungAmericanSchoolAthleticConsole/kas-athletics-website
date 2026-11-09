@@ -2,6 +2,7 @@ import { html, paragraphs } from '../lib/html.js';
 import { upcomingEvents, pastEvents } from '../lib/events.js';
 import { layout, icon, link } from './layout.js';
 import { photo, eventRow, videoFacade, pageHero, emptyState, initials } from './parts.js';
+import { ed, edImg, edList, showWhenEditing } from './edit.js';
 
 function withAnchors(events, opts = {}) {
   const seen = new Set();
@@ -15,19 +16,19 @@ function withAnchors(events, opts = {}) {
 function hero(home) {
   return html`
     <section class="hero" aria-labelledby="hero-title">
-      ${home.heroImage ? photo(home.heroImage, '', { cls: 'hero__bg', width: 1920, height: 1080, eager: true }) : html`<div class="hero__bg hero__bg--pattern" aria-hidden="true"></div>`}
+      ${home.heroImage ? photo(home.heroImage, '', { cls: 'hero__bg', width: 1920, height: 1080, eager: true, edit: 'home.heroImage' }) : html`<div class="hero__bg hero__bg--pattern" aria-hidden="true"${edImg('home.heroImage')}></div>`}
       <div class="hero__inner">
-        ${home.heroEyebrow ? html`<p class="eyebrow eyebrow--light">${home.heroEyebrow}</p>` : ''}
-        <h1 id="hero-title" class="hero__title">${home.heroTitle}</h1>
-        ${home.heroSubtitle ? html`<p class="hero__subtitle">${home.heroSubtitle}</p>` : ''}
+        ${showWhenEditing(home.heroEyebrow) ? html`<p class="eyebrow eyebrow--light"${ed('home.heroEyebrow', { placeholder: 'Small text above the title' })}>${home.heroEyebrow}</p>` : ''}
+        <h1 id="hero-title" class="hero__title"${ed('home.heroTitle')}>${home.heroTitle}</h1>
+        ${showWhenEditing(home.heroSubtitle) ? html`<p class="hero__subtitle"${ed('home.heroSubtitle', { placeholder: 'Add a subtitle' })}>${home.heroSubtitle}</p>` : ''}
         <div class="hero__actions">
-          ${home.heroCtaLabel ? link(home.heroCtaLink || '/events', html`${home.heroCtaLabel} ${icon('arrow')}`, 'btn btn--primary') : ''}
+          ${home.heroCtaLabel ? link(home.heroCtaLink || '/events', html`<span${ed('home.heroCtaLabel')}>${home.heroCtaLabel}</span> ${icon('arrow')}`, 'btn btn--primary') : ''}
           <a class="btn btn--glass" href="/events">${icon('calendar')} Full schedule</a>
         </div>
       </div>
       ${home.stats?.length ? html`
-        <ul class="stat-strip" aria-label="KAS Athletics by the numbers">
-          ${home.stats.map((s) => html`<li><strong data-count>${s.value}</strong><span>${s.label}</span></li>`)}
+        <ul class="stat-strip" aria-label="KAS Athletics by the numbers"${edList('home.stats')}>
+          ${home.stats.map((s, i) => html`<li><strong data-count${ed(`home.stats[${i}].value`)}>${s.value}</strong><span${ed(`home.stats[${i}].label`)}>${s.label}</span></li>`)}
         </ul>` : ''}
     </section>`;
 }
@@ -51,15 +52,15 @@ function seasonGrid(seasons = []) {
       <div class="section__head">
         <h2 id="seasons-title" class="section__title"><span class="kicker">Programs</span>Find your season</h2>
       </div>
-      <ul class="season-grid">
+      <ul class="season-grid"${edList('seasons')}>
         ${seasons.map((s, i) => html`
           <li class="season-card${i === 0 ? ' season-card--feature' : ''}">
             <a href="/${s.slug}">
-              ${photo(s.image, '', { cls: 'season-card__img', width: 900, height: 700 })}
+              ${photo(s.image, '', { cls: 'season-card__img', width: 900, height: 700, edit: `seasons[${i}].image` })}
               <span class="season-card__shade" aria-hidden="true"></span>
               <span class="season-card__body">
                 <span class="season-card__count">${s.teams?.length || 0} teams${s.dates ? ` · ${s.dates}` : ''}</span>
-                <span class="season-card__title">${s.title}</span>
+                <span class="season-card__title"${ed(`seasons[${i}].title`)}>${s.title}</span>
                 <span class="season-card__go" aria-hidden="true">${icon('arrow')}</span>
               </span>
             </a>
@@ -83,12 +84,12 @@ function director(home) {
   return html`
     <section class="section director" aria-labelledby="director-title">
       <figure class="director__figure">
-        ${photo(home.directorPhoto, home.directorName, { cls: 'director__photo', width: 600, height: 750 })}
-        <figcaption><strong>${home.directorName}</strong><span>${home.directorRole}</span></figcaption>
+        ${photo(home.directorPhoto, home.directorName, { cls: 'director__photo', width: 600, height: 750, edit: 'home.directorPhoto' })}
+        <figcaption><strong${ed('home.directorName')}>${home.directorName}</strong><span${ed('home.directorRole')}>${home.directorRole}</span></figcaption>
       </figure>
       <div class="director__body">
         <h2 id="director-title" class="section__title"><span class="kicker">From the AD</span>A message to our Dragons</h2>
-        <blockquote class="director__quote">${paragraphs(home.directorMessage)}</blockquote>
+        <blockquote class="director__quote"${ed('home.directorMessage', { multiline: true, placeholder: 'Write a message' })}>${paragraphs(home.directorMessage)}</blockquote>
       </div>
     </section>`;
 }
@@ -99,7 +100,7 @@ function media(content) {
   return html`
     <section class="section media" aria-labelledby="media-title">
       <div class="media__video">
-        <h2 id="media-title" class="section__title"><span class="kicker">Watch</span>${home.videoTitle || 'Season recap'}</h2>
+        <h2 id="media-title" class="section__title"><span class="kicker">Watch</span><span${ed('home.videoTitle')}>${home.videoTitle || 'Season recap'}</span></h2>
         ${video || html`
           <div class="video video--empty">
             <div class="video__empty">
@@ -107,7 +108,7 @@ function media(content) {
               ${site.youtubeUrl ? link(site.youtubeUrl, html`${icon('play')} Open the YouTube channel`, 'btn btn--primary') : ''}
             </div>
           </div>`}
-        ${home.videoCaption ? html`<p class="media__caption">${home.videoCaption}</p>` : ''}
+        ${showWhenEditing(home.videoCaption) ? html`<p class="media__caption"${ed('home.videoCaption', { multiline: true, placeholder: 'Add a caption' })}>${home.videoCaption}</p>` : ''}
       </div>
       <aside class="social-card" aria-labelledby="social-title">
         <span class="social-card__icon" aria-hidden="true">${icon('instagram')}</span>
@@ -124,8 +125,8 @@ function mission(home) {
   return html`
     <section class="mission" aria-labelledby="mission-title">
       <div class="mission__inner">
-        <h2 id="mission-title" class="mission__title">${home.missionTitle || 'Our mission'}</h2>
-        <div class="mission__body">${paragraphs(home.missionBody)}</div>
+        <h2 id="mission-title" class="mission__title"${ed('home.missionTitle')}>${home.missionTitle || 'Our mission'}</h2>
+        <div class="mission__body"${ed('home.missionBody', { multiline: true })}>${paragraphs(home.missionBody)}</div>
       </div>
     </section>`;
 }
@@ -157,31 +158,35 @@ export function homePage(content) {
   return layout(content, { path: '/', body, image: home.heroImage, description: home.heroSubtitle });
 }
 
-function teamCard(t, season) {
+function teamCard(t, season, ti, si) {
   const href = t.slug ? `/${season.slug}/${t.slug}` : null;
   const players = (t.roster || '').split('\n').filter((l) => l.trim()).length;
+  const base = `seasons[${si}].teams[${ti}]`;
+  const name = html`<span${ed(`${base}.name`)}>${t.name}</span>`;
   return html`
     <li class="team-card${href ? ' team-card--link' : ''}">
-      ${photo(t.image, t.name, { cls: 'team-card__img', width: 800, height: 560 })}
+      ${photo(t.image, t.name, { cls: 'team-card__img', width: 800, height: 560, edit: `${base}.image` })}
       <div class="team-card__body">
-        ${t.level ? html`<p class="team-card__level">${t.level}</p>` : ''}
-        <h3 class="team-card__name">${href ? html`<a href="${href}">${t.name}</a>` : t.name}</h3>
+        ${showWhenEditing(t.level) ? html`<p class="team-card__level"${ed(`${base}.level`, { placeholder: 'Level' })}>${t.level}</p>` : ''}
+        <h3 class="team-card__name">${href ? html`<a href="${href}">${name}</a>` : name}</h3>
         <dl class="team-card__facts">
-          ${t.coach ? html`<div><dt>Coach</dt><dd>${t.coach}</dd></div>` : ''}
-          ${t.practice ? html`<div><dt>Practice</dt><dd>${t.practice}</dd></div>` : ''}
+          ${t.coach ? html`<div><dt>Coach</dt><dd${ed(`${base}.coach`)}>${t.coach}</dd></div>` : ''}
+          ${t.practice ? html`<div><dt>Practice</dt><dd${ed(`${base}.practice`)}>${t.practice}</dd></div>` : ''}
           ${players ? html`<div><dt>Roster</dt><dd>${players} players</dd></div>` : ''}
         </dl>
-        ${t.description ? html`<div class="team-card__desc">${paragraphs(t.description)}</div>` : ''}
+        ${showWhenEditing(t.description) ? html`<div class="team-card__desc"${ed(`${base}.description`, { multiline: true, placeholder: 'Describe the team' })}>${paragraphs(t.description)}</div>` : ''}
         ${href ? html`<span class="team-card__more" aria-hidden="true">Team page ${icon('arrow')}</span>` : ''}
       </div>
     </li>`;
 }
 
 export function seasonPage(content, season) {
+  const si = (content.seasons || []).indexOf(season);
   const body = html`
-    ${pageHero({ eyebrow: season.dates || 'KAS Athletics', title: season.title, intro: season.intro, image: season.image })}
+    ${pageHero({ eyebrow: season.dates || 'KAS Athletics', title: season.title, intro: season.intro, image: season.image,
+      edit: { title: `seasons[${si}].title`, intro: `seasons[${si}].intro`, image: `seasons[${si}].image` } })}
     <section class="section" aria-label="Teams">
-      ${season.teams?.length ? html`<ul class="team-grid">${season.teams.map((t) => teamCard(t, season))}</ul>` : emptyState('Teams for this season will be announced soon.')}
+      ${season.teams?.length ? html`<ul class="team-grid"${edList(`seasons[${si}].teams`)}>${season.teams.map((t, ti) => teamCard(t, season, ti, si))}</ul>` : emptyState('Teams for this season will be announced soon.')}
     </section>`;
   return layout(content, { path: `/${season.slug}`, title: season.title, description: season.intro, image: season.image, body });
 }
@@ -208,14 +213,14 @@ export function coachesPage(content) {
   const body = html`
     ${pageHero({ eyebrow: 'Inside Athletics', title: 'Coaches', intro: 'The people who help our Dragons grow — on and off the court.' })}
     <section class="section" aria-label="Coaching staff">
-      ${coaches.length ? html`<ul class="coach-grid">${coaches.map((c) => html`
+      ${coaches.length ? html`<ul class="coach-grid"${edList('coaches')}>${coaches.map((c, i) => html`
         <li class="coach-card">
-          ${photo(c.photo, c.name, { cls: 'coach-card__photo', width: 480, height: 600, fallback: initials(c.name) })}
+          ${photo(c.photo, c.name, { cls: 'coach-card__photo', width: 480, height: 600, fallback: initials(c.name), edit: `coaches[${i}].photo` })}
           <div class="coach-card__body">
-            <p class="coach-card__sport">${c.sport}</p>
-            <h2 class="coach-card__name">${c.name}</h2>
-            <p class="coach-card__role">${c.role}</p>
-            ${c.bio ? html`<div class="coach-card__bio">${paragraphs(c.bio)}</div>` : ''}
+            <p class="coach-card__sport"${ed(`coaches[${i}].sport`, { placeholder: 'Sport' })}>${c.sport}</p>
+            <h2 class="coach-card__name"${ed(`coaches[${i}].name`)}>${c.name}</h2>
+            <p class="coach-card__role"${ed(`coaches[${i}].role`, { placeholder: 'Role' })}>${c.role}</p>
+            ${showWhenEditing(c.bio) ? html`<div class="coach-card__bio"${ed(`coaches[${i}].bio`, { multiline: true, placeholder: 'Add a short bio' })}>${paragraphs(c.bio)}</div>` : ''}
             ${c.email ? html`<a class="text-link" href="mailto:${c.email}">${icon('mail')} Email</a>` : ''}
           </div>
         </li>`)}</ul>` : emptyState('Coach profiles are coming soon.')}
@@ -226,7 +231,7 @@ export function coachesPage(content) {
 export function contactPage(content) {
   const { contact = {}, site } = content;
   const body = html`
-    ${pageHero({ eyebrow: 'Inside Athletics', title: contact.title || 'Contact us', intro: contact.intro })}
+    ${pageHero({ eyebrow: 'Inside Athletics', title: contact.title || 'Contact us', intro: contact.intro, edit: { title: 'contact.title', intro: 'contact.intro' } })}
     <section class="section contact" aria-label="Contact details">
       <div class="contact__main">
         ${site.phone ? html`<a class="contact__big" href="tel:${site.phone.replace(/[^\d+]/g, '')}">${icon('phone')}<span>${site.phone}</span></a>` : ''}

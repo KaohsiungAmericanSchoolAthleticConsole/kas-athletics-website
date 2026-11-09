@@ -3,6 +3,7 @@ import { html, paragraphs, safeUrl } from '../lib/html.js';
 import { upcomingEvents, pastEvents } from '../lib/events.js';
 import { layout } from './layout.js';
 import { photo, eventRow, pageHero, initials } from './parts.js';
+import { ed, showWhenEditing } from './edit.js';
 
 const lines = (text) => (text || '').split('\n').map((l) => l.trim()).filter(Boolean);
 
@@ -50,15 +51,17 @@ function gallery(team) {
 }
 
 export function teamPage(content, season, team) {
+  const si = (content.seasons || []).indexOf(season);
+  const base = `seasons[${si}].teams[${(season.teams || []).indexOf(team)}]`;
   const body = html`
-    ${pageHero({ eyebrow: [season.title, team.level].filter(Boolean).join(' · '), title: team.name, image: team.image })}
+    ${pageHero({ eyebrow: [season.title, team.level].filter(Boolean).join(' · '), title: team.name, image: team.image, edit: { title: `${base}.name`, image: `${base}.image` } })}
     <section class="section section--tight team-intro" aria-label="About the team">
       <a class="text-link" href="/${season.slug}">← All ${season.title}</a>
       <dl class="team-facts">
-        ${team.coach ? html`<div><dt>Coaches</dt><dd>${team.coach}</dd></div>` : ''}
-        ${team.practice ? html`<div><dt>Practice</dt><dd>${team.practice}</dd></div>` : ''}
+        ${showWhenEditing(team.coach) ? html`<div><dt>Coaches</dt><dd${ed(`${base}.coach`, { placeholder: 'Add coaches' })}>${team.coach}</dd></div>` : ''}
+        ${showWhenEditing(team.practice) ? html`<div><dt>Practice</dt><dd${ed(`${base}.practice`, { placeholder: 'Add practice times' })}>${team.practice}</dd></div>` : ''}
       </dl>
-      ${team.description ? html`<div class="team-intro__text">${paragraphs(team.description)}</div>` : ''}
+      ${showWhenEditing(team.description) ? html`<div class="team-intro__text"${ed(`${base}.description`, { multiline: true, placeholder: 'Describe the team' })}>${paragraphs(team.description)}</div>` : ''}
     </section>
     ${schedule(content, team)}
     ${roster(team)}

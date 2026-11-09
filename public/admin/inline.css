@@ -1,0 +1,89 @@
+/* On-page editor (staff only). Sits on top of the normal site styles. */
+.kas-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Floating toolbar */
+.kas-bar {
+  position: fixed; left: 50%; bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 1000; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 0.5rem; max-width: calc(100% - 1.5rem); padding: 0.45rem;
+  background: rgb(20 22 26 / 0.92); color: #fff; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 999px;
+  box-shadow: 0 12px 40px -8px rgb(0 0 0 / 0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  font: 500 0.9rem/1 system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: 0;
+}
+.kas-bar__badge { padding: 0.45rem 0.7rem; border-radius: 999px; background: rgb(255 255 255 / 0.1); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.kas-bar__status { padding: 0 0.35rem; color: rgb(255 255 255 / 0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kas-bar__status:empty { display: none; }
+.kas-bar__status.is-dirty { color: #ffcf6e; }
+.kas-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem; min-height: 2.5rem; padding: 0 1rem; border: 0; border-radius: 999px;
+  background: rgb(255 255 255 / 0.1); color: #fff; font: inherit; text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: background-color 150ms, transform 150ms;
+}
+.kas-btn:hover { background: rgb(255 255 255 / 0.2); text-decoration: none; }
+.kas-btn:active { transform: scale(0.96); }
+.kas-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.kas-btn[hidden] { display: none; }
+.kas-btn .icon { width: 1rem; height: 1rem; }
+.kas-btn--edit { background: #fff; color: #111; font-weight: 600; }
+.kas-btn--edit:hover { background: #e9e9e9; }
+.kas-btn--edit[aria-pressed='true'] { background: #2f9e5b; color: #fff; }
+.kas-btn--primary { background: var(--brand, #d7141f); font-weight: 600; }
+.kas-btn--primary:hover { background: color-mix(in oklab, var(--brand, #d7141f) 85%, white); }
+.kas-btn--primary:disabled { opacity: 0.6; cursor: wait; }
+.kas-btn--link { background: transparent; color: rgb(255 255 255 / 0.75); }
+@media (max-width: 40rem) {
+  .kas-bar { left: 0.75rem; right: 0.75rem; transform: none; flex-wrap: wrap; justify-content: center; border-radius: 22px; }
+  .kas-bar__badge, .kas-btn--link { display: none; }
+  .kas-bar__status { order: 5; width: 100%; text-align: center; padding: 0.15rem 0 0.25rem; font-size: 0.8rem; }
+}
+
+.kas-toast {
+  position: fixed; left: 50%; bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 4.25rem); z-index: 1001; transform: translateX(-50%);
+  max-width: min(36rem, calc(100% - 2rem)); padding: 0.8rem 1.1rem; border-radius: 14px; background: #fff; color: #111;
+  box-shadow: 0 10px 30px -8px rgb(0 0 0 / 0.4); font: 500 0.9rem/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif; text-align: center;
+}
+.kas-toast[data-kind='error'] { background: #b42318; color: #fff; }
+.kas-toast[hidden] { display: none; }
+
+/* Editable text */
+[data-editing] [data-edit] { border-radius: 4px; outline: 1.5px dashed transparent; outline-offset: 4px; cursor: text; transition: outline-color 150ms, background-color 150ms; }
+[data-editing] [data-edit]:hover { outline-color: color-mix(in oklab, var(--accent, #d7141f) 70%, transparent); }
+[data-editing] [data-edit]:focus { outline: 2px solid var(--accent, #d7141f); background: color-mix(in oklab, var(--accent, #d7141f) 8%, transparent); }
+[data-editing] [data-edit]:empty { display: inline-block; min-width: 8ch; }
+[data-editing] [data-edit]:empty::before { content: attr(data-placeholder); opacity: 0.5; font-style: italic; pointer-events: none; }
+[data-editing] .kas-error, .kas-error { outline: 2px solid #e5484d !important; background: rgb(229 72 77 / 0.1); }
+/* Empty optional fields are only rendered for staff: keep them out of sight unless editing. */
+html:not([data-editing]) [data-edit]:empty { display: none; }
+/* Stretched card links would swallow clicks meant for the text. */
+[data-editing] .team-card--link .team-card__name a::after { display: none; }
+[data-editing] .season-card a { cursor: default; }
+
+/* Photo buttons */
+.kas-chips { position: fixed; inset: 0; z-index: 999; pointer-events: none; }
+.kas-chip {
+  position: absolute; top: 0; left: 0; pointer-events: auto; display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 0.8rem; border: 0; border-radius: 999px; background: rgb(20 22 26 / 0.85); color: #fff; cursor: pointer;
+  font: 600 0.8rem/1 system-ui, -apple-system, 'Segoe UI', sans-serif; box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.5);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: background-color 150ms, padding 150ms;
+}
+.kas-chip:hover { background: #000; }
+.kas-chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.kas-chip .icon { width: 1rem; height: 1rem; }
+.kas-chip.is-busy { opacity: 0.6; pointer-events: none; }
+.kas-chip.is-busy span::after { content: '…'; }
+.kas-files .kas-chip { padding: 1rem 1.3rem; background: var(--brand, #d7141f); outline: 3px dashed #fff; }
+.kas-files .kas-chip span::before { content: 'Drop to '; }
+.kas-chip.is-drop { transform: scale(1.08); }
+
+/* Reordering */
+.kas-sortable > * { position: relative; }
+.kas-handle {
+  position: absolute; top: 0.6rem; left: 0.6rem; z-index: 6; display: grid; place-items: center; width: 2.25rem; height: 2.25rem;
+  border: 0; border-radius: 10px; background: rgb(20 22 26 / 0.8); color: #fff; font-size: 1.15rem; line-height: 1;
+  cursor: grab; touch-action: none; box-shadow: 0 4px 12px -4px rgb(0 0 0 / 0.5);
+}
+.kas-handle:active { cursor: grabbing; }
+.kas-handle:focus-visible { outline: 2px solid var(--accent, #d7141f); outline-offset: 2px; }
+.kas-dragging { opacity: 0.55; outline: 2px dashed var(--accent, #d7141f); outline-offset: 4px; }
+.stat-strip.kas-sortable .kas-handle { top: 0.3rem; left: auto; right: 0.3rem; width: 1.8rem; height: 1.8rem; font-size: 0.95rem; }
+
+@media (prefers-reduced-motion: reduce) { .kas-btn, .kas-chip, [data-edit] { transition: none !important; } }

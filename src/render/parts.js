@@ -2,15 +2,17 @@
 import { html, raw, safeUrl, youtubeId } from '../lib/html.js';
 import { dateBadge, formatTime, venueLabel } from '../lib/events.js';
 import { icon, link } from './layout.js';
+import { ed, edImg, showWhenEditing } from './edit.js';
 
 export function initials(name = '') {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || 'KAS';
 }
 
-export function photo(src, alt, { cls = '', width = 800, height = 600, eager = false, fallback = '' } = {}) {
-  if (!src && !alt) return html`<div class="photo-fallback ${cls}" aria-hidden="true"><span>${fallback}</span></div>`;
-  if (!src) return html`<div class="photo-fallback ${cls}" role="img" aria-label="${alt}"><span>${fallback || initials(alt)}</span></div>`;
-  return html`<img class="${cls}" src="${safeUrl(src)}" alt="${alt}" width="${width}" height="${height}" ${raw(eager ? 'fetchpriority="high"' : 'loading="lazy"')} decoding="async">`;
+export function photo(src, alt, { cls = '', width = 800, height = 600, eager = false, fallback = '', edit = '' } = {}) {
+  const attrs = edit ? edImg(edit) : '';
+  if (!src && !alt) return html`<div class="photo-fallback ${cls}" aria-hidden="true"${attrs}><span>${fallback}</span></div>`;
+  if (!src) return html`<div class="photo-fallback ${cls}" role="img" aria-label="${alt}"${attrs}><span>${fallback || initials(alt)}</span></div>`;
+  return html`<img class="${cls}" src="${safeUrl(src)}" alt="${alt}" width="${width}" height="${height}" ${raw(eager ? 'fetchpriority="high"' : 'loading="lazy"')} decoding="async"${attrs}>`;
 }
 
 export function eventRow(e, { showResult = false, anchor = false } = {}) {
@@ -47,14 +49,19 @@ export function videoFacade(url, title) {
     </div>`;
 }
 
-export function pageHero({ eyebrow, title, intro, image }) {
+/**
+ * @param {{ eyebrow?: string, title: string, intro?: string, image?: string,
+ *   edit?: { title?: string, intro?: string, image?: string } }} opts  edit = content paths for click-to-edit
+ */
+export function pageHero({ eyebrow, title, intro, image, edit = {} }) {
+  const hasImage = Boolean(image) || Boolean(edit.image && showWhenEditing(''));
   return html`
-    <section class="page-hero${image ? ' page-hero--image' : ''}" aria-labelledby="page-title">
-      ${image ? photo(image, '', { cls: 'page-hero__bg', width: 1600, height: 700, eager: true }) : ''}
+    <section class="page-hero${hasImage ? ' page-hero--image' : ''}" aria-labelledby="page-title">
+      ${hasImage ? photo(image, '', { cls: 'page-hero__bg', width: 1600, height: 700, eager: true, edit: edit.image }) : ''}
       <div class="page-hero__inner">
         ${eyebrow ? html`<p class="eyebrow">${eyebrow}</p>` : ''}
-        <h1 id="page-title" class="page-hero__title">${title}</h1>
-        ${intro ? html`<p class="page-hero__intro">${intro}</p>` : ''}
+        <h1 id="page-title" class="page-hero__title"${edit.title ? ed(edit.title) : ''}>${title}</h1>
+        ${intro || (edit.intro && showWhenEditing(intro)) ? html`<p class="page-hero__intro"${edit.intro ? ed(edit.intro, { multiline: true, placeholder: 'Add a short introduction' }) : ''}>${intro}</p>` : ''}
       </div>
     </section>`;
 }

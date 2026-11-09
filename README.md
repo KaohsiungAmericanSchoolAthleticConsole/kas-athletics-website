@@ -36,6 +36,15 @@ Make sure `data/` is on **persistent** storage and is backed up.
 
 ## Staff guide (for coaches and the athletics office)
 
+**Easiest way: edit right on the page.** Sign in once at `yoursite/admin/`, then browse the website as normal. A small toolbar appears at the bottom of every page:
+
+- **Edit this page** → click any outlined text and type. Press Enter (or click elsewhere) when done.
+- **Change photo** appears on every picture: click it, or drag a photo from your computer onto it.
+- Drag the **⠿** handle on cards (season tiles, teams, coaches, numbers) to reorder them. On a keyboard, focus the handle and use the arrow keys.
+- **Publish** puts your changes live; **Discard** throws them away. Visitors never see the toolbar.
+
+**The full editor** (`/admin/`) is for everything else: games and scores, links, settings, adding new teams or coaches.
+
 1. Go to `yoursite/admin/` and sign in.
 2. Pick a section on the left: **Site settings**, **Home page**, **Games & events**, **Sports pages**, **Coaches**, **Contact page**, **Useful links**.
 3. Change text or click **Upload photo** (or drag a photo onto the box). Large phone photos are shrunk automatically.

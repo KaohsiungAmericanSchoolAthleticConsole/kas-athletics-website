@@ -200,6 +200,23 @@ test('staff can add, reset and remove accounts, but not themselves', async () =>
   assert.equal((await req('DELETE', '/api/users/coach-sam', { cookie })).status, 403);
 });
 
+test('signed-in staff get click-to-edit markers; visitors get a clean page', async () => {
+  const visitor = await req('GET', '/');
+  assert.doesNotMatch(visitor.text, /data-edit=|inline\.js/);
+  const { cookie } = await signIn();
+  const staff = await req('GET', '/', { cookie });
+  assert.match(staff.text, /data-edit="home\.heroTitle"/);
+  assert.match(staff.text, /data-edit-image="home\.heroImage"/);
+  assert.match(staff.text, /data-edit-list="seasons"/);
+  assert.match(staff.text, /\/admin\/inline\.js/);
+  assert.match(staff.headers.get('cache-control'), /private, no-store/);
+  const season = await req('GET', '/fall-sports', { cookie });
+  assert.match(season.text, /data-edit-list="seasons\[0\]\.teams"/);
+  assert.match(season.text, /data-edit="seasons\[0\]\.teams\[1\]\.name"/);
+  const afterStaff = await req('GET', '/');
+  assert.doesNotMatch(afterStaff.text, /data-edit=/, 'edit flag must not leak into the next visitor');
+});
+
 // Keep last: it locks out further logins from this IP for 15 minutes.
 test('repeated failed logins are rate limited', async () => {
   let last;

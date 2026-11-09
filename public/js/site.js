@@ -125,7 +125,8 @@
 
   // Numbers in the stat strip count up the first time they appear.
   const COUNT_MS = 1400;
-  const counters = document.querySelectorAll('[data-count]');
+  // Staff pages may edit these numbers in place, so don't animate them there.
+  const counters = document.querySelector('script[src*="/admin/inline.js"]') ? [] : document.querySelectorAll('[data-count]');
   if (!reduceMotion && counters.length && 'IntersectionObserver' in window) {
     const countIo = new IntersectionObserver((entries) => entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
