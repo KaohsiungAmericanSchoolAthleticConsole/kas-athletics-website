@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { createStore } from './lib/store.js';
 import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPage } from './render/pages.js';
 import { teamPage } from './render/team.js';
+import { scoresPage } from './render/scores.js';
 import { brandCssText } from './app.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -19,6 +20,8 @@ const pages = [
   ['coaches/index.html', coachesPage(content)],
   ['contact/index.html', contactPage(content)],
   ['404.html', notFoundPage(content)],
+  ['scores/index.html', scoresPage(content)],
+  ['scores/standings/index.html', scoresPage(content, { tab: 'standings' })],
   ...content.seasons.map((s) => [`${s.slug}/index.html`, seasonPage(content, s)]),
   ...content.seasons.flatMap((s) => (s.teams || []).filter((t) => t.slug).map((t) => [`${s.slug}/${t.slug}/index.html`, teamPage(content, s, t)])),
 ];

@@ -165,3 +165,13 @@ test('brand.css carries both school colors', async () => {
   const r = await req('GET', '/brand.css');
   assert.match(r.text, /--brand:#[0-9a-f]{6};--brand-2:#[0-9a-f]{6}/i);
 });
+
+test('scoreboard pages are served, with team filter', async () => {
+  const games = await req('GET', '/scores');
+  assert.equal(games.status, 200);
+  assert.match(games.text, /Scoreboard/);
+  assert.equal((await req('GET', '/scores/standings')).status, 200);
+  const filtered = await req('GET', '/scores?team=Varsity%20Swimming');
+  assert.equal(filtered.status, 200);
+  assert.match(filtered.text, /<option value="Varsity Swimming" selected>/);
+});

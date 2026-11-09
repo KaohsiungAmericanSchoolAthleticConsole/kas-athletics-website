@@ -8,6 +8,7 @@ import { createAuth, verifyPassword, MIN_PASSWORD_LENGTH } from './lib/auth.js';
 import { saveImage, MAX_UPLOAD_BYTES } from './lib/uploads.js';
 import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPage } from './render/pages.js';
 import { teamPage, findTeam } from './render/team.js';
+import { scoresPage } from './render/scores.js';
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -183,6 +184,11 @@ export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logge
     const fixed = { '/': homePage, '/events': eventsPage, '/coaches': coachesPage, '/contact': contactPage };
     const pageCache = { 'Cache-Control': 'no-cache' };
     if (fixed[p]) return send(res, 200, fixed[p](content), undefined, pageCache);
+    if (p === '/scores' || p === '/scores/standings') {
+      const team = String(url.searchParams.get('team') || '').slice(0, 160);
+      const html = scoresPage(content, { tab: p === '/scores' ? 'games' : 'standings', team });
+      return send(res, 200, html, undefined, pageCache);
+    }
     const season = (content.seasons || []).find((s) => `/${s.slug}` === p);
     if (season) return send(res, 200, seasonPage(content, season), undefined, pageCache);
     const found = findTeam(content, p);

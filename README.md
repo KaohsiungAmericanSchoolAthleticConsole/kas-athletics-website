@@ -43,6 +43,8 @@ Make sure `data/` is on **persistent** storage and is backed up.
 5. Made a mistake? **Undo history** → pick an earlier version → **Publish changes**.
 
 The **next upcoming game** in *Games & events* appears automatically in the red bar at the top of every page.
+
+**Scores** (`/scores`) is a live scoreboard built from *Games & events*. For each game, fill in **Opponent** (and optionally a logo), then the **KAS score** and **Opponent score** once it's over. The game turns to *Final*, the winner is marked, and the **Standings** tab updates its win/loss records automatically. Set **Status** to *Live now* during a game; the page refreshes itself every minute while games are on. For meets and tournaments, leave Opponent empty and use **Result note** (e.g. “2nd of 6”).
 Visitors can switch between **Auto, Light, Dark, Dragon (school colors) and High contrast** themes with the palette button. The school color and the default theme are set in *Site settings*.
 
 Accounts: create or reset one with `npm run set-password -- <username>` on the server. Staff can change their own password in the editor.

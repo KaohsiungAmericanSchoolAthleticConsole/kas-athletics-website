@@ -30,7 +30,7 @@ function ticker(content) {
   if (!next) return '';
   const when = [formatDate(next.date), formatTime(next.time)].filter(Boolean).join(' · ');
   return html`
-    <a class="ticker" href="/events#event-${next.date}">
+    <a class="ticker" href="/scores">
       <span class="ticker__label"><span class="ticker__pulse" aria-hidden="true"></span>Next up</span>
       <span class="ticker__title">${next.title}</span>
       <span class="ticker__meta">${[next.sport, when].filter(Boolean).join(' — ')}</span>
@@ -58,6 +58,7 @@ export function navItems(content) {
   return [
     { href: '/', label: 'Home' },
     ...(content.seasons || []).map((s) => ({ href: `/${s.slug}`, label: s.title })),
+    { href: '/scores', label: 'Scores' },
     { href: '/events', label: 'Schedule' },
     { href: '/coaches', label: 'Coaches' },
     { href: '/contact', label: 'Contact' },

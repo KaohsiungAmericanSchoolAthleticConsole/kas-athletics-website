@@ -145,4 +145,26 @@
     }), { threshold: 0.6 });
     counters.forEach((c) => countIo.observe(c));
   }
+  // ---------- Scoreboard ----------
+  // Team filter submits as soon as a team is picked (the button stays for no-JS).
+  const bindFilters = (scope) => scope.querySelectorAll('[data-autosubmit]').forEach((form) => {
+    form.querySelector('.sb-filter__go')?.setAttribute('hidden', '');
+    form.querySelector('select')?.addEventListener('change', () => form.requestSubmit());
+  });
+  bindFilters(document);
+
+  // While a game is live or happening today, refresh the scores every minute.
+  const REFRESH_MS = 60_000;
+  const board = document.querySelector('[data-scoreboard][data-live-refresh]');
+  if (board) {
+    setInterval(async () => {
+      if (document.hidden) return;
+      try {
+        const res = await fetch(location.href, { headers: { Accept: 'text/html' }, cache: 'no-store' });
+        if (!res.ok) return;
+        const next = new DOMParser().parseFromString(await res.text(), 'text/html').querySelector('[data-scoreboard]');
+        if (next) { board.replaceChildren(...next.childNodes); bindFilters(board); }
+      } catch { /* offline for a moment: try again next minute */ }
+    }, REFRESH_MS);
+  }
 })();

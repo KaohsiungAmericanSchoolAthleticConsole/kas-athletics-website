@@ -5,8 +5,9 @@
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 const COLOR_RE = /^#[0-9a-fA-F]{6}$/;
+const SCORE_RE = /^\d{1,4}$/;
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const RESERVED_SLUGS = new Set(['admin', 'api', 'uploads', 'css', 'js', 'img', 'events', 'coaches', 'contact']);
+const RESERVED_SLUGS = new Set(['admin', 'api', 'uploads', 'css', 'js', 'img', 'events', 'coaches', 'contact', 'scores']);
 const DEFAULT_MAX = 160;
 
 export function isSafeLink(value) {
@@ -42,6 +43,7 @@ function checkString(field, value, path, errors) {
       if (!SLUG_RE.test(s)) invalid('use lowercase letters, numbers and dashes only.');
       else if (RESERVED_SLUGS.has(s)) invalid(`"${s}" is reserved, please choose another.`);
       break;
+    case 'score': if (!SCORE_RE.test(s)) invalid('use a whole number like 3.'); break;
     case 'select':
       if (!field.options.some((o) => o.value === s)) invalid('choose one of the options.');
       break;

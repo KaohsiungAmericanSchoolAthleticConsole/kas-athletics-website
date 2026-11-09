@@ -2,6 +2,7 @@
   "site": {
     "name": "KAS Athletics",
     "tagline": "Fight Like a Dragon",
+    "shortName": "KAS",
     "schoolName": "Kaohsiung American School",
     "logo": "/uploads/imported/kas-seal.png",
     "phone": "+886 7 586 3370",
@@ -57,7 +58,13 @@
       "venue": "away",
       "location": "Morrison Academy Taichung",
       "result": "",
-      "link": ""
+      "link": "",
+      "opponent": "",
+      "opponentLogo": "",
+      "kasScore": "",
+      "opponentScore": "",
+      "status": "auto",
+      "photo": ""
     },
     {
       "date": "2026-09-18",
@@ -67,7 +74,13 @@
       "venue": "away",
       "location": "Taipei American School",
       "result": "",
-      "link": ""
+      "link": "",
+      "opponent": "",
+      "opponentLogo": "",
+      "kasScore": "",
+      "opponentScore": "",
+      "status": "auto",
+      "photo": ""
     },
     {
       "date": "2026-09-22",
@@ -77,7 +90,13 @@
       "venue": "away",
       "location": "Morrison Academy Taichung",
       "result": "",
-      "link": ""
+      "link": "",
+      "opponent": "Morrison Taichung",
+      "opponentLogo": "",
+      "kasScore": "",
+      "opponentScore": "",
+      "status": "auto",
+      "photo": ""
     },
     {
       "date": "2026-10-02",
@@ -87,7 +106,13 @@
       "venue": "away",
       "location": "American School in Taichung",
       "result": "",
-      "link": ""
+      "link": "",
+      "opponent": "American School in Taichung",
+      "opponentLogo": "",
+      "kasScore": "",
+      "opponentScore": "",
+      "status": "auto",
+      "photo": ""
     },
     {
       "date": "2026-10-15",
@@ -97,7 +122,13 @@
       "venue": "neutral",
       "location": "Senri & Osaka International Schools, Osaka, Japan",
       "result": "",
-      "link": ""
+      "link": "",
+      "opponent": "",
+      "opponentLogo": "",
+      "kasScore": "",
+      "opponentScore": "",
+      "status": "auto",
+      "photo": ""
     }
   ],
   "seasons": [

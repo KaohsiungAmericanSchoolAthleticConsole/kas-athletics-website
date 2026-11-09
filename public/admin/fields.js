@@ -2,7 +2,7 @@
 // ctx = { get(path), set(path, value), restructure(path, value), upload(file), errorFor(path) }
 import { h, icon, uid, pathToString } from './dom.js';
 
-const INPUT_TYPES = { text: 'text', url: 'url', date: 'date', time: 'time', slug: 'text', color: 'color' };
+const INPUT_TYPES = { text: 'text', url: 'url', date: 'date', time: 'time', slug: 'text', color: 'color', score: 'text' };
 
 function fieldShell(field, path, ctx, control, id, visual = control) {
   const err = ctx.errorFor(path);
@@ -39,7 +39,7 @@ function textField(field, path, ctx) {
   } else {
     control = h('input', {
       id, type: INPUT_TYPES[field.type] || 'text', value, maxlength: field.max, placeholder: field.placeholder || '',
-      autocomplete: 'off', spellcheck: field.type === 'text' ? 'true' : 'false',
+      autocomplete: 'off', spellcheck: field.type === 'text' ? 'true' : 'false', inputmode: field.type === 'score' ? 'numeric' : false,
       oninput: (e) => ctx.set(path, field.type === 'slug' ? e.target.value.toLowerCase() : e.target.value),
     });
     if (field.type === 'url') {
