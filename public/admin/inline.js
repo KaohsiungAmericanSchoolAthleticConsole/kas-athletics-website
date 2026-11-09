@@ -10,7 +10,8 @@ import { prepareImage } from './images.js';
 
 const root = document.documentElement;
 const PLAINTEXT = (() => { const d = document.createElement('div'); d.contentEditable = 'plaintext-only'; return d.contentEditable === 'plaintext-only'; })();
-const state = { csrf: null, draft: null };
+const state = { draft: null, assetBase: '', uploads: {} };
+const pendingUploads = new Map(); // id -> { resolve, reject }
 
 /** "seasons[1].teams[0].name" -> "team name"; "home.heroTitle" -> "hero title" */
 function labelFor(path) {
@@ -29,20 +30,20 @@ function update(path, value) {
   toEditor({ type: 'change', path, value });
 }
 
+/** How to show a stored image path here (on GitHub Pages, new photos come straight from the repository). */
+function displayUrl(path) {
+  if (state.uploads[path]) return state.uploads[path];
+  if (state.assetBase && /^\/uploads\//.test(path || '')) return `${state.assetBase}${path}`;
+  return path;
+}
+
+/** The editor (parent window) holds the sign-in, so it does the actual upload. */
 async function uploadImage(file) {
-  if (!state.csrf) {
-    const session = await (await fetch('/api/session', { credentials: 'same-origin' })).json();
-    state.csrf = session.csrf;
-  }
   const dataUrl = await prepareImage(file);
-  const res = await fetch('/api/upload', {
-    method: 'POST', credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': state.csrf },
-    body: JSON.stringify({ dataUrl }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'The photo could not be uploaded.');
-  return data.url;
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const result = new Promise((resolve, reject) => pendingUploads.set(id, { resolve, reject }));
+  toEditor({ type: 'upload', id, dataUrl });
+  return result;
 }
 
 const toastEl = h('div', { class: 'kas-toast', role: 'status', hidden: true });
@@ -98,7 +99,9 @@ function applyDraft() {
   });
   document.querySelectorAll('img[data-edit-image]').forEach((img) => {
     const value = getIn(state.draft, parsePath(img.dataset.editImage));
-    if (value && img.getAttribute('src') !== value) { img.removeAttribute('srcset'); img.src = value; }
+    if (!value || img.getAttribute('src')?.endsWith(value)) return; // already showing it (the page was built with it)
+    img.removeAttribute('srcset');
+    img.src = displayUrl(value);
   });
 }
 
@@ -110,7 +113,7 @@ async function replacePhoto(entry, file) {
   if (!file) return;
   entry.chip.classList.add('is-busy');
   try {
-    const url = await uploadImage(file);
+    const { url, display } = await uploadImage(file);
     let el = entry.el;
     if (el.tagName !== 'IMG') {
       const img = h('img', { class: [...el.classList].filter((c) => c !== 'photo-fallback' && c !== 'hero__bg--pattern').join(' '), alt: '', 'data-edit-image': el.dataset.editImage });
@@ -119,7 +122,7 @@ async function replacePhoto(entry, file) {
       el = img;
     }
     el.removeAttribute('srcset');
-    el.src = url;
+    el.src = display;
     update(el.dataset.editImage, url);
     toast('Photo replaced.');
   } catch (err) {
@@ -250,8 +253,8 @@ function setupLists() {
 }
 
 // ---------- Start (only inside the editor's frame) ----------
-function start(draft) {
-  state.draft = draft;
+function start({ draft, assetBase = '', uploads = {} }) {
+  Object.assign(state, { draft, assetBase, uploads });
   root.dataset.editing = '';
   applyDraft();
   setupText();
@@ -284,7 +287,13 @@ if (window.parent !== window) {
     if (e.origin !== location.origin || e.source !== window.parent) return;
     const msg = e.data || {};
     if (msg.source !== 'kas-editor') return;
-    if (msg.type === 'init' && !state.draft) start(msg.draft);
+    if (msg.type === 'init' && !state.draft) start(msg);
+    if (msg.type === 'uploaded' || msg.type === 'upload-failed') {
+      const pending = pendingUploads.get(msg.id);
+      pendingUploads.delete(msg.id);
+      if (msg.type === 'uploaded') { state.uploads[msg.url] = msg.display; pending?.resolve(msg); }
+      else pending?.reject(new Error(msg.message));
+    }
     if (msg.type === 'errors') {
       document.querySelectorAll('.kas-error').forEach((el) => el.classList.remove('kas-error'));
       (msg.paths || []).forEach((p) => document.querySelectorAll(`[data-edit="${CSS.escape(p)}"]`).forEach((el) => el.classList.add('kas-error')));

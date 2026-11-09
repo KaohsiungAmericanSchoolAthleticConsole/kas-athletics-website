@@ -9,11 +9,31 @@ function suggestPassword() {
   return `${words[bytes[0] % words.length]}-${words[bytes[1] % words.length]}-${words[bytes[2] % words.length]}-${10 + (bytes[3] % 90)}`;
 }
 
+export const KEY_LINK = 'https://github.com/settings/tokens/new?scopes=public_repo&description=KAS%20Athletics%20editor';
+
+function githubAccess(backend, username) {
+  return h('div', { class: 'group' },
+    h('p', {}, `Signed in as ${username}. On the hosted website, staff sign in with a GitHub “editor key” instead of a password.`),
+    h('h2', { class: 'subtitle' }, 'Give a staff member access'),
+    h('ol', { class: 'help__notes' },
+      h('li', {}, 'Easiest: share the school’s editor key with them privately (it works like a shared password).'),
+      h('li', {}, 'Or give them their own: they create a free GitHub account, you add them under ', h('a', { href: `${backend.repoUrl}/settings/access`, target: '_blank', rel: 'noopener' }, 'Collaborators'), ', and they make their own key with the link below.')),
+    h('h2', { class: 'subtitle' }, 'Make a new editor key'),
+    h('ol', { class: 'help__notes' },
+      h('li', {}, 'Sign in to GitHub with the account that should do the editing.'),
+      h('li', {}, h('a', { href: KEY_LINK, target: '_blank', rel: 'noopener' }, 'Open the “new key” page'), ', choose an expiration (1 year is fine), keep “public_repo” ticked, and press “Generate token”.'),
+      h('li', {}, 'Copy the key (it starts with ghp_) and paste it on the editor’s sign-in page.')),
+    h('h2', { class: 'subtitle' }, 'Take access away'),
+    h('p', { class: 'muted' }, 'Delete the key on GitHub (Settings → Developer settings → Personal access tokens), or remove the person from Collaborators. It stops working immediately.'));
+}
+
 /**
- * @param {Function} api
+ * @param {object} backend from backend.js
  * @param {{ toast: Function, username: string }} ctx
  */
-export function renderAccounts(api, { toast, username }) {
+export function renderAccounts(backend, { toast, username }) {
+  if (backend.mode === 'github') return githubAccess(backend, username);
+  const { api } = backend;
   const list = h('ul', { class: 'accounts' }, h('li', { class: 'muted' }, 'Loading…'));
   const error = h('p', { class: 'form-error', role: 'alert', hidden: true });
 

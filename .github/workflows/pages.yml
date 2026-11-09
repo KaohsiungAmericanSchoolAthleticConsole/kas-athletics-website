@@ -1,6 +1,6 @@
-# Publishes the public website to GitHub Pages every time main is pushed.
-# The site is exported as plain files (npm run build); the staff editor is
-# not included because it needs the Node server.
+# Publishes the website to GitHub Pages every time main is pushed, including
+# when staff press "Publish changes" in /admin (that commits data/content.json).
+# Tests run first, so content that fails validation never goes live.
 name: Publish website
 
 on:
@@ -31,6 +31,8 @@ jobs:
         run: npm run build
         env:
           BASE_PATH: /${{ github.event.repository.name }}
+          PAGES_REPO: ${{ github.repository }}
+          PAGES_BRANCH: ${{ github.ref_name }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

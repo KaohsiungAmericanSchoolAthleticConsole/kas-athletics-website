@@ -3,43 +3,25 @@ import { renderField } from './fields.js';
 import { prepareImage } from './images.js';
 import { renderHelp, renderAccounts } from './pages.js';
 import { renderVisual, visualFrame } from './visual.js';
+import { createServerBackend, createGithubBackend } from './backend.js';
 
 const $ = (sel) => document.querySelector(sel);
 const state = {
-  csrf: null, username: null, schema: null, saved: null, draft: null, version: null,
+  username: null, schema: null, saved: null, draft: null, version: null,
   section: null, errors: new Map(), open: new Set(), saving: false,
 };
+let backend; // set at start: local server, or GitHub when hosted on GitHub Pages
 
 // Extra pages in the sidebar that are not part of the content schema.
 const EXTRA_PAGES = {
   visual: {
     label: 'Edit on the page', icon: 'pencil', top: true,
     help: 'Click any outlined text to type, use “Change photo” on pictures, drag ⠿ to reorder. Then press Publish changes.',
-    render: () => renderVisual(state),
+    render: () => renderVisual(state, backend),
   },
-  accounts: { label: 'Staff accounts', icon: 'people', help: 'Who can sign in to this editor.', render: (api, ctx2) => renderAccounts(api, ctx2) },
+  accounts: { label: 'Staff accounts', icon: 'people', help: 'Who can sign in to this editor.', render: (ctx2) => renderAccounts(backend, ctx2) },
   help: { label: 'Help', icon: 'link', help: 'A quick guide to updating the website.', render: () => renderHelp() },
 };
-
-// ---------- API ----------
-async function api(method, url, body) {
-  let res;
-  try {
-    res = await fetch(url, {
-      method,
-      credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json', ...(state.csrf ? { 'X-CSRF-Token': state.csrf } : {}) },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
-  } catch {
-    throw Object.assign(new Error('Can’t reach the website right now. Check your internet connection and try again. Your changes are still here.'), { status: 0 });
-  }
-  let data = {};
-  try { data = await res.json(); } catch { /* empty body */ }
-  if (res.status === 401 && url !== '/api/login') showLogin('Your session ended. Please sign in again — your unpublished changes are kept.');
-  if (!res.ok) throw Object.assign(new Error(data.error || `Something went wrong (error ${res.status}).`), { status: res.status, data });
-  return data;
-}
 
 // ---------- Helpers ----------
 const isDirty = () => state.draft !== null && JSON.stringify(state.draft) !== JSON.stringify(state.saved);
@@ -92,10 +74,11 @@ const ctx = {
   },
   async upload(file) {
     const dataUrl = await prepareImage(file);
-    const { url } = await api('POST', '/api/upload', { dataUrl });
+    const url = await backend.upload(dataUrl);
     toast('Photo uploaded. Press “Publish changes” to put it on the website.');
     return url;
   },
+  imageUrl: (path) => backend.imageUrl(path),
   errorFor: (path) => state.errors.get(pathToString(path)),
   hasErrorWithin: (path) => [...state.errors.keys()].some(pathPrefix(pathToString(path))),
   isOpen: (path) => state.open.has(pathToString(path)),
@@ -144,7 +127,7 @@ function renderEditor({ keepScroll = false } = {}) {
   if (extra) {
     $('#section-title').textContent = extra.label;
     $('#section-help').textContent = extra.help;
-    $('#editor').replaceChildren(h('div', { class: 'panel' }, extra.render(api, { toast, username: state.username })));
+    $('#editor').replaceChildren(h('div', { class: 'panel' }, extra.render({ toast, username: state.username })));
   } else {
     const field = currentField();
     state.section = field.key;
@@ -169,9 +152,15 @@ window.addEventListener('message', (e) => {
   if (e.origin !== location.origin || !frame || e.source !== frame.contentWindow) return;
   const msg = e.data || {};
   if (msg.source !== 'kas-preview') return;
-  if (msg.type === 'ready') frame.contentWindow.postMessage({ source: 'kas-editor', type: 'init', draft: state.draft }, location.origin);
+  const reply = (data) => frame.contentWindow.postMessage({ source: 'kas-editor', ...data }, location.origin);
+  if (msg.type === 'ready') reply({ type: 'init', draft: state.draft, assetBase: backend.assetBase, uploads: backend.uploadCache() });
   if (msg.type === 'change') ctx.set(parsePath(msg.path), msg.value);
   if (msg.type === 'publish') publish();
+  if (msg.type === 'upload') {
+    backend.upload(msg.dataUrl)
+      .then((url) => reply({ type: 'uploaded', id: msg.id, url, display: backend.imageUrl(url) }))
+      .catch((err) => reply({ type: 'upload-failed', id: msg.id, message: err.message }));
+  }
 });
 
 function sendErrorsToPreview() {
@@ -199,12 +188,14 @@ async function publish() {
   state.saving = true;
   updateSaveState();
   try {
-    const { content, version } = await api('PUT', '/api/content', { content: state.draft, version: state.version });
+    const { content, version } = await backend.publish(state.draft, state.version);
     Object.assign(state, { saved: content, draft: content, version, errors: new Map() });
     renderErrorSummary([]);
     refreshView({ keepScroll: true });
     sendErrorsToPreview();
-    toast('Published! Your changes are live on the website.');
+    toast(backend.mode === 'github'
+      ? 'Published! The website updates in about a minute.'
+      : 'Published! Your changes are live on the website.');
   } catch (err) {
     if (err.status === 422) {
       state.errors = new Map(err.data.errors.map((e) => [e.path, e.message]));
@@ -217,6 +208,7 @@ async function publish() {
         action: h('p', {}, h('button', { type: 'button', class: 'btn btn--ghost btn--sm', onclick: reloadLatest }, 'Load the latest version (discards my edits)')),
       });
     } else {
+      if (err.status === 401) showLogin(err.message);
       toast(err.message, 'error');
     }
   } finally {
@@ -227,7 +219,7 @@ async function publish() {
 
 async function reloadLatest() {
   if (isDirty() && !confirm('Load the latest published version? Your unpublished edits will be lost.')) return;
-  const { content, version } = await api('GET', '/api/content');
+  const { content, version } = await backend.load();
   Object.assign(state, { saved: content, draft: content, version, errors: new Map() });
   renderErrorSummary([]);
   renderEditor();
@@ -250,15 +242,14 @@ async function openHistory() {
   list.replaceChildren(h('li', { class: 'muted' }, 'Loading…'));
   $('#history-dialog').showModal();
   try {
-    const { versions } = await api('GET', '/api/history');
+    const versions = await backend.history();
     const fmt = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
     list.replaceChildren(...(versions.length ? versions.map((v) => h('li', {},
-      h('span', {}, h('strong', {}, fmt.format(new Date(v.savedAt))), h('span', { class: 'muted small' }, ` · replaced by ${v.author}`)),
+      h('span', {}, h('strong', {}, fmt.format(new Date(v.savedAt))), h('span', { class: 'muted small' }, ` · ${backend.mode === 'github' ? 'published' : 'replaced'} by ${v.author}`)),
       h('button', { type: 'button', class: 'btn btn--ghost btn--sm', onclick: async () => {
         if (isDirty() && !confirm('Loading this version will replace your unpublished changes. Continue?')) return;
         try {
-          const { content } = await api('GET', `/api/history/${encodeURIComponent(v.id)}`);
-          state.draft = content;
+          state.draft = await backend.readVersion(v.id);
           $('#history-dialog').close();
           renderEditor();
           updateSaveState();
@@ -274,14 +265,17 @@ function showLogin(message) {
   $('#app-view').hidden = true;
   $('#login-view').hidden = false;
   document.querySelectorAll('dialog[open]').forEach((d) => d.close());
-  const err = $('#login-error');
+  const github = backend?.mode === 'github';
+  $('#login-form').hidden = github;
+  $('#gh-login-form').hidden = !github;
+  const err = $(github ? '#gh-login-error' : '#login-error');
   err.hidden = !message;
   err.textContent = message || '';
-  $('#login-form [name=username]').focus();
+  (github ? $('#gh-login-form [name=token]') : $('#login-form [name=username]')).focus();
 }
 
 async function showApp() {
-  const { content, version, schema } = await api('GET', '/api/content');
+  const { content, version, schema } = await backend.load();
   // If the session ended mid-edit, keep the unpublished work. We also keep the
   // version it was based on, so publishing can't silently overwrite someone else.
   const keepDraft = isDirty();
@@ -291,30 +285,41 @@ async function showApp() {
   $('#login-view').hidden = true;
   $('#app-view').hidden = false;
   $('#whoami').textContent = `(${state.username})`;
+  $('#password-btn').hidden = backend.mode === 'github'; // GitHub mode signs in with editor keys, not passwords
+  document.querySelectorAll('[data-site-link]').forEach((a) => { a.href = backend.siteUrl; });
   renderEditor();
   updateSaveState();
 }
 
 // ---------- Wiring ----------
-$('#login-form').addEventListener('submit', async (e) => {
+async function signIn(e, credentials) {
   e.preventDefault();
-  const form = new FormData(e.target);
   const btn = e.target.querySelector('button[type=submit]');
+  const label = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Signing in…';
   try {
-    const res = await api('POST', '/api/login', { username: String(form.get('username')).trim(), password: form.get('password') });
-    state.csrf = res.csrf;
+    const res = await backend.login(credentials());
     state.username = res.username;
     e.target.reset();
     await showApp();
   } catch (err) {
-    $('#login-error').textContent = err.message;
-    $('#login-error').hidden = false;
+    const box = e.target.querySelector('.form-error');
+    box.textContent = err.message;
+    box.hidden = false;
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Sign in';
+    btn.textContent = label;
   }
+}
+
+$('#login-form').addEventListener('submit', (e) => {
+  const form = new FormData(e.target);
+  return signIn(e, () => ({ username: String(form.get('username')).trim(), password: form.get('password') }));
+});
+$('#gh-login-form').addEventListener('submit', (e) => {
+  const form = new FormData(e.target);
+  return signIn(e, () => ({ token: form.get('token'), remember: form.get('remember') === 'on' }));
 });
 
 $('#save-btn').addEventListener('click', publish);
@@ -322,8 +327,8 @@ $('#discard-btn').addEventListener('click', discard);
 $('#history-btn').addEventListener('click', openHistory);
 $('#logout-btn').addEventListener('click', async () => {
   if (isDirty() && !confirm('You have unpublished changes. Sign out and lose them?')) return;
-  try { await api('POST', '/api/logout'); } catch { /* signing out locally is enough */ }
-  Object.assign(state, { csrf: null, draft: null, saved: null });
+  try { await backend.logout(); } catch { /* signing out locally is enough */ }
+  Object.assign(state, { draft: null, saved: null });
   showLogin();
 });
 
@@ -333,7 +338,7 @@ $('#password-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = new FormData(e.target);
   try {
-    await api('POST', '/api/password', { current: form.get('current'), next: form.get('next') });
+    await backend.changePassword(form.get('current'), form.get('next'));
     $('#password-dialog').close();
     showLogin('Password changed. Please sign in with your new password.');
   } catch (err) {
@@ -356,12 +361,25 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ---------- Start ----------
+async function chooseBackend() {
+  // The GitHub Pages build ships admin/config.json; the local server has none.
+  let config = null;
+  try {
+    const res = await fetch(new URL('config.json', import.meta.url), { cache: 'no-store' });
+    if (res.ok) config = await res.json();
+  } catch { /* no config: local server */ }
+  if (config?.mode !== 'github') return createServerBackend({ onUnauthorized: () => showLogin('Your session ended. Please sign in again — your unpublished changes are kept.') });
+  const [{ SCHEMA }, { validateContent }] = await Promise.all([import('./lib/schema.js'), import('./lib/validate.js')]);
+  return createGithubBackend({ ...config, schema: SCHEMA, validate: validateContent });
+}
+
 (async () => {
   try {
-    const session = await api('GET', '/api/session');
+    backend = await chooseBackend();
+    document.documentElement.dataset.mode = backend.mode;
+    const session = await backend.session();
     $('#setup-notice').hidden = !session.needsSetup;
     if (session.authenticated) {
-      state.csrf = session.csrf;
       state.username = session.username;
       await showApp();
     } else {

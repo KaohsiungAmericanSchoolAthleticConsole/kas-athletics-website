@@ -79,7 +79,7 @@ function imageField(field, path, ctx) {
   const fileInput = h('input', { id, type: 'file', accept: 'image/*', class: 'sr-only' });
   const status = h('span', { class: 'image-field__status', 'aria-live': 'polite' });
   const preview = value
-    ? h('img', { src: value, alt: '', class: 'image-field__preview' })
+    ? h('img', { src: ctx.imageUrl(value), alt: '', class: 'image-field__preview' })
     : h('div', { class: 'image-field__empty' }, icon('image'), h('span', {}, 'No photo yet'));
 
   async function handle(file) {
@@ -137,7 +137,7 @@ function listField(field, path, ctx, { top = false } = {}) {
     const hasError = ctx.hasErrorWithin(itemPath);
     const details = h('details', { class: `item${hasError ? ' has-error' : ''}`, open: ctx.isOpen(itemPath) || hasError },
       h('summary', { class: 'item__summary' },
-        item?.image ? h('img', { class: 'item__thumb', src: item.image, alt: '', loading: 'lazy' }) : null,
+        item?.image ? h('img', { class: 'item__thumb', src: ctx.imageUrl(item.image), alt: '', loading: 'lazy' }) : null,
         h('span', { class: 'item__title' }, itemTitle(field, item, i)),
         field.titleKey === 'title' && item?.date ? h('span', { class: 'item__meta' }, item.date) : null,
         h('span', { class: 'item__tools' },

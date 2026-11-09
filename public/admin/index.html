@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Staff Editor · KAS Athletics</title>
-<link rel="icon" href="/img/crest.svg">
+<link rel="icon" href="../img/crest.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Barlow:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="/admin/admin.css">
-<script type="module" src="/admin/admin.js"></script>
+<link rel="stylesheet" href="admin.css">
+<script type="module" src="admin.js"></script>
 </head>
 <body>
 
 <!-- Sign in -->
 <main class="login" id="login-view" hidden>
   <form class="login__card" id="login-form" novalidate>
-    <img src="/img/crest.svg" alt="" width="64" height="64">
+    <img src="../img/crest.svg" alt="" width="64" height="64">
     <h1>Staff editor</h1>
     <p class="muted">Sign in to update the KAS Athletics website.</p>
     <div class="notice notice--info" id="setup-notice" hidden>
@@ -29,15 +29,35 @@
       <input name="password" type="password" autocomplete="current-password" required></label>
     <p class="form-error" id="login-error" role="alert" hidden></p>
     <button class="btn btn--primary btn--block" type="submit">Sign in</button>
-    <a class="muted small" href="/">← Back to the website</a>
+    <a class="muted small" href="../">← Back to the website</a>
+  </form>
+
+  <form class="login__card" id="gh-login-form" novalidate hidden>
+    <img src="../img/crest.svg" alt="" width="64" height="64">
+    <h1>Staff editor</h1>
+    <p class="muted">Sign in with your editor key to update the KAS Athletics website.</p>
+    <label class="field"><span class="field__label">Editor key</span>
+      <input name="token" type="password" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="ghp_…" required></label>
+    <label class="check"><input type="checkbox" name="remember" checked> Remember me on this device</label>
+    <p class="form-error" id="gh-login-error" role="alert" hidden></p>
+    <button class="btn btn--primary btn--block" type="submit">Sign in</button>
+    <details class="login__help">
+      <summary>Don’t have a key?</summary>
+      <ol>
+        <li>Sign in to GitHub as the school’s account (or your own account if you were added as a collaborator).</li>
+        <li><a href="https://github.com/settings/tokens/new?scopes=public_repo&amp;description=KAS%20Athletics%20editor" target="_blank" rel="noopener">Open the “new key” page</a>, pick an expiration (1 year is fine), keep <strong>public_repo</strong> ticked and press <strong>Generate token</strong>.</li>
+        <li>Copy the key (starts with <code>ghp_</code>) and paste it above. Keep it private, like a password.</li>
+      </ol>
+    </details>
+    <a class="muted small" href="../">← Back to the website</a>
   </form>
 </main>
 
 <!-- Editor -->
 <div class="app" id="app-view" hidden>
   <aside class="sidebar" aria-label="Sections">
-    <a class="sidebar__brand" href="/" target="_blank" rel="noopener">
-      <img src="/img/crest.svg" alt="" width="36" height="36"><span>KAS Athletics<small>Staff editor</small></span>
+    <a class="sidebar__brand" href="../" target="_blank" rel="noopener" data-site-link>
+      <img src="../img/crest.svg" alt="" width="36" height="36"><span>KAS Athletics<small>Staff editor</small></span>
     </a>
     <nav><ul class="sidebar__nav" id="section-nav"></ul></nav>
     <div class="sidebar__foot">
@@ -56,7 +76,7 @@
       <div class="topbar__actions">
         <span class="save-state" id="save-state" aria-live="polite"></span>
         <button class="btn btn--quiet" type="button" id="discard-btn" hidden>Discard changes</button>
-        <a class="btn btn--ghost" href="/" target="_blank" rel="noopener">View site</a>
+        <a class="btn btn--ghost" href="../" target="_blank" rel="noopener" data-site-link>View site</a>
         <button class="btn btn--primary" type="button" id="save-btn" disabled>Publish changes</button>
       </div>
     </header>

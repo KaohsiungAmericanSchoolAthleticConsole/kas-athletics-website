@@ -210,3 +210,9 @@ fieldset.list > legend { padding: 0 0.4rem; }
 .visual__frame { display: block; width: 100%; height: calc(100vh - 15rem); min-height: 32rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; transition: width 300ms; }
 .visual--phone .visual__frame { width: 390px; }
 @media (max-width: 52rem) { .visual__hint { display: none; } .visual__frame { height: 70vh; } }
+
+.check { display: flex; align-items: center; gap: 0.5rem; font-size: 0.925rem; }
+.check input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); }
+.login__help { font-size: 0.9rem; color: var(--ink-2); }
+.login__help summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+.login__help ol { margin: 0.5rem 0 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; }

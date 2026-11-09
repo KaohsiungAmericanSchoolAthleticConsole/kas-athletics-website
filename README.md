@@ -34,9 +34,16 @@ Make sure `data/` is on **persistent** storage and is backed up.
 
 > WP Engine only hosts WordPress, so it can't run this site. Point the domain at the new host when you switch over.
 
-### Preview copy on GitHub Pages
+### Hosting on GitHub Pages (with the editor)
 
-Every push to `main` publishes the **public** site to GitHub Pages automatically (`.github/workflows/pages.yml`): tests run first, then `npm run build` exports plain files with the right sub-folder prefix. The staff editor is not included there (it needs the Node server), so Pages shows exactly what was last committed in `data/content.json`. To publish edits made in the editor to Pages, commit `data/` and push.
+Every push to `main` publishes the site to GitHub Pages automatically (`.github/workflows/pages.yml`): tests run first, then `npm run build` exports plain files with the right sub-folder prefix. The editor is included at **`…github.io/<repo>/admin/`**.
+
+On GitHub Pages there is no server, so the editor saves straight to the repository:
+
+- Staff sign in with an **editor key** (a GitHub personal access token with the `public_repo` scope, created on an account that can write to the repo). The sign-in page links to the page that creates one.
+- **Publish changes** commits `data/content.json`; that push rebuilds the site in about a minute. Photos are committed to `data/uploads/` (marked `[skip ci]`, so they ride along with the next publish).
+- **Undo history** is the repo's commit history of `data/content.json`. Two people publishing at once still get the conflict warning.
+- Because staff edits create commits on GitHub, run `git pull` before making changes locally.
 
 Build it yourself for a sub-folder with `BASE_PATH=/repo-name npm run build`.
 

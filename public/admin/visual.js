@@ -21,15 +21,15 @@ function pageOptions(draft) {
   ];
 }
 
-export function renderVisual(state) {
+export function renderVisual(state, backend) {
   const select = h('select', { 'aria-label': 'Page to edit' }, pageOptions(state.draft));
   select.value = currentPath;
   if (select.value !== currentPath) { currentPath = '/'; select.value = '/'; }
 
-  frame = h('iframe', { class: 'visual__frame', title: 'Website preview (editable)', src: `${currentPath}?admin-edit=1` });
+  frame = h('iframe', { class: 'visual__frame', title: 'Website preview (editable)', src: backend.previewUrl(currentPath) });
   select.addEventListener('change', () => {
     currentPath = select.value;
-    frame.src = `${currentPath}?admin-edit=1`;
+    frame.src = backend.previewUrl(currentPath);
   });
 
   const wrap = h('div', { class: `visual${phone ? ' visual--phone' : ''}` });

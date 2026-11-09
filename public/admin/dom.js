@@ -19,12 +19,14 @@ export function h(tag, attrs = {}, ...children) {
 }
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+// Relative to this file, so it works at /admin/ and inside a sub-folder (GitHub Pages).
+const ICONS = new URL('../img/icons.svg', import.meta.url).pathname;
 export function icon(name) {
   const svg = document.createElementNS(SVG_NS, 'svg');
   svg.setAttribute('class', 'icon');
   svg.setAttribute('aria-hidden', 'true');
   const use = document.createElementNS(SVG_NS, 'use');
-  use.setAttribute('href', `/img/icons.svg#${name}`);
+  use.setAttribute('href', `${ICONS}#${name}`);
   svg.append(use);
   return svg;
 }
