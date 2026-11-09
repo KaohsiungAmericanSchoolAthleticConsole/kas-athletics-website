@@ -369,7 +369,7 @@ async function chooseBackend() {
     if (res.ok) config = await res.json();
   } catch { /* no config: local server */ }
   if (config?.mode !== 'github') return createServerBackend({ onUnauthorized: () => showLogin('Your session ended. Please sign in again — your unpublished changes are kept.') });
-  const [{ SCHEMA }, { validateContent }, { migrate }] = await Promise.all([import('./lib/schema.js'), import('./lib/validate.js'), import('./lib/migrate.js')]);
+  const [{ SCHEMA }, { validateContent }, { migrate }] = await Promise.all([import('./src/schema.js'), import('./src/lib/validate.js'), import('./src/lib/migrate.js')]);
   return createGithubBackend({ ...config, schema: SCHEMA, validate: validateContent, migrate });
 }
 

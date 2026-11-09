@@ -54,17 +54,22 @@ if (pagesRepo) {
   if (!owner || !repo) throw new Error('PAGES_REPO must look like owner/repo');
   const adminDir = path.join(dist, 'admin');
   await fs.cp(path.join(root, 'public', 'admin'), adminDir, { recursive: true });
-  await fs.mkdir(path.join(adminDir, 'lib'), { recursive: true });
-  await fs.copyFile(path.join(root, 'src', 'schema.js'), path.join(adminDir, 'lib', 'schema.js'));
-  await fs.copyFile(path.join(root, 'src', 'lib', 'validate.js'), path.join(adminDir, 'lib', 'validate.js'));
+  // Shared source for the browser preview (whitelist only).
+  const srcDir = path.join(adminDir, 'src');
+  await fs.mkdir(path.join(srcDir, 'render'), { recursive: true });
+  await fs.mkdir(path.join(srcDir, 'lib'), { recursive: true });
+  const whitelist = [
+    'schema.js', 'blocks.js', 'fieldkit.js',
+    ...['render/sections.js', 'render/router.js', 'render/edit.js', 'render/layout.js', 'render/pages.js', 'render/parts.js', 'render/team.js', 'render/scores.js'],
+    ...['lib/html.js', 'lib/events.js', 'lib/validate.js', 'lib/migrate.js', 'lib/static.js', 'lib/assetVersion.js'],
+  ];
+  for (const rel of whitelist) {
+    const dest = path.join(srcDir, rel);
+    await fs.mkdir(path.dirname(dest), { recursive: true });
+    await fs.copyFile(path.join(root, 'src', rel), dest);
+  }
   const config = { mode: 'github', owner, repo, branch: process.env.PAGES_BRANCH || 'main', base };
   await fs.writeFile(path.join(adminDir, 'config.json'), `${JSON.stringify(config, null, 2)}\n`);
-  // Editable copies of each page for "Edit on the page" (never indexed by search engines).
-  for (const [dir, render] of editablePages) {
-    const htmlText = toStatic(renderWithEdit(true, render), base).replace('<head>', '<head>\n<meta name="robots" content="noindex">');
-    await fs.mkdir(path.join(adminDir, 'preview', dir), { recursive: true });
-    await fs.writeFile(path.join(adminDir, 'preview', dir, 'index.html'), htmlText);
-  }
   process.stdout.write(`Exported the staff editor to dist/admin/ (saves to ${pagesRepo}@${config.branch})\n`);
 }
 process.stdout.write(`Exported ${pages.length} pages to dist/${base ? ` (for ${base}/)` : ''}\n`);

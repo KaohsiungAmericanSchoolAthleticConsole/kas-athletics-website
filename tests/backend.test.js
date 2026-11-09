@@ -134,6 +134,6 @@ test('history lists published versions and can load an old one', async () => {
   assert.equal(versions[0].author, 'kas-staff');
   const old = await be.readVersion(versions[0].id);
   assert.equal(old.site.footerNote, 'v1');
-  assert.equal(be.previewUrl('/'), '/r/admin/preview/');
-  assert.equal(be.previewUrl('/fall-sports'), '/r/admin/preview/fall-sports/');
+  assert.equal(be.previewUrl('/'), '/r/admin/preview.html');
+  assert.equal(be.previewUrl('/fall-sports'), '/r/admin/preview.html');
 });

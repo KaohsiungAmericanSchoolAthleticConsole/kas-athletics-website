@@ -243,6 +243,35 @@ export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logge
     if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed');
     if (url.pathname === '/brand.css') return brandCss(res);
     if (url.pathname === '/admin') return send(res, 301, '', undefined, { Location: '/admin/' });
+    if (url.pathname === '/admin/preview.html') {
+      const file = path.join(publicDir, 'admin', 'preview.html');
+      const data = await fs.readFile(file);
+      return send(res, 200, data, 'text/html; charset=utf-8', {
+        'Cache-Control': 'no-cache',
+        'X-Frame-Options': 'SAMEORIGIN',
+        'Content-Security-Policy': CSP.replace("frame-ancestors 'none'", "frame-ancestors 'self'"),
+      });
+    }
+    if (url.pathname.startsWith('/admin/src/')) {
+      const rel = url.pathname.slice('/admin/src/'.length);
+      const allowed = [
+        'schema.js', 'blocks.js', 'fieldkit.js',
+      ];
+      // allow render/*.js and lib/{html,events,validate,migrate,static}.js
+      const ok = allowed.includes(rel)
+        || /^render\/[A-Za-z0-9_-]+\.js$/.test(rel)
+        || /^lib\/(html|events|validate|migrate|static)\.js$/.test(rel);
+      if (!ok) return send(res, 404, 'Not found');
+      const rootAbs = path.resolve(publicDir, '..', 'src');
+      const file = path.resolve(rootAbs, rel);
+      if (!file.startsWith(rootAbs + path.sep)) return send(res, 404, 'Not found');
+      try {
+        const data = await fs.readFile(file);
+        return send(res, 200, data, TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', { 'Cache-Control': 'no-cache' });
+      } catch {
+        return send(res, 404, 'Not found');
+      }
+    }
     if (url.pathname.startsWith('/admin/')) {
       const rel = url.pathname === '/admin/' ? 'admin/index.html' : url.pathname.slice(1);
       if (await serveFile(res, publicDir, rel, 'no-cache')) return undefined;
