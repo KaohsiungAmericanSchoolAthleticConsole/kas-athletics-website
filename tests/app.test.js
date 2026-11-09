@@ -143,11 +143,6 @@ test('logout ends the session', async () => {
   assert.equal((await req('GET', '/api/content', { cookie })).status, 401);
 });
 
-test('repeated failed logins are rate limited', async () => {
-  let last;
-  for (let i = 0; i < 9; i += 1) last = await req('POST', '/api/login', { body: { username: 'x', password: 'y' } });
-  assert.match(last.json.error, /Too many attempts/);
-});
 
 test('team pages render roster, gallery and team schedule; unknown teams 404', async () => {
   const r = await req('GET', '/fall-sports/varsity-boys-soccer-tissa');
@@ -174,4 +169,40 @@ test('scoreboard pages are served, with team filter', async () => {
   const filtered = await req('GET', '/scores?team=Varsity%20Swimming');
   assert.equal(filtered.status, 200);
   assert.match(filtered.text, /<option value="Varsity Swimming" selected>/);
+});
+
+test('a stale editor cannot overwrite a newer publish (409), a fresh one can', async () => {
+  const { cookie, csrf } = await signIn();
+  const first = (await req('GET', '/api/content', { cookie })).json;
+  const a = await req('PUT', '/api/content', { cookie, csrf, body: { content: { ...first.content, site: { ...first.content.site, footerNote: 'A' } }, version: first.version } });
+  assert.equal(a.status, 200);
+  const b = await req('PUT', '/api/content', { cookie, csrf, body: { content: { ...first.content, site: { ...first.content.site, footerNote: 'B' } }, version: first.version } });
+  assert.equal(b.status, 409);
+  assert.match(b.json.error, /Someone else published/);
+  const c = await req('PUT', '/api/content', { cookie, csrf, body: { content: { ...first.content, site: { ...first.content.site, footerNote: 'C' } }, version: a.json.version } });
+  assert.equal(c.status, 200);
+});
+
+test('staff can add, reset and remove accounts, but not themselves', async () => {
+  const { cookie, csrf } = await signIn();
+  assert.equal((await req('POST', '/api/users', { cookie, csrf, body: { username: 'coach-sam', password: 'short' } })).status, 400);
+  assert.equal((await req('POST', '/api/users', { cookie, csrf, body: { username: 'coach-sam', password: 'a-long-enough-pass' } })).status, 200);
+  assert.equal((await req('POST', '/api/users', { cookie, csrf, body: { username: 'coach-sam', password: 'a-long-enough-pass' } })).status, 400);
+  const users = (await req('GET', '/api/users', { cookie })).json.users;
+  assert.deepEqual(users.map((u) => u.username).sort(), ['coach-sam', 'stella']);
+  assert.equal(users.find((u) => u.username === 'stella').isYou, true);
+  assert.equal((await req('POST', '/api/users/reset', { cookie, csrf, body: { username: 'coach-sam', password: 'another-long-pass' } })).status, 200);
+  const sam = await req('POST', '/api/login', { body: { username: 'coach-sam', password: 'another-long-pass' } });
+  assert.equal(sam.status, 200);
+  assert.equal((await req('DELETE', '/api/users/stella', { cookie, csrf })).status, 400);
+  assert.equal((await req('DELETE', '/api/users/coach-sam', { cookie, csrf })).status, 200);
+  assert.equal((await req('GET', '/api/content', { cookie: sam.headers.get('set-cookie').split(';')[0] })).status, 401);
+  assert.equal((await req('DELETE', '/api/users/coach-sam', { cookie })).status, 403);
+});
+
+// Keep last: it locks out further logins from this IP for 15 minutes.
+test('repeated failed logins are rate limited', async () => {
+  let last;
+  for (let i = 0; i < 9; i += 1) last = await req('POST', '/api/login', { body: { username: 'x', password: 'y' } });
+  assert.match(last.json.error, /Too many attempts/);
 });

@@ -73,6 +73,7 @@ export function createAuth(usersFile, { now = () => Date.now() } = {}) {
 
   /** @returns {Promise<{ok: true, token: string, csrf: string} | {ok: false, reason: string}>} */
   async function login(username, password, ip) {
+    sweep();
     if (isLockedOut(ip)) return { ok: false, reason: 'Too many attempts. Please wait 15 minutes and try again.' };
     const user = (await readUsers()).find((u) => u.username === String(username || ''));
     // Always run scrypt so response time doesn't reveal whether a username exists.
@@ -98,7 +99,22 @@ export function createAuth(usersFile, { now = () => Date.now() } = {}) {
 
   function logout(token) { sessions.delete(token); }
 
+  async function removeUser(username) {
+    const users = await readUsers();
+    if (!users.some((u) => u.username === username)) throw Object.assign(new Error('That account no longer exists.'), { status: 404 });
+    if (users.length <= 1) throw Object.assign(new Error('You can’t remove the last staff account.'), { status: 400 });
+    await writeUsers(users.filter((u) => u.username !== username));
+    [...sessions].filter(([, s]) => s.username === username).forEach(([t]) => sessions.delete(t));
+  }
+
+  // Forget expired sessions and old failed-login records so memory never grows without bound.
+  function sweep() {
+    const t = now();
+    [...sessions].filter(([, s]) => s.expires < t).forEach(([k]) => sessions.delete(k));
+    [...failures].filter(([, f]) => t - f.first > FAILURE_WINDOW_MS).forEach(([k]) => failures.delete(k));
+  }
+
   async function hasUsers() { return (await readUsers()).length > 0; }
 
-  return { login, logout, getSession, setPassword, hasUsers, readUsers, SESSION_TTL_MS };
+  return { login, logout, getSession, setPassword, removeUser, hasUsers, readUsers, SESSION_TTL_MS };
 }

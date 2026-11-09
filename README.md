@@ -41,6 +41,11 @@ Make sure `data/` is on **persistent** storage and is backed up.
 3. Change text or click **Upload photo** (or drag a photo onto the box). Large phone photos are shrunk automatically.
 4. Press **Publish changes** (or Ctrl/⌘ + S). The site updates immediately.
 5. Made a mistake? **Undo history** → pick an earlier version → **Publish changes**.
+6. Changed your mind before publishing? **Discard changes** throws away everything since the last publish.
+
+The editor has a built-in **Help** page with step-by-step instructions for common tasks, and a **Staff accounts** page where any staff member can add colleagues, reset their passwords or remove them. Only the very first account needs the command line (`npm run set-password`).
+
+Built-in safety nets: if two people edit at once, the second to publish is warned instead of overwriting the first; if someone is signed out mid-edit, their changes are kept; if `content.json` is ever damaged, the site keeps running from the last good saved copy.
 
 The **next upcoming game** in *Games & events* appears automatically in the red bar at the top of every page.
 

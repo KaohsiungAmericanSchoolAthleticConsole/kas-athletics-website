@@ -5,6 +5,8 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createStore } from './lib/store.js';
+import { validateContent } from './lib/validate.js';
+import { SCHEMA } from './schema.js';
 import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPage } from './render/pages.js';
 import { teamPage } from './render/team.js';
 import { scoresPage } from './render/scores.js';
@@ -12,7 +14,7 @@ import { brandCssText } from './app.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
-const content = await createStore(path.join(root, 'data')).load();
+const content = await createStore(path.join(root, 'data'), { normalize: (raw) => validateContent(SCHEMA, raw).value }).load();
 
 const pages = [
   ['index.html', homePage(content)],

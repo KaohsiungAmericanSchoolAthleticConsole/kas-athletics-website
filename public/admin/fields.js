@@ -2,6 +2,11 @@
 // ctx = { get(path), set(path, value), restructure(path, value), upload(file), errorFor(path) }
 import { h, icon, uid, pathToString } from './dom.js';
 
+export function slugify(text) {
+  return String(text || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+}
+
 const INPUT_TYPES = { text: 'text', url: 'url', date: 'date', time: 'time', slug: 'text', color: 'color', score: 'text' };
 
 function fieldShell(field, path, ctx, control, id, visual = control) {
@@ -24,6 +29,12 @@ function textField(field, path, ctx) {
   if (field.type === 'textarea') {
     control = h('textarea', { id, rows: field.max > 1500 ? 7 : 3, maxlength: field.max, oninput: (e) => ctx.set(path, e.target.value) });
     control.value = value;
+  } else if (field.type === 'team') {
+    const names = ctx.teamNames();
+    const options = value && !names.includes(value) ? [value, ...names] : names;
+    control = h('select', { id, onchange: (e) => ctx.set(path, e.target.value) },
+      h('option', { value: '' }, '— Not linked to a team —'),
+      options.map((n) => h('option', { value: n, selected: n === value }, n)));
   } else if (field.type === 'select') {
     control = h('select', { id, onchange: (e) => ctx.set(path, e.target.value) },
       h('option', { value: '' }, '— Choose —'),
@@ -42,6 +53,14 @@ function textField(field, path, ctx) {
       autocomplete: 'off', spellcheck: field.type === 'text' ? 'true' : 'false', inputmode: field.type === 'score' ? 'numeric' : false,
       oninput: (e) => ctx.set(path, field.type === 'slug' ? e.target.value.toLowerCase() : e.target.value),
     });
+    if (field.suggest) {
+      // Offer names typed before (e.g. opponents) and reuse their logo automatically.
+      const listId = `${id}-list`;
+      control.setAttribute('list', listId);
+      const datalist = h('datalist', { id: listId }, ctx.siblingValues(path).map((v) => h('option', { value: v })));
+      control.addEventListener('change', () => { if (field.autofill) ctx.autofill(path, field.autofill); });
+      return fieldShell(field, path, ctx, control, id, h('div', {}, control, datalist));
+    }
     if (field.type === 'url') {
       // Friendly fix-up: "www.example.com" -> "https://www.example.com"
       control.addEventListener('change', () => {
@@ -75,7 +94,7 @@ function imageField(field, path, ctx) {
       box.classList.remove('is-busy');
     }
   }
-  fileInput.addEventListener('change', () => handle(fileInput.files[0]));
+  fileInput.addEventListener('change', () => { handle(fileInput.files[0]); fileInput.value = ''; });
 
   const box = h('div', {
     class: 'image-field',
@@ -126,17 +145,25 @@ function listField(field, path, ctx, { top = false } = {}) {
           h('button', { type: 'button', class: 'tool', title: 'Move down', disabled: i === items.length - 1, onclick: (e) => { e.preventDefault(); move(i, i + 1); } }, icon('down'), h('span', { class: 'sr-only' }, 'Move down')),
           h('button', { type: 'button', class: 'tool', title: 'Duplicate', onclick: (e) => {
             e.preventDefault();
-            const next = [...items.slice(0, i + 1), structuredClone(item), ...items.slice(i + 1)];
+            const copy = structuredClone(item);
+            if (copy.slug) copy.slug = `${copy.slug}-copy`.slice(0, 60);
+            const next = [...items.slice(0, i + 1), copy, ...items.slice(i + 1)];
             ctx.restructure(path, next, { open: [...path, i + 1] });
           } }, icon('copy'), h('span', { class: 'sr-only' }, 'Duplicate')),
           h('button', { type: 'button', class: 'tool tool--danger', title: 'Delete', onclick: (e) => {
             e.preventDefault();
-            if (confirm(`Delete “${itemTitle(field, item, i)}”? You can still undo by not publishing.`)) {
+            if (confirm(`Delete “${itemTitle(field, item, i)}”?\n\nIt disappears from the website when you press Publish. Until then you can bring it back with “Discard changes”.`)) {
               ctx.restructure(path, items.filter((_, j) => j !== i));
             }
           } }, icon('trash'), h('span', { class: 'sr-only' }, 'Delete')))),
       h('div', { class: 'item__body' }, groupFields(field.item, itemPath, ctx)));
     details.addEventListener('toggle', () => ctx.setOpen(itemPath, details.open));
+    // Keep the item's heading in sync while its name/title is typed.
+    const titlePath = `${pathToString(itemPath)}.${field.titleKey}`;
+    details.addEventListener('input', (e) => {
+      if (e.target.closest('[data-path]')?.dataset.path !== titlePath) return;
+      details.querySelector(':scope > summary .item__title').textContent = e.target.value || itemTitle(field, {}, i);
+    });
     return details;
   });
 
@@ -145,19 +172,47 @@ function listField(field, path, ctx, { top = false } = {}) {
   icon('plus'), field.addLabel || 'Add item');
 
   const tools = field.sortBy ? h('button', { type: 'button', class: 'btn btn--quiet btn--sm', onclick: () => {
-    const sorted = items.toSorted((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
+    const sorted = items.toSorted((a, b) => `${a.date || ''}T${a.time || '00:00'}`.localeCompare(`${b.date || ''}T${b.time || '00:00'}`));
     ctx.restructure(path, sorted);
   } }, 'Sort by date') : null;
 
+  const SEARCH_THRESHOLD = 8;
+  const search = items.length > SEARCH_THRESHOLD ? h('input', {
+    type: 'search', class: 'list__search', placeholder: `Search ${items.length} items…`, 'aria-label': `Search ${field.label}`,
+    oninput: (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      cards.forEach((card, i) => {
+        const haystack = Object.values(items[i] || {}).filter((v) => typeof v === 'string').join(' ').toLowerCase();
+        card.hidden = Boolean(q) && !haystack.includes(q);
+      });
+    },
+  }) : null;
+
   return h(top ? 'div' : 'fieldset', { class: `list${top ? ' list--top' : ''}`, dataset: { path: pathToString(path) } },
     top ? null : h('legend', { class: 'field__label' }, field.label),
-    h('div', { class: 'list__head' }, h('span', { class: 'muted small' }, `${items.length} ${items.length === 1 ? 'item' : 'items'}`), tools),
+    h('div', { class: 'list__head' }, h('span', { class: 'muted small' }, `${items.length} ${items.length === 1 ? 'item' : 'items'}`), search, tools),
     cards.length ? cards : h('p', { class: 'list__empty muted' }, 'Nothing here yet.'),
     add);
 }
 
 export function groupFields(group, path, ctx) {
-  return group.fields.map((f) => renderField(f, [...path, f.key], ctx));
+  const nodes = group.fields.map((f) => renderField(f, [...path, f.key], ctx));
+  // Web addresses fill themselves in from the title until someone edits them by hand.
+  group.fields.filter((f) => f.type === 'slug' && f.from).forEach((slugField) => {
+    const at = (key) => nodes[group.fields.findIndex((f) => f.key === key)]?.querySelector('input');
+    const source = at(slugField.from);
+    const target = at(slugField.key);
+    if (!source || !target) return;
+    let previous = source.value;
+    source.addEventListener('input', () => {
+      if (!target.value || target.value === slugify(previous)) {
+        target.value = slugify(source.value);
+        ctx.set([...path, slugField.key], target.value);
+      }
+      previous = source.value;
+    });
+  });
+  return nodes;
 }
 
 export function renderField(field, path, ctx, opts) {

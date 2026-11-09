@@ -95,7 +95,7 @@ async function serveFile(res, root, relPath, cache) {
 export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logger = console }) {
   const publicDir = path.join(rootDir, 'public');
   const uploadDir = path.join(dataDir, 'uploads');
-  const store = createStore(dataDir);
+  const store = createStore(dataDir, { normalize: (raw) => validateContent(SCHEMA, raw).value, logger });
   const auth = createAuth(path.join(dataDir, 'users.json'));
 
   function isSecure(req) {
@@ -142,16 +142,47 @@ export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logge
     }
     if (route === 'GET /api/content') {
       requireStaff(req);
-      return sendJson(res, 200, { content: await store.load(), schema: SCHEMA });
+      return sendJson(res, 200, { content: await store.load(), version: await store.version(), schema: SCHEMA });
     }
     if (route === 'PUT /api/content') {
       const session = requireStaff(req, { write: true });
-      const { content } = await readJson(req, JSON_LIMIT);
+      const { content, version } = await readJson(req, JSON_LIMIT);
       const { value, errors } = validateContent(SCHEMA, content);
       if (errors.length) return sendJson(res, 422, { error: 'Please fix the highlighted fields.', errors });
-      await store.save(value, session.username);
+      const saved = await store.save(value, session.username, typeof version === 'string' ? version : undefined);
       logger.info(`[content] saved by ${session.username}`);
-      return sendJson(res, 200, { ok: true, content: value });
+      return sendJson(res, 200, { ok: true, content: saved.content, version: saved.version });
+    }
+    if (route === 'GET /api/users') {
+      const session = requireStaff(req);
+      const users = (await auth.readUsers()).map((u) => ({ username: u.username, updatedAt: u.updatedAt || null, isYou: u.username === session.username }));
+      return sendJson(res, 200, { users });
+    }
+    if (route === 'POST /api/users') {
+      const session = requireStaff(req, { write: true });
+      const { username, password } = await readJson(req, JSON_LIMIT);
+      const name = String(username || '').trim();
+      if ((await auth.readUsers()).some((u) => u.username === name)) throw new HttpError(400, `There is already an account called “${name}”.`);
+      try { await auth.setPassword(name, String(password || '')); } catch (err) { throw new HttpError(400, err.message); }
+      logger.info(`[users] ${session.username} added ${name}`);
+      return sendJson(res, 200, { ok: true });
+    }
+    if (route === 'POST /api/users/reset') {
+      const session = requireStaff(req, { write: true });
+      const { username, password } = await readJson(req, JSON_LIMIT);
+      const name = String(username || '');
+      if (!(await auth.readUsers()).some((u) => u.username === name)) throw new HttpError(404, 'That account no longer exists.');
+      try { await auth.setPassword(name, String(password || '')); } catch (err) { throw new HttpError(400, err.message); }
+      logger.info(`[users] ${session.username} reset the password of ${name}`);
+      return sendJson(res, 200, { ok: true });
+    }
+    if (req.method === 'DELETE' && url.pathname.startsWith('/api/users/')) {
+      const session = requireStaff(req, { write: true });
+      const name = decodeURIComponent(url.pathname.slice('/api/users/'.length));
+      if (name === session.username) throw new HttpError(400, 'You can’t remove your own account while signed in.');
+      await auth.removeUser(name);
+      logger.info(`[users] ${session.username} removed ${name}`);
+      return sendJson(res, 200, { ok: true });
     }
     if (route === 'POST /api/upload') {
       requireStaff(req, { write: true });

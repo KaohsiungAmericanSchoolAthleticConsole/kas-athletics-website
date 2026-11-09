@@ -13,7 +13,7 @@ const team = {
   titleKey: 'name',
   fields: [
     text('name', 'Team name', { required: true, placeholder: 'Varsity Girls Volleyball' }),
-    { key: 'slug', label: 'Web address', type: 'slug', help: 'Optional. Gives the team its own page, e.g. varsity-girls-volleyball' },
+    { key: 'slug', label: 'Web address', type: 'slug', from: 'name', help: 'Fills in automatically from the team name. Gives the team its own page.' },
     text('level', 'Level / league', { placeholder: 'High School · Varsity · TISSA' }),
     text('coach', 'Coaches', { max: 300, placeholder: 'Angela Hsu (Head Coach) · Kaitlyn Osborne (Assistant)' }),
     image('image', 'Team photo'),
@@ -96,7 +96,7 @@ export const SCHEMA = {
         fields: [
           { key: 'date', label: 'Date', type: 'date', required: true },
           { key: 'time', label: 'Time', type: 'time' },
-          text('sport', 'Team', { placeholder: 'Varsity Boys Basketball', help: 'Use the exact team name to show this game on that team’s page.' }),
+          { key: 'sport', label: 'Team', type: 'team', help: 'Pick the team so the game also appears on its team page and in the standings.' },
           text('title', 'Title', { required: true, placeholder: 'KAS vs. MAK' }),
           {
             key: 'venue', label: 'Home or away', type: 'select',
@@ -106,7 +106,7 @@ export const SCHEMA = {
             ],
           },
           text('location', 'Location'),
-          text('opponent', 'Opponent', { placeholder: 'Morrison Academy', help: 'Leave empty for meets and tournaments with many schools.' }),
+          text('opponent', 'Opponent', { placeholder: 'Morrison Academy', suggest: true, autofill: 'opponentLogo', help: 'Start typing to reuse a school you entered before (its logo is copied too). Leave empty for meets and tournaments.' }),
           image('opponentLogo', 'Opponent logo'),
           { key: 'kasScore', label: 'KAS score', type: 'score' },
           { key: 'opponentScore', label: 'Opponent score', type: 'score' },
@@ -131,7 +131,7 @@ export const SCHEMA = {
         type: 'group',
         fields: [
           text('title', 'Page title', { required: true }),
-          { key: 'slug', label: 'Web address', type: 'slug', required: true, help: 'Lowercase letters and dashes, e.g. fall-sports' },
+          { key: 'slug', label: 'Web address', type: 'slug', from: 'title', required: true, help: 'Fills in automatically from the page title, e.g. fall-sports.' },
           text('dates', 'Season dates', { placeholder: 'August – November' }),
           area('intro', 'Introduction', { max: 2000 }),
           image('image', 'Banner photo'),
