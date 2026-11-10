@@ -216,7 +216,7 @@ export function createGithubBackend({
     },
     assetBase: rawBase,
     uploadCache: () => Object.fromEntries(uploads),
-    previewUrl: (pagePath) => `${base}/admin/preview.html`,
+    previewUrl: (pagePath) => `${base}/admin/preview${pagePath === '/' ? '/' : `${pagePath}/`}`,
     get username() { return login; },
   };
 }

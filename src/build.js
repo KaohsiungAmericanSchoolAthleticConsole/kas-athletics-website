@@ -70,6 +70,12 @@ if (pagesRepo) {
   }
   const config = { mode: 'github', owner, repo, branch: process.env.PAGES_BRANCH || 'main', base };
   await fs.writeFile(path.join(adminDir, 'config.json'), `${JSON.stringify(config, null, 2)}\n`);
+  // Editable copies of each page for "Edit on the page" (never indexed by search engines).
+  for (const [dir, render] of editablePages) {
+    const htmlText = toStatic(renderWithEdit(true, render), base).replace('<head>', '<head>\n<meta name="robots" content="noindex">');
+    await fs.mkdir(path.join(adminDir, 'preview', dir), { recursive: true });
+    await fs.writeFile(path.join(adminDir, 'preview', dir, 'index.html'), htmlText);
+  }
   process.stdout.write(`Exported the staff editor to dist/admin/ (saves to ${pagesRepo}@${config.branch})\n`);
 }
 process.stdout.write(`Exported ${pages.length} pages to dist/${base ? ` (for ${base}/)` : ''}\n`);
