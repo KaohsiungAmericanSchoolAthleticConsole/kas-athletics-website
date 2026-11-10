@@ -112,9 +112,6 @@ export function captainReveal(content, team, base, season) {
             <blockquote class="captain__quote"${ed(`${base}.captain.quote`, { multiline: true, placeholder: 'Add a line from the captain (optional)' })}>${cap.quote}</blockquote>` : ''}
           <div class="captain__actions">
             ${hasRoster ? html`<a class="btn btn--primary" href="#team-roster">Meet the team ${icon('arrow')}</a>` : ''}
-            <button class="btn btn--glass" type="button" data-captain-replay hidden>
-              ${icon('play')} Replay<span class="visually-hidden"> the captain’s moment</span>
-            </button>
           </div>
         </div>
         <figure class="captain__card">

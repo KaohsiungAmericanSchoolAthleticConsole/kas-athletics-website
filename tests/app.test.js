@@ -166,7 +166,7 @@ test('team pages have a captain’s moment, jump links, breadcrumbs and a team p
   assert.match(r.text, /data-sport="soccer"/);
   assert.match(r.text, /Adam Chu/);
   assert.match(r.text, /Class of 2026/);
-  assert.match(r.text, /data-captain-replay hidden/);
+
   assert.match(r.text, /class="jump-nav"/);
   assert.match(r.text, /class="crumbs"/);
   assert.match(r.text, /class="team-pager"/);

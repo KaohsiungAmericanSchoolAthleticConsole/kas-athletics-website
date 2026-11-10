@@ -11,7 +11,8 @@
   display: grid;
   align-items: end;
   overflow: hidden;
-  min-height: clamp(24rem, 54vh, 34rem);
+  min-height: 100vh;
+  min-height: 100dvh;
   color: #fff;
   background:
     radial-gradient(60rem 30rem at 12% 0%, color-mix(in oklab, var(--brand) 48%, transparent), transparent 72%),

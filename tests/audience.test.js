@@ -95,7 +95,7 @@ test('the captain reveal is escaped and carries the animation hooks', () => {
   assert.match(out, /class="captain"/);
   assert.match(out, /data-sport="soccer"/);
   assert.match(out, /id="team-captain"/);
-  assert.match(out, /data-captain-replay hidden/);
+
   assert.match(out, /A &lt;b&gt;B&lt;\/b&gt;/);
   assert.doesNotMatch(out, /<img onerror/);
   assert.match(out, /href="#team-roster"/);

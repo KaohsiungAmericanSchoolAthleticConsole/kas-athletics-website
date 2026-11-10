@@ -181,12 +181,6 @@
       entry.target.classList.add('is-live');
     }), { threshold: 0.35 });
     captains.forEach((panel) => captainIo.observe(panel));
-    document.querySelectorAll('[data-captain-replay]').forEach((btn) => {
-      const panel = btn.closest('.captain');
-      if (!panel) return;
-      btn.hidden = false;
-      btn.addEventListener('click', () => play(panel));
-    });
   }
 
   // Fallback fade-ins for browsers without CSS scroll-driven animations.
