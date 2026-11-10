@@ -452,6 +452,17 @@ main:focus { outline: none; }
 .roster { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); }
 .roster li { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); font-weight: 500; }
 .roster__badge { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex: none; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font: 800 1rem/1 var(--font-display); }
+.player-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(3, 1fr); list-style: none; margin: 0; padding: 0; }
+@media (max-width: 52rem) { .player-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 32rem) { .player-grid { grid-template-columns: 1fr; } }
+.player-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: transform var(--duration) var(--ease-out), box-shadow var(--duration); }
+.player-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.player-card__photo { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.player-card__body { padding: var(--space-4); display: grid; gap: var(--space-1); }
+.player-card__name { font: 700 var(--text-lg) / 1.1 var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; margin: 0; }
+.player-card__role { color: var(--accent); font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.08em; margin: 0; }
+.player-card__role--empty { color: var(--ink-2); font-style: italic; text-transform: none; letter-spacing: 0; }
+.player-card__bio { color: var(--ink-2); font-size: var(--text-sm); margin: var(--space-2) 0 0; }
 .gallery { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); }
 .gallery a { display: block; overflow: hidden; border-radius: var(--radius); }
 .gallery img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; object-position: center 30%; transition: transform 700ms var(--ease-out); }

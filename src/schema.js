@@ -20,6 +20,15 @@ const team = {
     text('practice', 'Practice times', { placeholder: 'Mon / Wed / Fri · 3:30–5:00 PM' }),
     area('roster', 'Roster (one player per line)', { max: 4000, placeholder: 'Adam Chu ’26\nEric Su ’28' }),
     {
+      key: 'players', label: 'Player cards', type: 'list', addLabel: 'Add a player', max: 60, titleKey: 'name',
+      item: { type: 'group', fields: [
+        text('name', 'Name', { required: true }),
+        image('photo', 'Photo'),
+        text('role', 'Role / position', { placeholder: 'Setter · Captain' }),
+        area('bio', 'Short description', { max: 400 }),
+      ] },
+    },
+    {
       key: 'captain', label: 'Team captain (the reveal at the top of the team page)', type: 'group',
       help: 'Leave the name empty and the first player on the roster is shown instead — set it to be sure.',
       fields: [
