@@ -1,0 +1,12 @@
+/*
+Theme Name: KAS Athletics
+Theme URI: https://kas.tw
+Description: Kaohsiung American School Athletics — migrated from the Node.js site.
+Version: 1.0
+Author: KAS Athletics
+License: GPL-2.0-or-later
+Text Domain: kas-athletics
+*/
+
+/* Import the site design system */
+@import url('../../public/css/site.css');
