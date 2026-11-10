@@ -1,6 +1,6 @@
 {
   "name": "kas-athletics",
-  "version": "1.0.0",
+  "version": "1.11.0",
   "description": "KAS Athletics website — zero-dependency Node.js site with a built-in staff editor.",
   "type": "module",
   "private": true,
