@@ -75,10 +75,10 @@ function homeSections(home, content) {
 }
 
 /** A legacy roster line ("Adam Chu ’26 (c)") as a player card. */
-function legacyPlayer(line) {
+function legacyPlayer(line, photo) {
   const { name, year } = playerFromLine(line);
   const isCaptain = /\((?:c|captain)\)\s*$/i.test(line.trim());
-  return { name, photo: '', role: isCaptain ? 'Captain' : '', number: '', year, quote: '' };
+  return { name, photo: photo || '', role: isCaptain ? 'Captain' : '', number: '', year, quote: '' };
 }
 
 /**
@@ -95,7 +95,9 @@ function upgradeRosters(content) {
       ...s,
       teams: (s.teams || []).map((t) => {
         if (!needs(t)) return t;
-        const players = String(t.roster).split('\n').map((l) => l.trim()).filter(Boolean).map(legacyPlayer);
+        const gallery = (t.gallery || []).map((g) => (g && g.image) || '').filter(Boolean);
+        const lines = String(t.roster).split('\n').map((l) => l.trim()).filter(Boolean);
+        const players = lines.map((line, i) => legacyPlayer(line, gallery[i] || ''));
         return { ...t, players, roster: '' };
       }),
     })),
