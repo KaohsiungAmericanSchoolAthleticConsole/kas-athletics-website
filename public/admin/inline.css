@@ -10,8 +10,8 @@
 .kas-toast[hidden] { display: none; }
 
 /* Editable text */
-[data-editing] [data-edit] { border-radius: 4px; outline: 1.5px dashed transparent; outline-offset: 4px; cursor: text; transition: outline-color 150ms, background-color 150ms; }
-[data-editing] [data-edit]:hover { outline-color: color-mix(in oklab, var(--accent, #d7141f) 70%, transparent); }
+[data-editing] [data-edit] { border-radius: 4px; cursor: text; transition: background-color 150ms; }
+[data-editing] [data-edit]:hover { background: color-mix(in oklab, var(--accent, #d7141f) 10%, transparent); }
 [data-editing] [data-edit]:focus { outline: 2px solid var(--accent, #d7141f); background: color-mix(in oklab, var(--accent, #d7141f) 8%, transparent); }
 [data-editing] [data-edit]:empty { display: inline-block; min-width: 8ch; }
 [data-editing] [data-edit]:empty::before { content: attr(data-placeholder); opacity: 0.5; font-style: italic; pointer-events: none; }
