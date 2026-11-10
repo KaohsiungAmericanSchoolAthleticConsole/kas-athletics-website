@@ -58,6 +58,8 @@ code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; 
 
 /* Layout */
 .app { display: grid; grid-template-columns: 16.5rem minmax(0, 1fr); min-height: 100vh; }
+.app.sidebar-hidden { grid-template-columns: 1fr; }
+.app.sidebar-hidden .sidebar { display: none; }
 .sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 1.5rem; padding: 1.25rem; background: var(--surface); border-right: 1px solid var(--line); overflow-y: auto; }
 .sidebar__brand { display: flex; gap: 0.7rem; align-items: center; color: var(--ink); text-decoration: none; font: 800 1.25rem/1 var(--font-display); text-transform: uppercase; }
 .sidebar__brand small { display: block; font: 500 0.8rem/1.4 var(--font-body); text-transform: none; color: var(--ink-2); }
