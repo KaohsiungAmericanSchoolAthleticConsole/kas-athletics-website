@@ -123,21 +123,21 @@ main:focus { outline: none; }
 /* ---------- Buttons & small parts ---------- */
 .btn {
   display: inline-flex; align-items: center; gap: 0.55em; min-height: 3rem; padding: 0.7em 1.35em;
-  border-radius: 999px; border: 2px solid transparent; font: 600 var(--text-base) / 1 var(--font-body);
-  text-decoration: none; cursor: pointer; transition: transform var(--duration-fast) var(--ease-out), background-color var(--duration-fast), box-shadow var(--duration-fast);
+  border-radius: var(--radius-sm); border: 0; font: 600 var(--text-base) / 1 var(--font-body);
+  text-decoration: none; cursor: pointer; transition: background-color var(--duration-fast), color var(--duration-fast), transform var(--duration-fast);
 }
 .btn .icon { transition: transform var(--duration) var(--ease-out); }
 .btn:hover .icon { transform: translateX(4px); }
 .btn:active { transform: scale(0.97); }
-.btn--primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 10px 24px -10px var(--accent); }
+.btn--primary { background: var(--accent); color: var(--accent-ink); }
 .btn--primary:hover { background: color-mix(in oklab, var(--accent) 88%, black); }
-.btn--glass { background: rgb(255 255 255 / 0.12); color: #fff; border-color: rgb(255 255 255 / 0.35); backdrop-filter: blur(10px); }
-.btn--glass:hover { background: rgb(255 255 255 / 0.22); }
-.btn--ghost { border-color: var(--line); color: var(--ink); }
-.btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn--glass { background: rgb(255 255 255 / 0.14); color: #fff; backdrop-filter: blur(10px); }
+.btn--glass:hover { background: rgb(255 255 255 / 0.24); }
+.btn--ghost { background: transparent; color: var(--ink); }
+.btn--ghost:hover { background: var(--surface-2); color: var(--accent); }
 .btn--light { background: #fff; color: #111; }
 .btn--light:hover { background: #f1f1f1; }
-:root[data-theme='contrast'] .btn--glass, :root[data-theme='contrast'] .btn--ghost { border-color: #fff; background: #000; }
+:root[data-theme='contrast'] .btn--glass, :root[data-theme='contrast'] .btn--ghost { background: #000; color: #fff; }
 
 .icon-btn {
   display: inline-grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%;
