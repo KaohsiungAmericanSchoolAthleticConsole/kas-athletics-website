@@ -33,13 +33,13 @@ a { color: var(--accent); }
 code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.9em; }
 
 /* Buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45em; white-space: nowrap; min-height: 2.75rem; padding: 0.5em 1.1em; border-radius: 999px; border: 1px solid transparent; font: 600 0.95rem/1 var(--font-body); cursor: pointer; text-decoration: none; transition: background-color 150ms, border-color 150ms, transform 150ms; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45em; white-space: nowrap; min-height: 2.75rem; padding: 0.5em 1.1em; border-radius: var(--radius-sm); border: 0; font: 600 0.95rem/1 var(--font-body); cursor: pointer; text-decoration: none; transition: background-color 150ms, color 150ms, transform 150ms; }
 .btn:active:not(:disabled) { transform: scale(0.97); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn--primary { background: var(--accent); color: var(--accent-ink); }
 .btn--primary:hover:not(:disabled) { background: color-mix(in oklab, var(--accent) 86%, black); }
-.btn--ghost { background: var(--surface); border-color: var(--line-strong); color: var(--ink); }
-.btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn--ghost { background: var(--surface-2); color: var(--ink); }
+.btn--ghost:hover { background: var(--surface-3, var(--surface-2)); color: var(--accent); }
 .btn--quiet { background: none; color: var(--ink-2); }
 .btn--quiet:hover { color: var(--danger); }
 .btn--sm { min-height: 2.25rem; padding: 0.35em 0.9em; font-size: 0.875rem; }
