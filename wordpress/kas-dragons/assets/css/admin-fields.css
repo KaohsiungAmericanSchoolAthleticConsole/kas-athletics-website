@@ -1,0 +1,14 @@
+/* Edit boxes in the WordPress dashboard (Teams, Games, Coaches, Seasons). */
+.kas-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px 24px;
+}
+.kas-field { margin: 0 0 12px; }
+.kas-field--area, .kas-field--images { grid-column: 1 / -1; }
+.kas-field label { display: block; margin-bottom: 4px; }
+.kas-field input[type=text], .kas-field input[type=url], .kas-field input[type=date],
+.kas-field input[type=time], .kas-field select, .kas-field textarea { width: 100%; max-width: none; }
+.kas-media__preview { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.kas-media__preview img { width: 72px; height: 72px; object-fit: cover; border-radius: 4px; border: 1px solid #dcdcde; }
+.kas-media__clear { color: #b32d2e; }

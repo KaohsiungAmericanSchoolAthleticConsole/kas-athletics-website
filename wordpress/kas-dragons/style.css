@@ -1,0 +1,13 @@
+/*
+Theme Name: KAS Dragons
+Theme URI: https://github.com/KaohsiungAmericanSchoolAthleticConsole/kas-athletics-website
+Author: KAS Athletic Council
+Description: The KAS Athletics website (Kaohsiung American School Dragons) as a WordPress theme. Teams, games, coaches and seasons are edited in the WordPress dashboard; pages are built from drag-and-drop "KAS" section blocks.
+Version: 2.0.0
+Requires at least: 6.5
+Requires PHP: 8.0
+License: Proprietary (school use)
+Text Domain: kas-dragons
+*/
+
+/* The real styles live in assets/css/ (shared with the original site). */

@@ -1,0 +1,117 @@
+/* =========================================================================
+   Scroll motion
+   Uses native scroll-driven animations (animation-timeline), so motion is
+   tied to the scrollbar itself: smooth, no JavaScript, no libraries.
+   - Browsers without support show everything still (site.js adds a light
+     IntersectionObserver fallback for the fade-ins).
+   - People who ask their device for reduced motion get no movement at all.
+   Only transform / opacity / clip-path are animated (cheap for the GPU).
+   ========================================================================= */
+
+/* ---------- Static parts (always on) ---------- */
+.scroll-progress {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 3px; z-index: 2;
+  background: linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent) 60%, white));
+  transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+}
+.marquee {
+  margin-top: var(--space-section); overflow: hidden; display: grid; gap: 0.2em;
+  font: 800 clamp(3.5rem, 2rem + 7vw, 9rem)/0.9 var(--font-display); text-transform: uppercase;
+  border-block: 1px solid var(--line); padding-block: var(--space-5); user-select: none;
+}
+.marquee__row { display: flex; gap: 0.4em; white-space: nowrap; width: max-content; }
+.marquee__row--solid { color: var(--ink); }
+.marquee__row--outline { color: transparent; -webkit-text-stroke: 2px var(--accent); }
+.marquee__star { color: var(--accent); font-size: 0.5em; align-self: center; }
+.marquee__row--outline .marquee__star { -webkit-text-stroke: 0; }
+:root[data-theme='contrast'] .marquee__row--outline { -webkit-text-stroke-color: #ffe500; }
+
+/* ---------- Scroll-driven motion ---------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+
+    /* Reading progress bar under the header */
+    .scroll-progress { animation: grow-x linear both; animation-timeline: scroll(root block); }
+
+    /* Header tightens as you leave the top */
+    .brand__logo, .brand__text { animation: brand-shrink linear both; animation-timeline: scroll(root block); animation-range: 0 240px; transform-origin: left center; }
+
+    /* Hero: photo zooms and drifts, text lifts away, the red slash sweeps */
+    .hero, .page-hero { view-timeline: --hero block; }
+    .hero__bg, .page-hero__bg { animation: hero-bg linear both; animation-timeline: --hero; animation-range: exit 0% exit 100%; }
+    .hero__inner, .page-hero__inner { animation: hero-text linear both; animation-timeline: --hero; animation-range: exit 10% exit 100%; }
+    .hero::after { animation: hero-slash linear both; animation-timeline: --hero; animation-range: exit 0% exit 100%; }
+    .stat-strip { animation: fade-down linear both; animation-timeline: --hero; animation-range: exit 0% exit 60%; }
+
+    /* Big section titles wipe in from the left */
+    .section__title, .cta-band__title {
+      animation: wipe-in linear both; animation-timeline: view(); animation-range: entry 10% cover 35%;
+    }
+
+    /* Scoreboard rows slide in from the right, one after another as they enter */
+    .event { animation: slide-left linear both; animation-timeline: view(); animation-range: entry 0% entry 90%; }
+
+    /* Season tiles grow in; their photos move slower than the page (parallax) */
+    .season-card { animation: tile-in linear both; animation-timeline: view(); animation-range: entry 0% cover 30%; }
+    .season-card { view-timeline: --tile block; }
+    .season-card__img { animation: parallax linear both; animation-timeline: --tile; animation-range: cover 0% cover 100%; scale: 1.15; }
+
+    /* Marquee rows run in opposite directions with your scroll */
+    .marquee { view-timeline: --marquee block; }
+    .marquee__row--solid { animation: marquee-left linear both; animation-timeline: --marquee; animation-range: cover 0% cover 100%; }
+    .marquee__row--outline { animation: marquee-right linear both; animation-timeline: --marquee; animation-range: cover 0% cover 100%; }
+
+    /* Director spread: photo from the left, words from the right */
+    .director__figure { animation: from-left linear both; animation-timeline: view(); animation-range: entry 0% cover 35%; }
+    .director__body { animation: from-right linear both; animation-timeline: view(); animation-range: entry 0% cover 35%; }
+    .director__figure::before { animation: frame-shift linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+
+    /* Video card + social card */
+    .video, .social-card { animation: rise-in linear both; animation-timeline: view(); animation-range: entry 0% cover 30%; }
+
+    /* Mission: big words drift sideways across the band */
+    .mission { view-timeline: --mission block; }
+    .mission__title { animation: drift-x linear both; animation-timeline: --mission; animation-range: cover 0% cover 100%; }
+    .mission__body { animation: rise-in linear both; animation-timeline: view(); animation-range: entry 10% cover 40%; }
+
+    /* Cards, roster, gallery, people: rise in as each enters */
+    .team-card, .coach-card, .people-list li, .roster li, .gallery li, .cta-band, .social-card, .empty {
+      animation: rise-in linear both; animation-timeline: view(); animation-range: entry 0% entry 80%;
+    }
+    .gallery img { animation: gallery-zoom linear both; animation-timeline: view(); animation-range: entry 0% cover 50%; }
+
+    /* Footer rises up at the very end */
+    .site-footer__inner { animation: rise-in linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+  }
+}
+
+@keyframes grow-x { to { transform: scaleX(1); } }
+@keyframes brand-shrink { to { transform: scale(0.86); } }
+@keyframes hero-bg { to { transform: translateY(18%) scale(1.12); } }
+@keyframes hero-text { to { transform: translateY(-22%); opacity: 0; } }
+@keyframes hero-slash { to { transform: skewX(-18deg) translateX(35%); } }
+@keyframes fade-down { to { transform: translateY(30%); opacity: 0; } }
+@keyframes wipe-in { from { clip-path: inset(0 100% 0 0); transform: translateX(-0.4em); } to { clip-path: inset(0 0 0 0); transform: none; } }
+@keyframes slide-left { from { opacity: 0; translate: 12% 0; } }
+@keyframes tile-in { from { opacity: 0; translate: 0 60px; scale: 0.92; } }
+@keyframes parallax { from { translate: 0 -7%; } to { translate: 0 7%; } }
+@keyframes marquee-left { from { transform: translateX(-5vw); } to { transform: translateX(-45vw); } }
+@keyframes marquee-right { from { transform: translateX(-45vw); } to { transform: translateX(-5vw); } }
+@keyframes from-left { from { opacity: 0; translate: -12% 0; rotate: -2deg; } }
+@keyframes from-right { from { opacity: 0; translate: 10% 0; } }
+@keyframes frame-shift { from { transform: translate(-1rem, -1rem); } to { transform: translate(0.75rem, 0.75rem); } }
+@keyframes rise-in { from { opacity: 0; translate: 0 48px; } }
+@keyframes drift-x { from { transform: translateX(-12%); } to { transform: translateX(6%); } }
+@keyframes gallery-zoom { from { scale: 1.25; } to { scale: 1; } }
+
+/* ---------- Hero entrance on page load (time-based, not scroll) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__title, .page-hero__title { animation-name: title-in; animation-duration: 900ms; animation-timing-function: var(--ease-out); animation-fill-mode: both; }
+  .hero__subtitle { animation: title-in 900ms var(--ease-out) 120ms both; }
+  .hero__actions { animation: title-in 900ms var(--ease-out) 220ms both; }
+  @keyframes title-in { from { opacity: 0; transform: translateY(0.6em); clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 -20% 0); } }
+
+  /* Fallback for browsers without scroll-driven animations (set by site.js) */
+  .io-motion [data-motion] { transition: opacity 700ms var(--ease-out), translate 700ms var(--ease-out); }
+  .io-motion [data-motion]:not(.is-in) { opacity: 0; translate: 0 40px; }
+}

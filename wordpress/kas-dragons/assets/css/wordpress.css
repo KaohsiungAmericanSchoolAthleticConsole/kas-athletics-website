@@ -1,0 +1,10 @@
+/* Small additions so the original design sits well inside WordPress. */
+
+/* Signed-in staff see the WordPress toolbar; keep the sticky header below it. */
+body.admin-bar .site-header { top: var(--wp-admin--admin-bar--height, 32px); }
+
+/* Plain WordPress content (pages not built from KAS sections). */
+.wp-content > * + * { margin-top: 1em; }
+.wp-content img { max-width: 100%; height: auto; border-radius: var(--radius, 12px); }
+.wp-content .wp-block-button__link { display: inline-block; }
+.screen-reader-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

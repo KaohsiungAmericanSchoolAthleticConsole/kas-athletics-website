@@ -1,0 +1,2279 @@
+{
+  "groups": [
+    "Banners",
+    "Text",
+    "Photos",
+    "Games & teams",
+    "People",
+    "Media"
+  ],
+  "blocks": {
+    "hero": {
+      "label": "Big banner",
+      "group": "Banners",
+      "hint": "Full-width photo with a big title",
+      "fields": [
+        {
+          "key": "eyebrow",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160,
+          "required": true
+        },
+        {
+          "key": "subtitle",
+          "label": "Subtitle",
+          "type": "textarea",
+          "max": 400
+        },
+        {
+          "key": "image",
+          "label": "Background photo",
+          "type": "image"
+        },
+        {
+          "key": "buttonLabel",
+          "label": "Button text",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "buttonLink",
+          "label": "Button link",
+          "type": "url"
+        },
+        {
+          "key": "button2Label",
+          "label": "Button 2 text",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "button2Link",
+          "label": "Button 2 link",
+          "type": "url"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "hero",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "eyebrow": "Kaohsiung American School",
+        "title": "Your big headline",
+        "subtitle": "A short sentence about this page.",
+        "image": "",
+        "buttonLabel": "Learn more",
+        "buttonLink": "/events",
+        "button2Label": "",
+        "button2Link": ""
+      }
+    },
+    "heroSplit": {
+      "label": "Split banner",
+      "group": "Banners",
+      "hint": "Title on one side, photo on the other",
+      "fields": [
+        {
+          "key": "eyebrow",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160,
+          "required": true
+        },
+        {
+          "key": "subtitle",
+          "label": "Subtitle",
+          "type": "textarea",
+          "max": 400
+        },
+        {
+          "key": "image",
+          "label": "Photo",
+          "type": "image"
+        },
+        {
+          "key": "buttonLabel",
+          "label": "Button text",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "buttonLink",
+          "label": "Button link",
+          "type": "url"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "heroSplit",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "eyebrow": "KAS Dragons",
+        "title": "A headline that grabs attention",
+        "subtitle": "Tell visitors what this page is about.",
+        "image": "",
+        "buttonLabel": "See the schedule",
+        "buttonLink": "/events"
+      }
+    },
+    "pageHeader": {
+      "label": "Page title",
+      "group": "Banners",
+      "hint": "Simple page heading with an intro",
+      "fields": [
+        {
+          "key": "eyebrow",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160,
+          "required": true
+        },
+        {
+          "key": "intro",
+          "label": "Introduction",
+          "type": "textarea",
+          "max": 600
+        },
+        {
+          "key": "image",
+          "label": "Background photo (optional)",
+          "type": "image"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "pageHeader",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "eyebrow": "KAS Athletics",
+        "title": "Page title",
+        "intro": "A sentence or two introducing this page.",
+        "image": ""
+      }
+    },
+    "cta": {
+      "label": "Call to action",
+      "group": "Banners",
+      "hint": "Bold colored band with a button",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "text",
+          "label": "Text",
+          "type": "textarea",
+          "max": 400
+        },
+        {
+          "key": "buttonLabel",
+          "label": "Button text",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "buttonLink",
+          "label": "Button link",
+          "type": "url"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "cta",
+        "bg": "brand",
+        "space": "normal",
+        "align": "left",
+        "title": "Never miss a game.",
+        "text": "Follow the Dragons for schedules, results and big news.",
+        "buttonLabel": "See the schedule",
+        "buttonLink": "/events"
+      }
+    },
+    "heading": {
+      "label": "Heading",
+      "group": "Text",
+      "hint": "A section title with a short intro",
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "intro",
+          "label": "Introduction",
+          "type": "textarea",
+          "max": 800
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "heading",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "kicker": "Section",
+        "title": "A clear heading",
+        "intro": ""
+      }
+    },
+    "text": {
+      "label": "Text",
+      "group": "Text",
+      "hint": "Paragraphs of text",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "body",
+          "label": "Text",
+          "type": "textarea",
+          "max": 5000
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "text",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "title": "A short title",
+        "body": "Write your story here. Press Enter twice to start a new paragraph."
+      }
+    },
+    "statement": {
+      "label": "Big statement",
+      "group": "Text",
+      "hint": "Huge words beside a paragraph",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Big words",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "body",
+          "label": "Text",
+          "type": "textarea",
+          "max": 5000
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "statement",
+        "bg": "dark",
+        "space": "normal",
+        "align": "left",
+        "title": "More than winning.",
+        "body": "What we believe, in a few sentences."
+      }
+    },
+    "textImage": {
+      "label": "Text + photo",
+      "group": "Text",
+      "hint": "Story with a photo beside it",
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "body",
+          "label": "Text",
+          "type": "textarea",
+          "max": 5000
+        },
+        {
+          "key": "image",
+          "label": "Photo",
+          "type": "image"
+        },
+        {
+          "key": "imageSide",
+          "label": "Photo side",
+          "type": "select",
+          "options": [
+            {
+              "value": "right",
+              "label": "Right"
+            },
+            {
+              "value": "left",
+              "label": "Left"
+            }
+          ]
+        },
+        {
+          "key": "buttonLabel",
+          "label": "Button text",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "buttonLink",
+          "label": "Button link",
+          "type": "url"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "textImage",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "kicker": "Spotlight",
+        "title": "Tell a story",
+        "body": "Describe a team, an athlete or a big moment.",
+        "image": "",
+        "imageSide": "right",
+        "buttonLabel": "",
+        "buttonLink": ""
+      }
+    },
+    "stats": {
+      "label": "Numbers",
+      "group": "Text",
+      "hint": "Big numbers with labels",
+      "fields": [
+        {
+          "key": "items",
+          "label": "Numbers",
+          "type": "list",
+          "max": 6,
+          "item": {
+            "type": "group",
+            "fields": [
+              {
+                "key": "value",
+                "label": "Number",
+                "type": "text",
+                "max": 16
+              },
+              {
+                "key": "label",
+                "label": "Label",
+                "type": "text",
+                "max": 60
+              }
+            ]
+          },
+          "titleKey": "label",
+          "addLabel": "Add a number"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "stats",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "items": [
+          {
+            "value": "21",
+            "label": "Teams"
+          },
+          {
+            "value": "3",
+            "label": "Seasons"
+          },
+          {
+            "value": "100+",
+            "label": "Athletes"
+          }
+        ]
+      }
+    },
+    "marquee": {
+      "label": "Scrolling words",
+      "group": "Text",
+      "hint": "Huge words that slide as you scroll",
+      "fields": [
+        {
+          "key": "words",
+          "label": "Words (one per line)",
+          "type": "textarea",
+          "max": 600
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "marquee",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "words": "Fight Like a Dragon\nHome of the Dragons\nGo KAS"
+      }
+    },
+    "divider": {
+      "label": "Space",
+      "group": "Text",
+      "hint": "Breathing room or a thin line",
+      "fields": [
+        {
+          "key": "line",
+          "label": "Show a line",
+          "type": "boolean"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "divider",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "line": true
+      }
+    },
+    "gallery": {
+      "label": "Photo grid",
+      "group": "Photos",
+      "hint": "A grid of photos with captions",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "items",
+          "label": "Photos",
+          "type": "list",
+          "max": 40,
+          "item": {
+            "type": "group",
+            "fields": [
+              {
+                "key": "image",
+                "label": "Photo",
+                "type": "image"
+              },
+              {
+                "key": "caption",
+                "label": "Caption",
+                "type": "text",
+                "max": 160
+              }
+            ]
+          },
+          "titleKey": "caption",
+          "addLabel": "Add a photo"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "gallery",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "title": "Photos",
+        "items": [
+          {
+            "image": "",
+            "caption": ""
+          },
+          {
+            "image": "",
+            "caption": ""
+          },
+          {
+            "image": "",
+            "caption": ""
+          }
+        ]
+      }
+    },
+    "cards": {
+      "label": "Cards",
+      "group": "Photos",
+      "hint": "Photo cards with a title and text",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "intro",
+          "label": "Introduction",
+          "type": "textarea",
+          "max": 600
+        },
+        {
+          "key": "items",
+          "label": "Cards",
+          "type": "list",
+          "max": 24,
+          "item": {
+            "type": "group",
+            "fields": [
+              {
+                "key": "image",
+                "label": "Photo",
+                "type": "image"
+              },
+              {
+                "key": "title",
+                "label": "Title",
+                "type": "text",
+                "max": 160
+              },
+              {
+                "key": "text",
+                "label": "Text",
+                "type": "textarea",
+                "max": 600
+              },
+              {
+                "key": "link",
+                "label": "Link (optional)",
+                "type": "url"
+              }
+            ]
+          },
+          "titleKey": "title",
+          "addLabel": "Add a card"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "cards",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "title": "Highlights",
+        "intro": "",
+        "items": [
+          {
+            "image": "",
+            "title": "Card 1",
+            "text": "A sentence about this.",
+            "link": ""
+          },
+          {
+            "image": "",
+            "title": "Card 2",
+            "text": "A sentence about this.",
+            "link": ""
+          },
+          {
+            "image": "",
+            "title": "Card 3",
+            "text": "A sentence about this.",
+            "link": ""
+          }
+        ]
+      }
+    },
+    "upcomingGames": {
+      "label": "Upcoming games",
+      "group": "Games & teams",
+      "hint": "Next games from the schedule (automatic)",
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "count",
+          "label": "How many",
+          "type": "select",
+          "options": [
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            },
+            {
+              "value": "6",
+              "label": "6"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            }
+          ]
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "upcomingGames",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "kicker": "Up next",
+        "title": "On the schedule",
+        "count": "4"
+      }
+    },
+    "results": {
+      "label": "Latest results",
+      "group": "Games & teams",
+      "hint": "Recent final scores (automatic)",
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "count",
+          "label": "How many",
+          "type": "select",
+          "options": [
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "4",
+              "label": "4"
+            },
+            {
+              "value": "6",
+              "label": "6"
+            },
+            {
+              "value": "8",
+              "label": "8"
+            }
+          ]
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "results",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "kicker": "Results",
+        "title": "Latest scores",
+        "count": "4"
+      }
+    },
+    "seasonTiles": {
+      "label": "Season tiles",
+      "group": "Games & teams",
+      "hint": "Links to every sports season (automatic)",
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "seasonTiles",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "kicker": "Programs",
+        "title": "Find your season"
+      }
+    },
+    "quote": {
+      "label": "Quote",
+      "group": "People",
+      "hint": "A message with a photo and name",
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "photo",
+          "label": "Photo",
+          "type": "image"
+        },
+        {
+          "key": "text",
+          "label": "Quote",
+          "type": "textarea",
+          "max": 5000
+        },
+        {
+          "key": "name",
+          "label": "Name",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "role",
+          "label": "Role",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "quote",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "kicker": "In their words",
+        "title": "A message to our Dragons",
+        "photo": "",
+        "text": "Write the quote here.",
+        "name": "Name",
+        "role": "Role"
+      }
+    },
+    "coaches": {
+      "label": "Coaches",
+      "group": "People",
+      "hint": "Every coach with photo and bio (automatic)",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Title (optional)",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "coaches",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "title": ""
+      }
+    },
+    "contact": {
+      "label": "Contact details",
+      "group": "People",
+      "hint": "Phone, email, address and people",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Title (optional)",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "contact",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "title": ""
+      }
+    },
+    "video": {
+      "label": "Video",
+      "group": "Media",
+      "hint": "A YouTube video (loads when played)",
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "url",
+          "label": "YouTube link",
+          "type": "url"
+        },
+        {
+          "key": "poster",
+          "label": "Cover photo",
+          "type": "image"
+        },
+        {
+          "key": "caption",
+          "label": "Caption",
+          "type": "textarea",
+          "max": 600
+        },
+        {
+          "key": "withSocial",
+          "label": "Show “Follow the Dragons” beside it",
+          "type": "boolean"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "video",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "kicker": "Watch",
+        "title": "Season recap",
+        "url": "",
+        "poster": "",
+        "caption": "",
+        "withSocial": false
+      }
+    },
+    "social": {
+      "label": "Follow us",
+      "group": "Media",
+      "hint": "Instagram and YouTube links (from Site settings)",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "text",
+          "label": "Text",
+          "type": "textarea",
+          "max": 400
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "social",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "title": "Follow the Dragons",
+        "text": "Game-day photos, highlights and announcements."
+      }
+    },
+    "calendar": {
+      "label": "Google Calendar",
+      "group": "Media",
+      "hint": "Embed the sports calendar",
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Small text above",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "title",
+          "label": "Title",
+          "type": "text",
+          "max": 160
+        },
+        {
+          "key": "url",
+          "label": "Google Calendar embed link",
+          "type": "url"
+        },
+        {
+          "key": "bg",
+          "label": "Background",
+          "type": "select",
+          "options": [
+            {
+              "value": "default",
+              "label": "Page"
+            },
+            {
+              "value": "alt",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "brand",
+              "label": "School red"
+            },
+            {
+              "value": "navy",
+              "label": "Navy"
+            }
+          ]
+        },
+        {
+          "key": "space",
+          "label": "Spacing",
+          "type": "select",
+          "options": [
+            {
+              "value": "compact",
+              "label": "Compact"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "roomy",
+              "label": "Roomy"
+            }
+          ]
+        },
+        {
+          "key": "align",
+          "label": "Text alignment",
+          "type": "select",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        }
+      ],
+      "defaults": {
+        "type": "calendar",
+        "bg": "default",
+        "space": "normal",
+        "align": "left",
+        "kicker": "Calendar",
+        "title": "KAS sports calendar",
+        "url": ""
+      }
+    }
+  }
+}
