@@ -139,8 +139,9 @@ function listField(field, path, ctx, { top = false } = {}) {
       h('summary', { class: 'item__summary' },
         item?.image ? h('img', { class: 'item__thumb', src: ctx.imageUrl(item.image), alt: '', loading: 'lazy' }) : null,
         h('span', { class: 'item__title' }, itemTitle(field, item, i)),
-        field.titleKey === 'title' && item?.date ? h('span', { class: 'item__meta' }, item.date) : null,
-        h('span', { class: 'item__tools' },
+        field.titleKey === 'title' && item?.date ? h('span', { class: 'item__meta' }, item.date) : null),
+      h('div', { class: 'item__body' },
+        h('div', { class: 'item__tools' },
           h('button', { type: 'button', class: 'tool', title: 'Move up', disabled: i === 0, onclick: (e) => { e.preventDefault(); move(i, i - 1); } }, icon('up'), h('span', { class: 'sr-only' }, 'Move up')),
           h('button', { type: 'button', class: 'tool', title: 'Move down', disabled: i === items.length - 1, onclick: (e) => { e.preventDefault(); move(i, i + 1); } }, icon('down'), h('span', { class: 'sr-only' }, 'Move down')),
           h('button', { type: 'button', class: 'tool', title: 'Duplicate', onclick: (e) => {
@@ -155,8 +156,8 @@ function listField(field, path, ctx, { top = false } = {}) {
             if (confirm(`Delete “${itemTitle(field, item, i)}”?\n\nIt disappears from the website when you press Publish. Until then you can bring it back with “Discard changes”.`)) {
               ctx.restructure(path, items.filter((_, j) => j !== i));
             }
-          } }, icon('trash'), h('span', { class: 'sr-only' }, 'Delete')))),
-      h('div', { class: 'item__body' }, groupFields(field.item, itemPath, ctx)));
+          } }, icon('trash'), h('span', { class: 'sr-only' }, 'Delete'))),
+        groupFields(field.item, itemPath, ctx)));
     details.addEventListener('toggle', () => ctx.setOpen(itemPath, details.open));
     // Keep the item's heading in sync while its name/title is typed.
     const titlePath = `${pathToString(itemPath)}.${field.titleKey}`;

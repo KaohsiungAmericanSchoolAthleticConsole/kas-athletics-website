@@ -127,7 +127,8 @@ fieldset.list > legend { padding: 0 0.4rem; }
 .item[open] > .item__summary::before { transform: rotate(45deg); }
 .item__title { min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .item__meta { color: var(--ink-2); font-size: 0.85rem; white-space: nowrap; }
-.item__tools { margin-left: auto; display: flex; gap: 2px; flex: none; }
+.item__tools { display: flex; gap: 2px; flex: none; justify-content: flex-end; margin-bottom: 0.5rem; }
+.item__summary .item__tools { margin-left: auto; margin-bottom: 0; }
 .tool { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-2); cursor: pointer; }
 .tool:hover:not(:disabled) { background: var(--surface-2); color: var(--ink); }
 .tool--danger:hover:not(:disabled) { color: var(--danger); background: color-mix(in oklab, var(--danger) 12%, transparent); }
