@@ -1,7 +1,7 @@
 // Renderers for the page-builder sections ("blocks").
 // One renderer per block type in src/blocks.js. Reuses the existing CSS/markup
 // so the look stays consistent; only the data source changes (section fields).
-import { html, raw, safeUrl, youtubeId } from '../lib/html.js';
+import { html, raw, safeUrl, youtubeId, paragraphs } from '../lib/html.js';
 import { upcomingEvents, pastEvents, formatDate, formatTime } from '../lib/events.js';
 import { icon, link } from './layout.js';
 import { photo, eventRow, videoFacade, pageHero, emptyState, initials } from './parts.js';
@@ -73,14 +73,16 @@ const RENDERERS = {
     return html`
       <section class="section">
         ${showWhenEditing(s.title) ? html`<h2 class="section__title"${ed(p(sp, 'title'))}>${s.title}</h2>` : ''}
-        <div class="prose"${ed(p(sp, 'body'), { multiline: true })}>${s.body}</div>
+        <div class="prose"${ed(p(sp, 'body'), { multiline: true })}>${paragraphs(s.body)}</div>
       </section>`;
   },
   statement(content, s, sp) {
     return html`
-      <section class="mission">
-        <div class="mission__big"${ed(p(sp, 'title'))}>${s.title}</div>
-        <div class="mission__body"${ed(p(sp, 'body'), { multiline: true })}>${s.body}</div>
+      <section class="mission" aria-labelledby="mission-title">
+        <div class="mission__inner">
+          <h2 id="mission-title" class="mission__title"${ed(p(sp, 'title'))}>${s.title || 'Our mission'}</h2>
+          <div class="mission__body"${ed(p(sp, 'body'), { multiline: true })}>${paragraphs(s.body)}</div>
+        </div>
       </section>`;
   },
   textImage(content, s, sp) {
@@ -89,7 +91,7 @@ const RENDERERS = {
       <div class="text-image__body">
         ${showWhenEditing(s.kicker) ? html`<span class="kicker"${ed(p(sp, 'kicker'))}>${s.kicker}</span>` : ''}
         <h2 class="text-image__title"${ed(p(sp, 'title'))}>${s.title}</h2>
-        <div class="prose"${ed(p(sp, 'body'), { multiline: true })}>${s.body}</div>
+        <div class="prose"${ed(p(sp, 'body'), { multiline: true })}>${paragraphs(s.body)}</div>
         ${s.buttonLabel ? link(s.buttonLink || '/events', html`<span${ed(p(sp, 'buttonLabel'))}>${s.buttonLabel}</span> ${icon('arrow')}`, 'btn btn--primary') : ''}
       </div>`;
     return html`
@@ -217,7 +219,7 @@ const RENDERERS = {
         <div class="director__body">
           ${showWhenEditing(s.kicker) ? html`<span class="kicker"${ed(p(sp, 'kicker'))}>${s.kicker}</span>` : ''}
           <h2 class="director__title"${ed(p(sp, 'title'))}>${s.title}</h2>
-          <blockquote class="director__quote"${ed(p(sp, 'text'), { multiline: true })}>${s.text}</blockquote>
+          <blockquote class="director__quote"${ed(p(sp, 'text'), { multiline: true })}>${paragraphs(s.text)}</blockquote>
         </div>
       </section>`;
   },
