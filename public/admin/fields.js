@@ -215,11 +215,19 @@ export function groupFields(group, path, ctx) {
   return nodes;
 }
 
+function booleanField(field, path, ctx) {
+  const id = uid();
+  const value = ctx.get(path) === true;
+  const control = h('input', { id, type: 'checkbox', checked: value, onchange: (e) => ctx.set(path, e.target.checked) });
+  return fieldShell(field, path, ctx, control, id);
+}
+
 export function renderField(field, path, ctx, opts) {
   switch (field.type) {
     case 'group': return h('div', { class: 'group' }, groupFields(field, path, ctx));
     case 'list': return listField(field, path, ctx, opts);
     case 'image': return imageField(field, path, ctx);
+    case 'boolean': return booleanField(field, path, ctx);
     default: return textField(field, path, ctx);
   }
 }

@@ -118,7 +118,8 @@ Breaking one needs a very good reason, written in the version history.
    pages.js   home, season, schedule, coaches, contact, 404
    team.js    one team: /<season>/<team>
    scores.js  scoreboard /scores and /scores/standings
-   parts.js   shared pieces (photo, event row, page hero)
+   captain.js the sport animation + captain card at the top of a team page
+   parts.js   shared pieces (photo, event row, page hero, breadcrumbs)
    edit.js    click-to-edit markers (only inside the admin preview)
                         │
         ┌───────────────┴────────────────┐
@@ -161,11 +162,15 @@ Live URLs:
 | `src/lib/auth.js` | Staff accounts (scrypt), sessions, login rate-limit |
 | `src/lib/uploads.js` | Photo upload checks (real image bytes, 8 MB max) |
 | `src/lib/events.js` | Game dates in school time (Asia/Taipei), formatting |
+| `src/lib/sport.js` | Works out a team's sport; captain from the editor or the roster |
+| `src/lib/seasonal.js` | Festive theme: the staff choice, or the time of year |
 | `src/lib/static.js` | Prefixes links for a sub-folder, removes server-only bits |
 | `src/render/` | Page templates (see diagram) |
 | `public/css/site.css` | Whole design system: tokens, 5 themes, all components |
 | `public/css/motion.css` | Scroll-driven animations (CSS only, off for reduced motion) |
-| `public/js/site.js` | Theme menu, mobile menu, video facade, scoreboard refresh, count-up |
+| `public/css/captain.css` | The captain's moment: layout, sport pictograms, the play |
+| `public/css/seasonal.css` | Festive decoration (snow, ghosts, petals, confetti, embers) |
+| `public/js/site.js` | Theme menu, festive switch, mobile menu, captain play, video facade, scoreboard refresh, count-up |
 | `public/js/theme-init.js` | Sets the theme before first paint (no flash) |
 | `public/admin/` | Staff editor (see section 5) |
 | `public/img/` | `icons.svg` sprite, fallback `crest.svg` |
@@ -355,12 +360,53 @@ why. Version numbers are this project's own: minor = feature, patch = fix.
 To see or restore any version: `git log --oneline`, then
 `git switch -c look-at-old <commit>` (safe) or `git revert <commit>`.
 
+### v1.10 — 2026-11-10 — audience experience
+**The public site feels more like a sports team and less like a database.**
+- Every team page opens with a **captain's moment**: a sport-specific pictogram
+  plays a ball (football kick, basketball dunk, volleyball spike, swim stroke…)
+  and then the captain's photo, name and quote arrive. `src/render/captain.js`
+  draws the scene; `public/css/captain.css` runs the play. It is decoration
+  only, starts when the panel scrolls into view, has a Replay button, and is
+  completely still without JavaScript or with reduced motion.
+- Staff set the captain in **Sports pages → a team → Team captain** (name,
+  role, number, class, photo, quote) and can override the **Sport** used for
+  the animation. When the captain is not set, `src/lib/sport.js` shows the
+  first player on the roster and the team photo instead, so no page is blank.
+- **Festive themes** chosen in *Site settings → Festive theme*
+  (`src/lib/seasonal.js`, `public/css/seasonal.css`): Automatic follows the
+  calendar (snow at Christmas, ghosts and pumpkin colors at Halloween, petals
+  in spring, confetti at New Year), or pick one theme, or None. Visitors can
+  turn the effects off from the palette menu; `theme-init.js` remembers it
+  before the first paint. All decoration is one fixed CSS layer behind the
+  content, so it never covers a link or takes a click.
+- Navigation and accessibility: seasons are grouped under a native `<details>`
+  **Sports** menu (keyboard- and no-JS-friendly), team pages gained
+  breadcrumbs, an "On this page" jump bar and previous/next team links, and
+  every page has a Back to top link. The mobile menu now closes when a link is
+  followed or when people click away, traps Tab inside itself while open, and
+  its button label changes to "Close menu".
+- 13 new tests (`tests/audience.test.js` and additions to the app/migrate
+  suites) cover sport detection, captain fallback and escaping, the calendar
+  rules, breadcrumbs/jump links, the festive body attribute and editor
+  validation. The editor preview and the GitHub export ship the new modules.
+
 ### v1.8.3 — 2026-11-10 — handoff docs
 - Added `HANDOFF.md` (full status, the owner's decisions, accounts, and the
   complete spec and task list for the unfinished page builder) and `CLAUDE.md`
   (pointer for AI assistants).
 - Started the page builder on branch `page-builder`: `src/fieldkit.js` and
   `src/blocks.js` (section library). Not wired in yet.
+
+### v1.9 (in progress) — 2026-11-10
+**Page builder foundation (tasks 1–5).** Wired `fieldkit.js` into `schema.js`;
+added `pages` (list of pages, each with `sections` of type `blocks`); added the
+`blocks` validator (unknown types dropped); updated reserved slugs; added a
+checkbox renderer in `fields.js`. Added `src/lib/migrate.js` (old content →
+`pages` of sections) with tests. Normalize now migrates before validating in
+`app.js`, `build.js`, `backend.js`. Added `src/render/sections.js` with renderers
+for all 21 block types (reusing existing CSS/markup) plus `bg--/space--/align--`
+modifiers; moved `ASSET_VERSION` out of `layout.js` into `assetVersion.js` (node
+compute in `assetVersionNode.js`) so renderers can run in the browser.
 
 ### v1.8.2 — 2026-11-09
 **Match the school website's colors.** Set the default brand color and second

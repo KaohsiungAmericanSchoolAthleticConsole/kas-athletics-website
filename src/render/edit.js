@@ -39,5 +39,8 @@ export const edImg = (path) => (active ? raw(` data-edit-image="${esc(path)}"`) 
 /** A list whose direct children can be dragged into a new order. */
 export const edList = (path) => (active ? raw(` data-edit-list="${esc(path)}"`) : '');
 
+/** A list item whose settings can be opened in a Details dialog. */
+export const edItem = (path) => (active ? raw(` data-edit-item="${esc(path)}"`) : '');
+
 /** Show an optional field while editing even when it is empty, so it can be filled in. */
 export const showWhenEditing = (value) => Boolean(value) || active;

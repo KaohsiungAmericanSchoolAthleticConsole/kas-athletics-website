@@ -66,20 +66,76 @@
     applyTheme(root.getAttribute('data-theme-choice') || 'auto');
   }
 
+  // ---------- Festive effects switch ----------
+  // The decorations themselves are CSS (body[data-seasonal]); this only remembers
+  // whether this visitor wants them. theme-init.js applies the choice before paint.
+  const fxToggle = document.querySelector('[data-fx-toggle]');
+  if (fxToggle) {
+    const FX_KEY = 'kas-fx';
+    const fxHint = fxToggle.querySelector('[data-fx-hint]');
+    const fxLabel = fxToggle.dataset.fxLabel || 'Festive effects';
+    const setFx = (on, { save = true } = {}) => {
+      if (on) root.removeAttribute('data-fx');
+      else root.setAttribute('data-fx', 'off');
+      fxToggle.setAttribute('aria-checked', String(on));
+      if (fxHint) fxHint.textContent = `${fxLabel} · ${on ? 'turn off' : 'turn on'}`;
+      if (save) { try { localStorage.setItem(FX_KEY, on ? 'on' : 'off'); } catch { /* private mode: lasts this visit */ } }
+    };
+    setFx(root.getAttribute('data-fx') !== 'off', { save: false });
+    fxToggle.addEventListener('click', () => setFx(fxToggle.getAttribute('aria-checked') !== 'true'));
+  }
+
   // ---------- Mobile navigation ----------
   const navToggle = document.querySelector('[data-nav-toggle]');
   const nav = document.querySelector('[data-nav]');
   if (navToggle && nav) {
+    const navLabel = navToggle.querySelector('[data-nav-label]');
     const setNav = (isOpen) => {
       navToggle.setAttribute('aria-expanded', String(isOpen));
       nav.classList.toggle('is-open', isOpen);
       document.body.classList.toggle('nav-open', isOpen);
+      if (navLabel) navLabel.textContent = isOpen ? 'Close menu' : 'Menu';
     };
-    navToggle.addEventListener('click', () => setNav(navToggle.getAttribute('aria-expanded') !== 'true'));
+    const navFocusables = () => [...nav.querySelectorAll('a[href], button, summary')]
+      .filter((el) => !el.closest('[hidden]') && el.getClientRects().length > 0);
+
+    navToggle.addEventListener('click', () => {
+      const isOpen = navToggle.getAttribute('aria-expanded') !== 'true';
+      setNav(isOpen);
+      // Move into the menu so the next Tab goes to the first link, not the page behind it.
+      if (isOpen) navFocusables()[0]?.focus();
+    });
+    // Following a link should always leave the menu closed (also for Back/Forward).
+    nav.addEventListener('click', (e) => { if (e.target.closest('a[href]')) setNav(false); });
+    document.addEventListener('click', (e) => {
+      if (!nav.classList.contains('is-open')) return;
+      if (nav.contains(e.target) || navToggle.contains(e.target)) return;
+      setNav(false);
+    });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && nav.classList.contains('is-open')) { setNav(false); navToggle.focus(); }
+      if (e.key === 'Escape' && nav.classList.contains('is-open')) { setNav(false); navToggle.focus(); return; }
+      // Keep Tab inside the open menu instead of letting it wander over the hidden page.
+      if (e.key !== 'Tab' || !nav.classList.contains('is-open')) return;
+      const items = [...navFocusables(), navToggle];
+      const i = items.indexOf(document.activeElement);
+      if (i === -1) return;
+      e.preventDefault();
+      const step = e.shiftKey ? -1 : 1;
+      items[(i + step + items.length) % items.length].focus();
     });
     matchMedia('(min-width: 78rem)').addEventListener('change', () => setNav(false));
+  }
+
+  // The "Sports" dropdown is a native <details>: close it when people click elsewhere.
+  const navGroups = [...document.querySelectorAll('.nav-group__box')];
+  if (navGroups.length) {
+    document.addEventListener('click', (e) => navGroups.forEach((d) => {
+      if (d.open && !d.contains(e.target)) d.open = false;
+    }));
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      navGroups.forEach((d) => { d.open = false; });
+    });
   }
 
   // ---------- Header shadow once scrolled ----------
@@ -108,6 +164,30 @@
 
   // ---------- Motion extras ----------
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- The captain's moment ----------
+  // The panel is always fully readable; .is-live only starts the play. It starts
+  // when the panel comes into view, and "Replay" runs it again on request.
+  const captains = [...document.querySelectorAll('.captain')];
+  if (captains.length && !reduceMotion && 'IntersectionObserver' in window) {
+    const play = (panel) => {
+      panel.classList.remove('is-live');
+      void panel.offsetWidth; // restart the CSS animations from the top
+      panel.classList.add('is-live');
+    };
+    const captainIo = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      captainIo.unobserve(entry.target);
+      entry.target.classList.add('is-live');
+    }), { threshold: 0.35 });
+    captains.forEach((panel) => captainIo.observe(panel));
+    document.querySelectorAll('[data-captain-replay]').forEach((btn) => {
+      const panel = btn.closest('.captain');
+      if (!panel) return;
+      btn.hidden = false;
+      btn.addEventListener('click', () => play(panel));
+    });
+  }
 
   // Fallback fade-ins for browsers without CSS scroll-driven animations.
   if (!reduceMotion && !CSS.supports('animation-timeline: view()') && 'IntersectionObserver' in window) {

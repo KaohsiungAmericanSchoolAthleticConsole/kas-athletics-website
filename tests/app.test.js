@@ -91,9 +91,9 @@ test('writes without the CSRF token are refused', async () => {
 test('staff can edit content; text is escaped on the site; history is kept', async () => {
   const { cookie, csrf } = await signIn();
   const { json } = await req('GET', '/api/content', { cookie });
-  const originalTitle = json.content.home.heroTitle;
+  const originalTitle = json.content.pages[0].sections[0].title;
   const next = structuredClone(json.content);
-  next.home.heroTitle = 'Go <script>alert(1)</script> Dragons';
+  next.pages[0].sections[0].title = 'Go <script>alert(1)</script> Dragons';
   const save = await req('PUT', '/api/content', { cookie, csrf, body: { content: next } });
   assert.equal(save.status, 200);
 
@@ -104,7 +104,7 @@ test('staff can edit content; text is escaped on the site; history is kept', asy
   const hist = await req('GET', '/api/history', { cookie });
   assert.ok(hist.json.versions.length >= 1);
   const old = await req('GET', `/api/history/${hist.json.versions[0].id}`, { cookie });
-  assert.equal(old.json.content.home.heroTitle, originalTitle);
+  assert.equal(old.json.content.pages[0].sections[0].title, originalTitle);
   assert.equal((await req('GET', '/api/history/..%2fusers.json', { cookie })).status, 400);
 });
 
@@ -156,6 +156,36 @@ test('team pages render roster, gallery and team schedule; unknown teams 404', a
   assert.equal((await req('GET', '/fall-sports/no-such-team')).status, 404);
   const season = await req('GET', '/fall-sports');
   assert.match(season.text, /href="\/fall-sports\/varsity-boys-soccer-tissa"/);
+});
+
+test('team pages have a captain’s moment, jump links, breadcrumbs and a team pager', async () => {
+  const r = await req('GET', '/fall-sports/varsity-boys-soccer-tissa');
+  assert.equal(r.status, 200);
+  assert.match(r.text, /class="captain"/);
+  assert.match(r.text, /data-sport="soccer"/);
+  assert.match(r.text, /Adam Chu/);
+  assert.match(r.text, /Class of 2026/);
+  assert.match(r.text, /data-captain-replay hidden/);
+  assert.match(r.text, /class="jump-nav"/);
+  assert.match(r.text, /class="crumbs"/);
+  assert.match(r.text, /class="team-pager"/);
+  assert.match(r.text, /aria-label="On this page"/);
+  // The play only starts when site.js adds .is-live; the page itself stays still.
+  assert.doesNotMatch(r.text, /class="captain is-live"/);
+
+  // Teams without a captain set still get their sport's moment.
+  const swimming = await req('GET', '/fall-sports/varsity-swimming');
+  assert.match(swimming.text, /data-sport="swimming"/);
+  assert.match(swimming.text, /Captain to be announced/);
+});
+
+test('the editor preview can load the new page modules', async () => {
+  for (const p of ['/admin/src/render/captain.js', '/admin/src/lib/sport.js', '/admin/src/lib/seasonal.js', '/admin/src/lib/assetVersion.js']) {
+    const r = await req('GET', p);
+    assert.equal(r.status, 200, p);
+    assert.match(r.headers.get('content-type'), /javascript/);
+  }
+  assert.equal((await req('GET', '/admin/src/lib/nope.js')).status, 404);
 });
 
 test('brand.css carries both school colors', async () => {
@@ -210,9 +240,8 @@ test('pages are only editable inside the admin preview frame', async () => {
   const staffDirect = await req('GET', '/fall-sports', { cookie });
   assert.doesNotMatch(staffDirect.text, /data-edit=|inline\.js/, 'staff browsing the public site see the normal page');
   const frame = await req('GET', '/?admin-edit=1', { cookie });
-  assert.match(frame.text, /data-edit="home\.heroTitle"/);
-  assert.match(frame.text, /data-edit-image="home\.heroImage"/);
-  assert.match(frame.text, /data-edit-list="seasons"/);
+  assert.match(frame.text, /data-edit="pages\[0\]\.sections\[0\]\.title"/);
+  assert.match(frame.text, /data-edit-image="pages\[0\]\.sections\[0\]\.image"/);
   assert.match(frame.text, /\/admin\/inline\.js/);
   assert.equal(frame.headers.get('x-frame-options'), 'SAMEORIGIN');
   assert.match(frame.headers.get('content-security-policy'), /frame-ancestors 'self'/);

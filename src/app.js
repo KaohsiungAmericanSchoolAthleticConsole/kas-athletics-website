@@ -3,13 +3,15 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { SCHEMA } from './schema.js';
 import { validateContent } from './lib/validate.js';
+import { migrate } from './lib/migrate.js';
 import { createStore } from './lib/store.js';
 import { createAuth, verifyPassword, MIN_PASSWORD_LENGTH } from './lib/auth.js';
 import { saveImage, MAX_UPLOAD_BYTES } from './lib/uploads.js';
-import { homePage, seasonPage, eventsPage, coachesPage, contactPage, notFoundPage } from './render/pages.js';
-import { teamPage, findTeam } from './render/team.js';
-import { scoresPage } from './render/scores.js';
+import { resolve } from './render/router.js';
 import { renderWithEdit } from './render/edit.js';
+import { setAssetVersion } from './lib/assetVersion.js';
+import { computeAssetVersion } from './lib/assetVersionNode.js';
+setAssetVersion(computeAssetVersion());
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -96,7 +98,7 @@ async function serveFile(res, root, relPath, cache) {
 export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logger = console }) {
   const publicDir = path.join(rootDir, 'public');
   const uploadDir = path.join(dataDir, 'uploads');
-  const store = createStore(dataDir, { normalize: (raw) => validateContent(SCHEMA, raw).value, logger });
+  const store = createStore(dataDir, { normalize: (raw) => validateContent(SCHEMA, migrate(raw)).value, logger });
   const auth = createAuth(path.join(dataDir, 'users.json'));
 
   function isSecure(req) {
@@ -225,18 +227,10 @@ export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logge
         'Content-Security-Policy': CSP.replace("frame-ancestors 'none'", "frame-ancestors 'self'"),
       }
       : { 'Cache-Control': 'no-cache', Vary: 'Cookie' };
-    const ok = (fn) => send(res, 200, renderWithEdit(editFrame, fn), undefined, headers);
-    const fixed = { '/': homePage, '/events': eventsPage, '/coaches': coachesPage, '/contact': contactPage };
-    if (fixed[p]) return ok(() => fixed[p](content));
-    if (p === '/scores' || p === '/scores/standings') {
-      const team = String(url.searchParams.get('team') || '').slice(0, 160);
-      return ok(() => scoresPage(content, { tab: p === '/scores' ? 'games' : 'standings', team }));
-    }
-    const season = (content.seasons || []).find((s) => `/${s.slug}` === p);
-    if (season) return ok(() => seasonPage(content, season));
-    const found = findTeam(content, p);
-    if (found) return ok(() => teamPage(content, found.season, found.team));
-    return send(res, 404, notFoundPage(content), undefined, headers);
+    const team = String(url.searchParams.get('team') || '').slice(0, 160);
+    const r = resolve(content, p, { team, editing: editFrame });
+    if (r.status === 404) return send(res, 404, r.render(), undefined, headers);
+    return send(res, 200, r.render(), undefined, headers);
   }
 
   async function brandCss(res) {
@@ -249,6 +243,35 @@ export function createApp({ rootDir, dataDir = path.join(rootDir, 'data'), logge
     if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed');
     if (url.pathname === '/brand.css') return brandCss(res);
     if (url.pathname === '/admin') return send(res, 301, '', undefined, { Location: '/admin/' });
+    if (url.pathname === '/admin/preview.html') {
+      const file = path.join(publicDir, 'admin', 'preview.html');
+      const data = await fs.readFile(file);
+      return send(res, 200, data, 'text/html; charset=utf-8', {
+        'Cache-Control': 'no-cache',
+        'X-Frame-Options': 'SAMEORIGIN',
+        'Content-Security-Policy': CSP.replace("frame-ancestors 'none'", "frame-ancestors 'self'"),
+      });
+    }
+    if (url.pathname.startsWith('/admin/src/')) {
+      const rel = url.pathname.slice('/admin/src/'.length);
+      const allowed = [
+        'schema.js', 'blocks.js', 'fieldkit.js',
+      ];
+      // allow render/*.js and lib/{html,events,validate,migrate,static}.js
+      const ok = allowed.includes(rel)
+        || /^render\/[A-Za-z0-9_-]+\.js$/.test(rel)
+        || /^lib\/(html|events|validate|migrate|static|assetVersion|sport|seasonal)\.js$/.test(rel);
+      if (!ok) return send(res, 404, 'Not found');
+      const rootAbs = path.resolve(publicDir, '..', 'src');
+      const file = path.resolve(rootAbs, rel);
+      if (!file.startsWith(rootAbs + path.sep)) return send(res, 404, 'Not found');
+      try {
+        const data = await fs.readFile(file);
+        return send(res, 200, data, TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', { 'Cache-Control': 'no-cache' });
+      } catch {
+        return send(res, 404, 'Not found');
+      }
+    }
     if (url.pathname.startsWith('/admin/')) {
       const rel = url.pathname === '/admin/' ? 'admin/index.html' : url.pathname.slice(1);
       if (await serveFile(res, publicDir, rel, 'no-cache')) return undefined;

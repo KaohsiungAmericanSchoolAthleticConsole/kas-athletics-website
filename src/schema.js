@@ -3,10 +3,9 @@
 // save against it. To add a new editable field: add it here and use it in a
 // template under src/render/. Nothing else needs to change.
 
-const text = (key, label, opts = {}) => ({ key, label, type: 'text', max: 160, ...opts });
-const area = (key, label, opts = {}) => ({ key, label, type: 'textarea', max: 5000, ...opts });
-const url = (key, label, opts = {}) => ({ key, label, type: 'url', ...opts });
-const image = (key, label, opts = {}) => ({ key, label, type: 'image', ...opts });
+import { text, area, url, image, bool, select, list } from './fieldkit.js';
+import { SEASONAL_OPTIONS } from './lib/seasonal.js';
+import { SPORT_OPTIONS } from './lib/sport.js';
 
 const team = {
   type: 'group',
@@ -20,6 +19,23 @@ const team = {
     area('description', 'About the team', { max: 2000 }),
     text('practice', 'Practice times', { placeholder: 'Mon / Wed / Fri · 3:30–5:00 PM' }),
     area('roster', 'Roster (one player per line)', { max: 4000, placeholder: 'Adam Chu ’26\nEric Su ’28' }),
+    {
+      key: 'captain', label: 'Team captain (the reveal at the top of the team page)', type: 'group',
+      help: 'Leave the name empty and the first player on the roster is shown instead — set it to be sure.',
+      fields: [
+        text('name', 'Captain’s name', { max: 80, placeholder: 'Adam Chu' }),
+        text('role', 'Role label', { max: 40, placeholder: 'Team captain' }),
+        text('number', 'Jersey number', { max: 4, placeholder: '10' }),
+        text('year', 'Class / year', { max: 40, placeholder: 'Class of 2026' }),
+        image('photo', 'Captain photo (portrait works best)'),
+        area('quote', 'A line from the captain', { max: 300, placeholder: 'We play for each other.' }),
+      ],
+    },
+    {
+      key: 'sport', label: 'Sport (for the team page animation)', type: 'select',
+      help: 'Works it out from the team name automatically. Change it if the animation looks wrong.',
+      options: SPORT_OPTIONS,
+    },
     {
       key: 'gallery', label: 'Photo gallery', type: 'list', addLabel: 'Add a photo', max: 40, titleKey: 'caption',
       item: { type: 'group', fields: [image('image', 'Photo', { required: true }), text('caption', 'Caption (optional)')] },
@@ -54,12 +70,30 @@ export const SCHEMA = {
             { value: 'contrast', label: 'High contrast' },
           ],
         },
+        {
+          key: 'seasonal', label: 'Festive theme', type: 'select',
+          help: 'Decorates every page for the time of year — snow at Christmas, ghosts at Halloween. Automatic follows the calendar. Visitors can turn the effects off from the palette menu.',
+          options: SEASONAL_OPTIONS,
+        },
         url('instagramUrl', 'Instagram link'),
         text('instagramHandle', 'Instagram handle', { placeholder: '@kas_athletic_council' }),
         url('youtubeUrl', 'YouTube channel (Watch Games)'),
         url('newsletterUrl', 'Newsletter sign-up link (e.g. a Google Form)'),
         text('footerNote', 'Footer note'),
       ],
+    },
+    {
+      key: 'pages', label: 'Pages', type: 'list', addLabel: 'Add a page', icon: 'pages', max: 60, titleKey: 'title',
+      help: 'Every page on the site. The first page is always the home page. Drag to reorder; pages with “Show in menu” appear in the nav.',
+      item: {
+        type: 'group',
+        fields: [
+          text('title', 'Page title', { required: true }),
+          { key: 'slug', label: 'Web address', type: 'slug', from: 'title', help: 'Fills in automatically from the title. Leave blank for the home page.' },
+          bool('showInMenu', 'Show in menu'),
+          { key: 'sections', label: 'Sections', type: 'blocks', max: 40, addLabel: 'Add a section' },
+        ],
+      },
     },
     {
       key: 'home', label: 'Home page', type: 'group', icon: 'home',

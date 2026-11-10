@@ -96,7 +96,7 @@ function saveToken(storage, token, remember) {
  *   now?: () => Date }} opts
  */
 export function createGithubBackend({
-  owner, repo, branch = 'main', base = '', schema, validate,
+  owner, repo, branch = 'main', base = '', schema, validate, migrate = (x) => x,
   fetchFn = (...a) => fetch(...a), storage = { local: globalThis.localStorage, session: globalThis.sessionStorage },
   random = () => crypto.getRandomValues(new Uint32Array(3)).reduce((s, n) => s + n.toString(36), '').slice(0, 14),
   now = () => new Date(),
@@ -143,7 +143,7 @@ export function createGithubBackend({
     return login;
   }
 
-  const normalize = (raw) => validate(schema, raw).value;
+  const normalize = (raw) => validate(schema, migrate(raw)).value;
 
   async function readFile(ref) {
     const file = await gh('GET', `${repoPath}/contents/${CONTENT}?ref=${encodeURIComponent(ref)}`);
@@ -184,7 +184,7 @@ export function createGithubBackend({
       return { content, version: sha, schema };
     },
     async publish(content, version) {
-      const { value, errors } = validate(schema, content);
+      const { value, errors } = validate(schema, migrate(content));
       if (errors.length) throw fail('Please fix the highlighted fields.', 422, { errors });
       const res = await gh('PUT', `${repoPath}/contents/${CONTENT}`, {
         message: `Update website content (by ${login || 'staff'} in the editor)`,
@@ -216,7 +216,7 @@ export function createGithubBackend({
     },
     assetBase: rawBase,
     uploadCache: () => Object.fromEntries(uploads),
-    previewUrl: (pagePath) => `${base}/admin/preview${pagePath === '/' ? '/' : `${pagePath}/`}`,
+    previewUrl: (pagePath) => `${base}/admin/preview.html`,
     get username() { return login; },
   };
 }
