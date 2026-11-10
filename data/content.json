@@ -11,12 +11,169 @@
     "brandColor": "#d43429",
     "brandColor2": "#1863dc",
     "defaultTheme": "auto",
+    "seasonal": "auto",
     "instagramUrl": "https://www.instagram.com/kas_athletic_council",
     "instagramHandle": "@kas_athletic_council",
     "youtubeUrl": "https://www.youtube.com/@thescoreKAS",
     "newsletterUrl": "",
     "footerNote": "Home of the Dragons."
   },
+  "pages": [
+    {
+      "title": "Home",
+      "slug": "",
+      "showInMenu": true,
+      "sections": [
+        {
+          "type": "hero",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "eyebrow": "Kaohsiung American School",
+          "title": "Home of the Dr",
+          "subtitle": "Developing the mind, body and spirit of every student-athlete — on the court, on the field and beyond.",
+          "image": "/uploads/imported/home-hero.webp",
+          "buttonLabel": "See this week’s games",
+          "buttonLink": "/events",
+          "button2Label": "Full schedule",
+          "button2Link": "/events"
+        },
+        {
+          "type": "stats",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "items": [
+            {
+              "value": "21",
+              "label": "Teams"
+            },
+            {
+              "value": "3",
+              "label": "Seasons a year"
+            },
+            {
+              "value": "TISSA · AISA",
+              "label": "Leagues"
+            }
+          ]
+        },
+        {
+          "type": "upcomingGames",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "kicker": "Up next",
+          "title": "On the schedule",
+          "count": "4"
+        },
+        {
+          "type": "seasonTiles",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "kicker": "Programs",
+          "title": "Find your season"
+        },
+        {
+          "type": "marquee",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "words": "Fight Like a Dragon\nHome of the Dragons\nFall Sports\nWinter Sports\nSpring Sports\nMiddle School"
+        },
+        {
+          "type": "quote",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "kicker": "From the AD",
+          "title": "A message to our Dragons",
+          "photo": "/uploads/imported/stella-chen.webp",
+          "text": "This recap represents all of our Dragons’ hard work in School Year 25–26. It was an important year — and a big turning point for every Dragon who took part in our athletic program.\n\nLet’s cheer, and be proud of our Dragons!",
+          "name": "Stella Chen",
+          "role": "Athletic Director"
+        },
+        {
+          "type": "video",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "kicker": "Watch",
+          "title": "25–26 Season Recap",
+          "url": "https://www.youtube.com/watch?v=2NVtI57TzK4",
+          "poster": "",
+          "caption": "Every point, every practice, every comeback. Thank you, Dragons.",
+          "withSocial": true
+        },
+        {
+          "type": "statement",
+          "bg": "dark",
+          "space": "normal",
+          "align": "left",
+          "title": "More than winning.",
+          "body": "KAS Athletics is committed to developing the mind, body, and spirit of our student-athletes. Through teamwork, dedication, discipline, and sportsmanship, we provide students with opportunities to grow both on and off the court.\n\nOur goal is to help every student-athlete build confidence, develop leadership skills, overcome challenges, and learn the value of working together. We believe athletics is not only about competition and winning, but also about building character, creating lasting relationships, and becoming responsible and well-rounded individuals."
+        },
+        {
+          "type": "calendar",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "kicker": "Calendar",
+          "title": "KAS sports calendar",
+          "url": "https://calendar.google.com/calendar/embed?src=c_92db8f053d040e85cb6272a0d1b69a13fcdc8092cf1827c8a62b728830e162a7%40group.calendar.google.com&ctz=Asia%2FTaipei"
+        }
+      ]
+    },
+    {
+      "title": "Coaches",
+      "slug": "coaches",
+      "showInMenu": true,
+      "sections": [
+        {
+          "type": "pageHeader",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "eyebrow": "Inside Athletics",
+          "title": "Coaches",
+          "intro": "The people who help our Dragons grow — on and off the court.",
+          "image": ""
+        },
+        {
+          "type": "coaches",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "title": ""
+        }
+      ]
+    },
+    {
+      "title": "Contact us",
+      "slug": "contact",
+      "showInMenu": true,
+      "sections": [
+        {
+          "type": "pageHeader",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "eyebrow": "Inside Athletics",
+          "title": "Contact us",
+          "intro": "Questions about tryouts, schedules or game-day? We’re happy to help.",
+          "image": ""
+        },
+        {
+          "type": "contact",
+          "bg": "default",
+          "space": "normal",
+          "align": "left",
+          "title": ""
+        }
+      ]
+    }
+  ],
   "home": {
     "heroEyebrow": "Kaohsiung American School",
     "heroTitle": "Home of the Dragon",
@@ -148,6 +305,15 @@
           "description": "",
           "practice": "",
           "roster": "Adam ’25\nDuncan ’25\nOliver ’25\nAiden ’25\nEason ’25\nOwen ’25\nBenjamin ’25\nJason ’25\nSavi ’25\nClifford ’25\nKevin ’25\nStanley ’25",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": [
             {
               "image": "/uploads/imported/varsity-boys-volleyball-aisa/01.webp",
@@ -208,6 +374,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -219,6 +394,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -230,6 +414,15 @@
           "description": "",
           "practice": "",
           "roster": "Adam Chu ’26\nEric Su ’28\nJessie Kwok ’25\nLucas Lan ’25\nYuju Cheon ’27\nAlex Jenkins ’25\nIvan Kao ’28\nRex Chiang ’28\nYuki Shibata ’27\nBernie Wu ’25\nJack Hu ’26\nJessie Taffere ’25\nRyan Lin ’25\nCharles Chung ’27\nJae Chia ’28\nJosh Wu ’27\nSteve Shang ’25",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": [
             {
               "image": "/uploads/imported/varsity-boys-soccer-tissa/01.webp",
@@ -322,6 +515,15 @@
           "description": "",
           "practice": "",
           "roster": "Anna ’25\nEmma ’25\nTiffany ’25\nZoe ’25\nAnnabelle ’25\nLilian ’25\nVenus ’25\nApple ’25\nMakayla ’25\nWing ’25\nBella ’25\nNaomi ’25\nSophia ’25",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": [
             {
               "image": "/uploads/imported/jv-girls-volleyball/01.webp",
@@ -390,6 +592,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -401,6 +612,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -412,6 +632,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         }
       ]
@@ -432,6 +661,15 @@
           "description": "",
           "practice": "",
           "roster": "Aiden Chen ’25\nTravis Chang ’25\nBryant Lin ’25\nAnson Huang ’25\nJan Rychlewicsz ’25\nCasper Lee ’25\nBryce Tsai ’25\nJonathan Yu ’25\nClifford Lee ’25\nEason Lin ’25\nRay Yang ’25",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": [
             {
               "image": "/uploads/imported/varsity-boys-basketball/01.webp",
@@ -460,6 +698,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -471,6 +718,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -482,6 +738,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         }
       ]
@@ -502,6 +767,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -513,6 +787,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -524,6 +807,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -535,6 +827,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -546,6 +847,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         }
       ]
@@ -566,6 +876,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -577,6 +896,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -588,6 +916,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         },
         {
@@ -599,6 +936,15 @@
           "description": "",
           "practice": "",
           "roster": "",
+          "captain": {
+            "name": "",
+            "role": "",
+            "number": "",
+            "year": "",
+            "photo": "",
+            "quote": ""
+          },
+          "sport": "",
           "gallery": []
         }
       ]
