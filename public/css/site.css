@@ -340,7 +340,7 @@ main:focus { outline: none; }
 .video__play:hover { transform: scale(1.08); }
 .social-card { position: relative; overflow: hidden; display: grid; gap: var(--space-4); justify-items: start; padding: var(--space-6); border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--line); }
 .social-card::after { content: ''; position: absolute; right: -3rem; top: -3rem; width: 10rem; height: 10rem; border-radius: 50%; background: var(--accent-soft); }
-.social-card__icon { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; border-radius: var(--radius); background: linear-gradient(135deg, #feda75, #d62976 55%, #4f5bd5); color: #fff; }
+.social-card__icon { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; border-radius: var(--radius); background: var(--accent); color: var(--accent-ink); }
 .social-card__icon .icon { width: 1.8rem; height: 1.8rem; }
 .social-card__title { font-size: var(--text-xl); }
 .social-card p { color: var(--ink-2); }
@@ -374,8 +374,8 @@ main:focus { outline: none; }
 .page-hero:not(.page-hero--image)::after { content: ''; position: absolute; right: -5%; top: 0; width: 30%; height: 100%; background: var(--accent-soft); transform: skewX(-18deg); z-index: -1; }
 
 .team-grid, .coach-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
-.team-card, .coach-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; transition: transform var(--duration) var(--ease-out), box-shadow var(--duration); }
-.team-card:hover, .coach-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.team-card, .coach-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: transform var(--duration) var(--ease-out), box-shadow var(--duration); }
+.team-card:hover, .coach-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
 .team-card__img, .team-card .photo-fallback { width: 100%; aspect-ratio: 10 / 7; object-fit: cover; }
 .team-card__body, .coach-card__body { padding: var(--space-5); display: grid; gap: var(--space-2); align-content: start; }
 .team-card__level, .coach-card__sport { margin: 0; font-size: var(--text-sm); font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; }
