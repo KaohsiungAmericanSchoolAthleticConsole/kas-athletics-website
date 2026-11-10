@@ -176,9 +176,13 @@
       panel.classList.add('is-live');
     };
     const captainIo = new IntersectionObserver((entries) => entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      captainIo.unobserve(entry.target);
-      entry.target.classList.add('is-live');
+      if (entry.isIntersecting) {
+        entry.target.classList.remove('is-live');
+        void entry.target.offsetWidth;
+        entry.target.classList.add('is-live');
+      } else {
+        entry.target.classList.remove('is-live');
+      }
     }), { threshold: 0.35 });
     captains.forEach((panel) => captainIo.observe(panel));
   }
