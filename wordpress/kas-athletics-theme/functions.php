@@ -29,6 +29,33 @@ add_action('init', function () {
     ]);
 });
 
+// Meta boxes for team fields.
+add_action('add_meta_boxes', function () {
+    add_meta_box('kas_team_fields', 'Team details', function ($post) {
+        foreach (['level' => 'Level / league', 'coach' => 'Coaches', 'practice' => 'Practice times'] as $key => $label) {
+            $val = get_post_meta($post->ID, $key, true);
+            echo '<p><label>' . esc_html($label) . '<br><input type="text" name="kas_' . esc_attr($key) . '" value="' . esc_attr($val) . '" style="width:100%"></label></p>';
+        }
+        $roster = get_post_meta($post->ID, 'roster', true);
+        echo '<p><label>Roster (one player per line)<br><textarea name="kas_roster" rows="8" style="width:100%">' . esc_textarea($roster) . '</textarea></label></p>';
+    }, 'kas_team', 'normal', 'high');
+    add_meta_box('kas_event_fields', 'Game details', function ($post) {
+        foreach (['opponent' => 'Opponent', 'kas_score' => 'KAS score', 'opp_score' => 'Opponent score'] as $key => $label) {
+            $val = get_post_meta($post->ID, $key, true);
+            echo '<p><label>' . esc_html($label) . '<br><input type="text" name="kas_' . esc_attr($key) . '" value="' . esc_attr($val) . '" style="width:100%"></label></p>';
+        }
+    }, 'kas_event', 'normal', 'high');
+});
+add_action('save_post', function ($id) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    foreach (['level', 'coach', 'practice', 'roster'] as $k) {
+        if (isset($_POST['kas_' . $k])) update_post_meta($id, $k, sanitize_text_field($_POST['kas_' . $k]));
+    }
+    foreach (['opponent', 'kas_score', 'opp_score'] as $k) {
+        if (isset($_POST['kas_' . $k])) update_post_meta($id, $k, sanitize_text_field($_POST['kas_' . $k]));
+    }
+});
+
 // Theme support.
 add_theme_support('title-tag');
 add_theme_support('post-thumbnails');
