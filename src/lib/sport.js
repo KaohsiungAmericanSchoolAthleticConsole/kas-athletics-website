@@ -69,24 +69,26 @@ const rosterLines = (team) => String(team.roster || '')
 
 /**
  * Everything the captain reveal needs. Staff fields win; if the captain has not
- * been set yet, the first player on the roster and the team photo stand in, so
- * every team page still gets its moment. Nothing is invented beyond that.
+ * been set yet, the player whose role mentions "captain" (or else the first
+ * player card) and the team photo stand in, so every team page still gets its
+ * moment. Nothing is invented beyond that.
  */
 export function captainOf(team = {}) {
   const c = team.captain && typeof team.captain === 'object' ? team.captain : {};
   const pick = (key, flatKey) => String(c[key] || team[flatKey] || '').trim();
-  const first = rosterLines(team)[0] || '';
-  const fromRoster = playerFromLine(first);
+  const players = (Array.isArray(team.players) ? team.players : []).filter((p) => p && String(p.name || '').trim());
+  const lead = players.find((p) => /captain/i.test(p.role || '')) || players[0]
+    || { ...playerFromLine(rosterLines(team)[0] || ''), photo: '', number: '', quote: '' };
   const gallery = (team.gallery || []).find((g) => g && g.image);
   const customName = pick('name', 'captainName');
-  const name = customName || fromRoster.name;
+  const fromLead = (value) => (customName ? '' : String(value || '').trim());
   return {
-    name,
+    name: customName || String(lead.name || '').trim(),
     role: pick('role', 'captainRole') || 'Team captain',
-    number: pick('number', 'captainNumber'),
-    year: pick('year', 'captainYear') || (customName ? '' : fromRoster.year),
-    quote: pick('quote', 'captainQuote'),
-    photo: pick('photo', 'captainPhoto') || team.image || (gallery ? gallery.image : ''),
+    number: pick('number', 'captainNumber') || fromLead(lead.number),
+    year: pick('year', 'captainYear') || fromLead(lead.year),
+    quote: pick('quote', 'captainQuote') || fromLead(lead.quote),
+    photo: pick('photo', 'captainPhoto') || fromLead(lead.photo) || team.image || (gallery ? gallery.image : ''),
     fromRoster: !customName,
   };
 }

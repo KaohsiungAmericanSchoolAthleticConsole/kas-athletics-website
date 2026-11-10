@@ -43,3 +43,16 @@ test('migrate drops nothing from the rest of the content', () => {
   assert.equal(m.seasons.length, seed.seasons.length);
   assert.equal(m.coaches.length, seed.coaches.length);
 });
+test('plain-text rosters become player cards once, without touching the input', () => {
+  const raw = { seasons: [{ title: 'Fall', slug: 'fall', teams: [
+    { name: 'A', roster: 'Adam Chu ’26 (c)\n\n  Eric Su ’28 \nZoe' },
+    { name: 'B', roster: 'Ignored', players: [{ name: 'Kept' }] },
+  ] }] };
+  const out = migrate(raw);
+  const [a, b] = out.seasons[0].teams;
+  assert.deepEqual(a.players.map((p) => [p.name, p.year, p.role]), [['Adam Chu', 'Class of 2026', 'Captain'], ['Eric Su', 'Class of 2028', ''], ['Zoe', '', '']]);
+  assert.equal(a.roster, '');
+  assert.deepEqual(b.players, [{ name: 'Kept' }], 'teams that already have player cards are left alone');
+  assert.equal(raw.seasons[0].teams[0].roster.startsWith('Adam'), true, 'input is not changed');
+  assert.deepEqual(migrate(out), out, 'running it again changes nothing');
+});

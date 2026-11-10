@@ -85,7 +85,7 @@ export function captainReveal(content, team, base, season) {
   // Every team gets its moment, even before a captain has been chosen.
   const heading = cap.name || (editing() ? 'Add a captain' : 'Captain to be announced');
   const sport = sportOf(team);
-  const hasRoster = Boolean(String(team.roster || '').trim());
+  const hasRoster = (team.players || []).some((p) => p && String(p.name || '').trim());
   const photoPath = `${base}.captain.photo`;
 
   return html`

@@ -3,6 +3,7 @@
 // so it can run in the browser too.
 
 import { newBlock } from '../blocks.js';
+import { playerFromLine } from './sport.js';
 
 function homeSections(home, content) {
   const sections = [];
@@ -73,8 +74,40 @@ function homeSections(home, content) {
   return sections;
 }
 
+/** A legacy roster line ("Adam Chu ’26 (c)") as a player card. */
+function legacyPlayer(line) {
+  const { name, year } = playerFromLine(line);
+  const isCaptain = /\((?:c|captain)\)\s*$/i.test(line.trim());
+  return { name, photo: '', role: isCaptain ? 'Captain' : '', number: '', year, quote: '' };
+}
+
+/**
+ * Teams used to have a plain-text roster (one player per line). Each line
+ * becomes a player card, once, so nothing has to be retyped. Teams that
+ * already have player cards are left alone.
+ */
+function upgradeRosters(content) {
+  const needs = (t) => t && !(Array.isArray(t.players) && t.players.length) && String(t.roster || '').trim();
+  if (!(content.seasons || []).some((s) => (s.teams || []).some(needs))) return content;
+  return {
+    ...content,
+    seasons: content.seasons.map((s) => ({
+      ...s,
+      teams: (s.teams || []).map((t) => {
+        if (!needs(t)) return t;
+        const players = String(t.roster).split('\n').map((l) => l.trim()).filter(Boolean).map(legacyPlayer);
+        return { ...t, players, roster: '' };
+      }),
+    })),
+  };
+}
+
 export function migrate(raw) {
   if (!raw || typeof raw !== 'object') return raw;
+  return upgradeRosters(upgradePages(raw));
+}
+
+function upgradePages(raw) {
   if (Array.isArray(raw.pages) && raw.pages.length) {
     // Already migrated: only fill in fields added later (without changing the input).
     if (raw.site?.seasonal) return raw;

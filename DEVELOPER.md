@@ -360,6 +360,29 @@ why. Version numbers are this project's own: minor = feature, patch = fix.
 To see or restore any version: `git log --oneline`, then
 `git switch -c look-at-old <commit>` (safe) or `git revert <commit>`.
 
+### v1.11 — 2026-11-10 — player cards
+**Every roster is now a set of player cards** on the team page: photo (or the
+player's initial until one is added), name, **role in the game**, optional
+jersey number and class year, and an **optional quote** shown as a real quote.
+The captain gets a "C" badge.
+- `src/lib/migrate.js` `upgradeRosters()`: each old roster line
+  ("Adam Chu ’26 (c)") becomes a card once (name, "Class of 2026", role
+  "Captain" for `(c)`), so all 53 existing players got cards with nothing
+  retyped. Teams that already have cards are left alone; the input is never
+  changed.
+- `src/schema.js`: the "one player per line" roster box is gone; `players`
+  has name, photo, role, number, year and quote (an earlier draft's `bio`
+  became `quote`).
+- `src/render/team.js`: card markup; every part is click-to-edit in the editor
+  preview, and cards can be dragged to reorder. Fixed a crash in the earlier
+  draft (`edList` / `edItem` were used but not imported).
+- `src/lib/sport.js` `captainOf()`: the captain panel uses the player whose
+  role mentions "captain" (else the first player), including their photo,
+  number and quote, unless staff set a captain separately.
+- Team cards on season pages and the "Squad" fact count player cards.
+- Tests: `tests/players.test.js` (rendering, escaping, editor markers, captain
+  choice, validation) and a migration test.
+
 ### v1.10 — 2026-11-10 — audience experience
 **The public site feels more like a sports team and less like a database.**
 - Every team page opens with a **captain's moment**: a sport-specific pictogram

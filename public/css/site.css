@@ -452,17 +452,34 @@ main:focus { outline: none; }
 .roster { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); }
 .roster li { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); font-weight: 500; }
 .roster__badge { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex: none; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font: 800 1rem/1 var(--font-display); }
-.player-grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(3, 1fr); list-style: none; margin: 0; padding: 0; }
-@media (max-width: 52rem) { .player-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 32rem) { .player-grid { grid-template-columns: 1fr; } }
-.player-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: transform var(--duration) var(--ease-out), box-shadow var(--duration); }
-.player-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-.player-card__photo { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
-.player-card__body { padding: var(--space-4); display: grid; gap: var(--space-1); }
-.player-card__name { font: 700 var(--text-lg) / 1.1 var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; margin: 0; }
-.player-card__role { color: var(--accent); font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.08em; margin: 0; }
-.player-card__role--empty { color: var(--ink-2); font-style: italic; text-transform: none; letter-spacing: 0; }
-.player-card__bio { color: var(--ink-2); font-size: var(--text-sm); margin: var(--space-2) 0 0; }
+.player-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(2, minmax(0, 1fr)); list-style: none; margin: 0; padding: 0; }
+@media (min-width: 40rem) { .player-grid { grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); gap: var(--space-5); } }
+.player-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: transform var(--duration) var(--ease-out), box-shadow var(--duration), border-color var(--duration-fast); }
+.player-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in oklab, var(--accent) 35%, var(--line)); }
+.player-card--captain { border-color: color-mix(in oklab, var(--accent) 55%, var(--line)); }
+.player-card__media { position: relative; overflow: hidden; background: var(--surface-2); }
+.player-card__photo, .player-card__media .photo-fallback { display: block; width: 100%; aspect-ratio: 4 / 5; height: auto; object-fit: cover; object-position: center 20%; transition: transform 700ms var(--ease-out); }
+.player-card__media .photo-fallback { display: grid; place-items: center; padding: 0; font-size: clamp(2.6rem, 1.8rem + 2.4vw, 3.8rem); }
+.player-card:hover .player-card__photo { transform: scale(1.04); }
+.player-card__number {
+  position: absolute; left: var(--space-3); bottom: var(--space-3); min-width: 2.6rem; padding: 0.3rem 0.6rem; border-radius: 999px;
+  background: rgb(10 10 14 / 0.72); color: #fff; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  font: 800 1.25rem/1 var(--font-display); text-align: center;
+}
+.player-card__number:not(:empty)::before { content: '#'; opacity: 0.7; margin-right: 0.05em; }
+.player-card__number:empty { display: none; }
+.player-card__badge {
+  position: absolute; right: var(--space-3); top: var(--space-3); display: grid; place-items: center; width: 2.1rem; height: 2.1rem; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink); font: 800 1.05rem/1 var(--font-display); box-shadow: 0 4px 12px -4px rgb(0 0 0 / 0.5);
+}
+.player-card__body { display: grid; gap: 0.2rem; align-content: start; padding: var(--space-4); }
+.player-card__role { margin: 0; color: var(--accent); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+.player-card__name { margin: 0; font: 800 clamp(1.25rem, 1.1rem + 0.5vw, 1.55rem) / 1.05 var(--font-display); text-transform: uppercase; letter-spacing: 0.01em; overflow-wrap: anywhere; }
+.player-card__year { margin: 0; color: var(--ink-2); font-size: var(--text-sm); }
+.player-card__quote { position: relative; margin: var(--space-3) 0 0; padding: var(--space-3) 0 0 var(--space-5); border-top: 1px solid var(--line); color: var(--ink-2); font-size: var(--text-sm); font-style: italic; line-height: 1.5; }
+.player-card__quote::before { content: '“'; position: absolute; left: 0; top: var(--space-2); color: var(--accent); font: 800 2.2rem/1 var(--font-display); font-style: normal; }
+/* While editing, empty optional lines stay clickable (the editor shows a hint). */
+html[data-editing] .player-card__number:empty { display: block; min-height: 1.85rem; }
 .gallery { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); }
 .gallery a { display: block; overflow: hidden; border-radius: var(--radius); }
 .gallery img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; object-position: center 30%; transition: transform 700ms var(--ease-out); }

@@ -18,19 +18,21 @@ const team = {
     image('image', 'Team photo'),
     area('description', 'About the team', { max: 2000 }),
     text('practice', 'Practice times', { placeholder: 'Mon / Wed / Fri · 3:30–5:00 PM' }),
-    area('roster', 'Roster (one player per line)', { max: 4000, placeholder: 'Adam Chu ’26\nEric Su ’28' }),
     {
-      key: 'players', label: 'Player cards', type: 'list', addLabel: 'Add a player', max: 60, titleKey: 'name',
+      key: 'players', label: 'Players', type: 'list', addLabel: 'Add a player', max: 60, titleKey: 'name',
+      help: 'Each player gets a card on the team page. Only the name is required.',
       item: { type: 'group', fields: [
-        text('name', 'Name', { required: true }),
-        image('photo', 'Photo'),
-        text('role', 'Role / position', { placeholder: 'Setter · Captain' }),
-        area('bio', 'Short description', { max: 400 }),
+        text('name', 'Name', { required: true, max: 80, placeholder: 'Adam Chu' }),
+        image('photo', 'Photo (portrait works best)'),
+        text('role', 'Role in the game', { max: 60, placeholder: 'Setter · Captain' }),
+        text('number', 'Jersey number', { max: 4, placeholder: '10' }),
+        text('year', 'Class / year', { max: 40, placeholder: 'Class of 2026' }),
+        area('quote', 'Quote (optional)', { max: 240, placeholder: 'We play for each other.' }),
       ] },
     },
     {
       key: 'captain', label: 'Team captain (the reveal at the top of the team page)', type: 'group',
-      help: 'Leave the name empty and the first player on the roster is shown instead — set it to be sure.',
+      help: 'Leave the name empty and the player whose role says “Captain” (or the first player) is shown instead.',
       fields: [
         text('name', 'Captain’s name', { max: 80, placeholder: 'Adam Chu' }),
         text('role', 'Role label', { max: 40, placeholder: 'Team captain' }),

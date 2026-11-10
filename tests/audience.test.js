@@ -87,7 +87,7 @@ test('festive themes follow the calendar, or the editor’s choice', () => {
 test('the captain reveal is escaped and carries the animation hooks', () => {
   const team = {
     name: 'Varsity Boys Soccer',
-    roster: 'Adam Chu ’26\nEric Su ’28',
+    players: [{ name: 'Adam Chu', year: 'Class of 2026' }, { name: 'Eric Su', year: 'Class of 2028' }],
     image: '/uploads/team.webp',
     captain: { name: 'A <b>B</b>', quote: '<img onerror=alert(1)>' },
   };

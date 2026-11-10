@@ -160,7 +160,7 @@ export function homePage(content) {
 
 function teamCard(t, season, ti, si) {
   const href = t.slug ? `/${season.slug}/${t.slug}` : null;
-  const players = (t.roster || '').split('\n').filter((l) => l.trim()).length;
+  const players = (t.players || []).filter((p) => p && String(p.name || '').trim()).length;
   const base = `seasons[${si}].teams[${ti}]`;
   const name = html`<span${ed(`${base}.name`)}>${t.name}</span>`;
   return html`

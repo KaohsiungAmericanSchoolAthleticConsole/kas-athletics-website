@@ -3,10 +3,9 @@ import { html, paragraphs, safeUrl } from '../lib/html.js';
 import { upcomingEvents, pastEvents } from '../lib/events.js';
 import { layout } from './layout.js';
 import { photo, eventRow, pageHero, initials, crumbs } from './parts.js';
-import { ed, showWhenEditing } from './edit.js';
+import { ed, edList, edItem, showWhenEditing } from './edit.js';
 import { captainReveal } from './captain.js';
 
-const lines = (text) => (text || '').split('\n').map((l) => l.trim()).filter(Boolean);
 
 function teamEvents(content, team) {
   return (content.events || []).filter((e) => e.sport && e.sport.trim().toLowerCase() === team.name.trim().toLowerCase());
@@ -25,39 +24,38 @@ function schedule(content, team) {
     </section>`;
 }
 
-function playerCards(team, base) {
-  const players = (team.players || []).filter((p) => p && p.name);
-  if (!players.length) return '';
-  const b = base;
+/** Player cards with a name, so empty rows never show. Keeps each player's index for editing. */
+const playersOf = (team) => (team.players || []).map((p, i) => ({ p, i })).filter(({ p }) => p && String(p.name || '').trim());
+
+const isCaptain = (p) => /captain/i.test(p.role || '');
+
+function playerCard(p, path) {
+  const field = (key) => `${path}.${key}`;
   return html`
-    <section class="section" id="team-roster" aria-labelledby="team-roster-title" ${edList(`${b}.players`)}>
-      <h2 id="team-roster-title" class="section__title section__title--sm">Roster <span class="count">${players.length}</span></h2>
-      <p class="section__intro">The Dragons who make it happen.</p>
-      <ul class="player-grid">
-        ${players.map((p, i) => html`
-          <li class="player-card" ${edItem(`${b}.players[${i}]`)}>
-            ${photo(p.photo, p.name, { cls: 'player-card__photo', width: 400, height: 400, edit: `${b}.players[${i}].photo` })}
-            <div class="player-card__body">
-              <h3 class="player-card__name"${ed(`${b}.players[${i}].name`)}>${p.name}</h3>
-              ${p.role ? html`<p class="player-card__role"${ed(`${b}.players[${i}].role`)}>${p.role}</p>` : html`<p class="player-card__role player-card__role--empty"${ed(`${b}.players[${i}].role`, { placeholder: 'Role / position' })}></p>`}
-              ${showWhenEditing(p.bio) ? html`<p class="player-card__bio"${ed(`${b}.players[${i}].bio`, { multiline: true, placeholder: 'Short description' })}>${p.bio}</p>` : (p.bio ? html`<p class="player-card__bio">${p.bio}</p>` : '')}
-            </div>
-          </li>`)}
-      </ul>
-    </section>`;
+    <li class="player-card${isCaptain(p) ? ' player-card--captain' : ''}"${edItem(path)}>
+      <div class="player-card__media">
+        ${photo(p.photo, p.name, { cls: 'player-card__photo', width: 480, height: 600, fallback: initials(p.name), edit: field('photo') })}
+        ${showWhenEditing(p.number) ? html`<span class="player-card__number"${ed(field('number'), { placeholder: '#' })}>${p.number}</span>` : ''}
+        ${isCaptain(p) ? html`<span class="player-card__badge" title="Captain"><span aria-hidden="true">C</span><span class="visually-hidden">Captain</span></span>` : ''}
+      </div>
+      <div class="player-card__body">
+        ${showWhenEditing(p.role) ? html`<p class="player-card__role"${ed(field('role'), { placeholder: 'Role in the game' })}>${p.role}</p>` : ''}
+        <h3 class="player-card__name"${ed(field('name'))}>${p.name}</h3>
+        ${showWhenEditing(p.year) ? html`<p class="player-card__year"${ed(field('year'), { placeholder: 'Class / year' })}>${p.year}</p>` : ''}
+        ${showWhenEditing(p.quote) ? html`<blockquote class="player-card__quote"${ed(field('quote'), { multiline: true, placeholder: 'Add a quote (optional)' })}>${p.quote}</blockquote>` : ''}
+      </div>
+    </li>`;
 }
 
 function roster(team, base) {
-  const players = (team.players || []).filter((p) => p && p.name);
-  if (players.length) return playerCards(team, base);
-  const linesList = lines(team.roster);
-  if (!linesList.length) return '';
+  const players = playersOf(team);
+  if (!players.length) return '';
   return html`
     <section class="section" id="team-roster" aria-labelledby="team-roster-title">
-      <h2 id="team-roster-title" class="section__title section__title--sm">Roster <span class="count">${linesList.length}</span></h2>
+      <h2 id="team-roster-title" class="section__title section__title--sm">Roster <span class="count">${players.length}</span></h2>
       <p class="section__intro">The Dragons who make it happen.</p>
-      <ul class="roster">
-        ${linesList.map((p) => html`<li><span class="roster__badge" aria-hidden="true">${initials(p.replace(/[’'‘]\d{2}\b/, ''))}</span><span>${p}</span></li>`)}
+      <ul class="player-grid"${edList(`${base}.players`)}>
+        ${players.map(({ p, i }) => playerCard(p, `${base}.players[${i}]`))}
       </ul>
     </section>`;
 }
@@ -122,7 +120,8 @@ export function teamPage(content, season, team) {
   const teams = season.teams || [];
   const base = `seasons[${si}].teams[${teams.indexOf(team)}]`;
   const hasSchedule = teamEvents(content, team).length > 0;
-  const hasRoster = lines(team.roster).length > 0 || (team.players || []).some((p) => p && p.name);
+  const squad = playersOf(team).length;
+  const hasRoster = squad > 0;
   const hasPhotos = (team.gallery || []).some((g) => g.image);
   const body = html`
     ${crumbs([{ href: '/', label: 'Home' }, { href: `/${season.slug}`, label: season.title }, { label: team.name }])}
@@ -134,7 +133,7 @@ export function teamPage(content, season, team) {
       <dl class="team-facts">
         ${showWhenEditing(team.coach) ? html`<div><dt>Coaches</dt><dd${ed(`${base}.coach`, { placeholder: 'Add coaches' })}>${team.coach}</dd></div>` : ''}
         ${showWhenEditing(team.practice) ? html`<div><dt>Practice</dt><dd${ed(`${base}.practice`, { placeholder: 'Add practice times' })}>${team.practice}</dd></div>` : ''}
-        ${hasRoster ? html`<div><dt>Squad</dt><dd>${lines(team.roster).length} players</dd></div>` : ''}
+        ${hasRoster ? html`<div><dt>Squad</dt><dd>${squad} players</dd></div>` : ''}
       </dl>
       ${showWhenEditing(team.description) ? html`<div class="team-intro__text"${ed(`${base}.description`, { multiline: true, placeholder: 'Describe the team' })}>${paragraphs(team.description)}</div>` : ''}
     </section>

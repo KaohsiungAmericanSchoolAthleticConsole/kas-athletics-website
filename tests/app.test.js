@@ -150,7 +150,9 @@ test('team pages render roster, gallery and team schedule; unknown teams 404', a
   const r = await req('GET', '/fall-sports/varsity-boys-soccer-tissa');
   assert.equal(r.status, 200);
   assert.match(r.text, /Varsity Boys Soccer \(TISSA\)/);
-  assert.match(r.text, /class="roster"/);
+  assert.match(r.text, /class="player-grid"/);
+  assert.match(r.text, /class="player-card__name">Adam Chu</, 'old roster lines become player cards');
+  assert.match(r.text, /Class of 2026/);
   assert.match(r.text, /class="gallery"/);
   assert.match(r.text, /KAS vs\. MAC/);
   assert.equal((await req('GET', '/fall-sports/no-such-team')).status, 404);
