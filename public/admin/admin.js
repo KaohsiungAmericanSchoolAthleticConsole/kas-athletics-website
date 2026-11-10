@@ -10,6 +10,41 @@ const state = {
   username: null, schema: null, saved: null, draft: null, version: null,
   section: null, errors: new Map(), open: new Set(), saving: false,
 };
+// Undo/redo for the draft (per-edit, not per-publish). Coalesces rapid typing.
+const undoStack = [];
+const redoStack = [];
+let lastSnapshot = 0;
+const COALESCE_MS = 900;
+function snapshotDraft(pathKey) {
+  if (!state.draft) return;
+  const now = Date.now();
+  const coalesce = undoStack.length && (now - lastSnapshot < COALESCE_MS) && undoStack[undoStack.length - 1]._key === pathKey;
+  if (coalesce) return; // keep the earlier snapshot for this typing burst
+  undoStack.push({ draft: JSON.parse(JSON.stringify(state.draft)), _key: pathKey });
+  if (undoStack.length > 100) undoStack.shift();
+  redoStack.length = 0;
+  lastSnapshot = now;
+}
+function undo() {
+  if (!undoStack.length) { toast('Nothing to undo.', 'error'); return; }
+  redoStack.push({ draft: JSON.parse(JSON.stringify(state.draft)), _key: '' });
+  const prev = undoStack.pop();
+  state.draft = prev.draft;
+  state.errors = new Map();
+  renderEditor({ keepScroll: true });
+  updateSaveState();
+  toast('Undone.');
+}
+function redo() {
+  if (!redoStack.length) { toast('Nothing to redo.', 'error'); return; }
+  undoStack.push({ draft: JSON.parse(JSON.stringify(state.draft)), _key: '' });
+  const next = redoStack.pop();
+  state.draft = next.draft;
+  state.errors = new Map();
+  renderEditor({ keepScroll: true });
+  updateSaveState();
+  toast('Redone.');
+}
 let backend; // set at start: local server, or GitHub when hosted on GitHub Pages
 
 // Extra pages in the sidebar that are not part of the content schema.
@@ -44,6 +79,8 @@ function updateSaveState() {
   $('#save-btn').disabled = !dirty || state.saving;
   $('#save-btn').textContent = state.saving ? 'Publishing…' : 'Publish changes';
   $('#discard-btn').hidden = !dirty || state.saving;
+  const undoBtn = $('#undo-btn');
+  if (undoBtn) undoBtn.disabled = undoStack.length === 0 || state.saving;
   $('#save-state').textContent = dirty ? 'Unpublished changes' : 'All changes are live';
   $('#save-state').classList.toggle('is-dirty', dirty);
 }
@@ -51,6 +88,7 @@ function updateSaveState() {
 const ctx = {
   get: (path) => getIn(state.draft, path),
   set(path, value) {
+    snapshotDraft(pathToString(path));
     state.draft = setIn(state.draft, path, value);
     const key = pathToString(path);
     if (state.errors.has(key)) {
@@ -60,6 +98,7 @@ const ctx = {
     updateSaveState();
   },
   restructure(path, value, { open, focus } = {}) {
+    snapshotDraft(pathToString(path));
     state.draft = setIn(state.draft, path, value);
     // Positions in the list changed: forget which old positions were open.
     const listKey = pathToString(path);
@@ -190,6 +229,7 @@ async function publish() {
   try {
     const { content, version } = await backend.publish(state.draft, state.version);
     Object.assign(state, { saved: content, draft: content, version, errors: new Map() });
+    undoStack.length = 0; redoStack.length = 0;
     renderErrorSummary([]);
     refreshView({ keepScroll: true });
     sendErrorsToPreview();
@@ -221,6 +261,7 @@ async function reloadLatest() {
   if (isDirty() && !confirm('Load the latest published version? Your unpublished edits will be lost.')) return;
   const { content, version } = await backend.load();
   Object.assign(state, { saved: content, draft: content, version, errors: new Map() });
+  undoStack.length = 0; redoStack.length = 0;
   renderErrorSummary([]);
   renderEditor();
   updateSaveState();
@@ -231,6 +272,7 @@ function discard() {
   if (!confirm('Throw away all changes since the last publish?')) return;
   state.draft = state.saved;
   state.errors = new Map();
+  undoStack.length = 0; redoStack.length = 0;
   renderErrorSummary([]);
   renderEditor({ keepScroll: true });
   updateSaveState();
@@ -324,6 +366,7 @@ $('#gh-login-form').addEventListener('submit', (e) => {
 
 $('#save-btn').addEventListener('click', publish);
 $('#discard-btn').addEventListener('click', discard);
+$('#undo-btn')?.addEventListener('click', undo);
 
 // Hideable sidebar (more room for editing). Preference is remembered on this device.
 const sidebarToggle = $('#sidebar-toggle');
@@ -375,6 +418,9 @@ window.addEventListener('hashchange', () => {
 window.addEventListener('beforeunload', (e) => { if (isDirty()) e.preventDefault(); });
 document.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); publish(); }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && e.shiftKey) { e.preventDefault(); redo(); }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
 });
 
 // ---------- Start ----------
