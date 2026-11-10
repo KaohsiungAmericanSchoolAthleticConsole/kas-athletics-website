@@ -324,6 +324,23 @@ $('#gh-login-form').addEventListener('submit', (e) => {
 
 $('#save-btn').addEventListener('click', publish);
 $('#discard-btn').addEventListener('click', discard);
+
+// Hideable sidebar (more room for editing). Preference is remembered on this device.
+const sidebarToggle = $('#sidebar-toggle');
+function setSidebarHidden(hidden) {
+  document.querySelector('.app').classList.toggle('sidebar-hidden', hidden);
+  if (sidebarToggle) {
+    sidebarToggle.textContent = hidden ? 'Show sidebar' : 'Hide sidebar';
+    sidebarToggle.setAttribute('aria-pressed', String(hidden));
+  }
+  try { localStorage.setItem('kas-sidebar-hidden', hidden ? '1' : '0'); } catch { /* ignore */ }
+}
+if (sidebarToggle) {
+  let hidden = false;
+  try { hidden = localStorage.getItem('kas-sidebar-hidden') === '1'; } catch { /* ignore */ }
+  setSidebarHidden(hidden);
+  sidebarToggle.addEventListener('click', () => setSidebarHidden(!document.querySelector('.app').classList.contains('sidebar-hidden')));
+}
 $('#history-btn').addEventListener('click', openHistory);
 $('#logout-btn').addEventListener('click', async () => {
   if (isDirty() && !confirm('You have unpublished changes. Sign out and lose them?')) return;
