@@ -80,12 +80,11 @@ function gallery(team) {
 }
 
 /** "On this page" links, so a long team page is easy to skim with a keyboard. */
-function jumpNav({ captain, schedule: hasSchedule, roster: hasRoster, photos }) {
+function jumpNav({ captain, schedule: hasSchedule, roster: hasRoster }) {
   const links = [
     captain && { href: '#team-captain', label: 'Captain' },
     hasSchedule && { href: '#team-schedule', label: 'Schedule' },
     hasRoster && { href: '#team-roster', label: 'Roster' },
-    photos && { href: '#team-photos', label: 'Photos' },
   ].filter(Boolean);
   if (links.length < 2) return '';
   return html`
@@ -122,14 +121,14 @@ export function teamPage(content, season, team) {
   const hasSchedule = teamEvents(content, team).length > 0;
   const squad = playersOf(team).length;
   const hasRoster = squad > 0;
-  const hasPhotos = (team.gallery || []).some((g) => g.image);
+
   const body = html`
     ${crumbs([{ href: '/', label: 'Home' }, { href: `/${season.slug}`, label: season.title }, { label: team.name }])}
     ${pageHero({ eyebrow: [season.title, team.level].filter(Boolean).join(' · '), title: team.name, image: team.image, edit: { title: `${base}.name`, image: `${base}.image` } })}
     ${captainReveal(content, team, base, season)}
     <section class="section section--tight team-intro" id="team-about" aria-label="About the team">
       <a class="text-link" href="/${season.slug}">← All ${season.title}</a>
-      ${jumpNav({ captain: true, schedule: hasSchedule, roster: hasRoster, photos: hasPhotos })}
+      ${jumpNav({ captain: true, schedule: hasSchedule, roster: hasRoster })}
       <dl class="team-facts">
         ${showWhenEditing(team.coach) ? html`<div><dt>Coaches</dt><dd${ed(`${base}.coach`, { placeholder: 'Add coaches' })}>${team.coach}</dd></div>` : ''}
         ${showWhenEditing(team.practice) ? html`<div><dt>Practice</dt><dd${ed(`${base}.practice`, { placeholder: 'Add practice times' })}>${team.practice}</dd></div>` : ''}
@@ -139,7 +138,6 @@ export function teamPage(content, season, team) {
     </section>
     ${schedule(content, team)}
     ${roster(team, base)}
-    ${gallery(team)}
     ${pager(season, team, teams)}`;
   return layout(content, {
     path: `/${season.slug}`, title: `${team.name} · ${season.title}`, description: team.description || `${team.name} at KAS Athletics`, image: team.image, body,
