@@ -83,6 +83,9 @@ add_action('init', function (): void {
         'public' => true,
         'show_in_rest' => true,
         'menu_position' => 5,
+        // Own permission set, so the Coach role can edit teams and games but not pages (see roles.php).
+        'capability_type' => array('kas_item', 'kas_items'),
+        'map_meta_cap' => true,
     );
 
     register_post_type('kas_team', array_merge($common, array(
@@ -121,6 +124,10 @@ add_action('init', function (): void {
         'show_in_rest' => true,
         'show_admin_column' => true,
         'rewrite' => array('slug' => 'sports', 'with_front' => false),
+        'capabilities' => array(
+            'manage_terms' => 'manage_categories', 'edit_terms' => 'manage_categories',
+            'delete_terms' => 'manage_categories', 'assign_terms' => 'edit_kas_items',
+        ),
     ));
 
     foreach (array('kas_team', 'kas_event', 'kas_coach') as $type) {
@@ -130,7 +137,7 @@ add_action('init', function (): void {
                 'single' => true,
                 'show_in_rest' => true,
                 'sanitize_callback' => fn($v) => kas_clean_value($v, $field),
-                'auth_callback' => fn() => current_user_can('edit_posts'),
+                'auth_callback' => fn() => current_user_can('edit_kas_items'),
             ));
         }
     }

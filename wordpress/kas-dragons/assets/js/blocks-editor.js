@@ -88,6 +88,71 @@
         field.addLabel || 'Add') : null);
   }
 
+  /* ---------- Click-to-edit on the preview ----------
+   * The preview is the real page HTML from the server, so we work out which field a
+   * click belongs to by matching the clicked text or photo against the section's values. */
+
+  var norm = function (s) { return String(s || '').replace(/\s+/g, ' ').trim().toLowerCase(); };
+  var fileName = function (url) { return String(url || '').split('?')[0].split('/').pop().replace(/-\d+x\d+(?=\.\w+$)/, ''); };
+
+  /** Every editable value with its path: [key] or [key, index, subKey] for list items. */
+  function editableValues(fields, attrs) {
+    var out = [];
+    fields.forEach(function (f) {
+      if (f.type === 'list') {
+        (attrs[f.key] || []).forEach(function (item, i) {
+          ((f.item && f.item.fields) || []).forEach(function (sub) {
+            out.push({ field: sub, path: [f.key, i, sub.key], value: item[sub.key] });
+          });
+        });
+      } else if (['text', 'textarea', 'url', 'image'].indexOf(f.type) !== -1 || !f.type) {
+        out.push({ field: f, path: [f.key], value: attrs[f.key] });
+      }
+    });
+    return out;
+  }
+
+  function findField(fields, attrs, target) {
+    var values = editableValues(fields, attrs);
+    if (target.tagName === 'IMG') {
+      var name = fileName(target.getAttribute('src'));
+      var img = values.filter(function (v) { return v.field.type === 'image' && v.value && fileName(v.value) === name; })[0];
+      return img ? { field: img.field, path: img.path, el: target } : null;
+    }
+    // Walk up from the clicked element until its text matches a field (exactly, or as one paragraph of a long text).
+    for (var node = target; node && node.nodeType === 1; node = node.parentElement) {
+      var text = norm(node.textContent);
+      if (!text || text.length > 2000) continue;
+      var exact = values.filter(function (v) { return v.field.type !== 'image' && norm(v.value) === text; })[0];
+      if (exact) return { field: exact.field, path: exact.path, el: node };
+      var part = values.filter(function (v) { return v.field.type === 'textarea' && norm(v.value).indexOf(text) !== -1 && text.length > 3; })[0];
+      if (part) return { field: part.field, path: part.path, el: node };
+      if (node.classList && node.classList.contains('kas-block-preview')) break;
+    }
+    return null;
+  }
+
+  function readPath(attrs, path) {
+    return path.length === 1 ? attrs[path[0]] : ((attrs[path[0]] || [])[path[1]] || {})[path[2]];
+  }
+
+  /** New attributes object with one value changed (never mutates the old one). */
+  function writePath(attrs, path, value) {
+    var o = {};
+    if (path.length === 1) { o[path[0]] = value; return o; }
+    o[path[0]] = (attrs[path[0]] || []).map(function (item, i) {
+      if (i !== path[1]) return item;
+      var next = Object.assign({}, item); next[path[2]] = value; return next;
+    });
+    return o;
+  }
+
+  function pickImage(done) {
+    var frame = wp.media({ title: 'Choose a photo', button: { text: 'Use this photo' }, library: { type: 'image' }, multiple: false });
+    frame.on('select', function () { done(frame.state().get('selection').first().toJSON().url || ''); });
+    frame.open();
+  }
+
   var STYLE_KEYS = ['bg', 'space', 'align'];
 
   Object.keys(KAS.library.blocks).forEach(function (type) {
@@ -108,8 +173,26 @@
       supports: { html: false, customClassName: false },
       edit: function (props) {
         var attrs = props.attributes;
+        var popState = wp.element.useState(null);
+        var pop = popState[0];
+        var setPop = popState[1];
         function set(key) { return function (v) { var o = {}; o[key] = v; props.setAttributes(o); }; }
-        var blockProps = BE.useBlockProps({ className: 'kas-block-preview' });
+
+        function onPreviewClick(event) {
+          var link = event.target.closest && event.target.closest('a');
+          if (link) event.preventDefault();
+          var hit = findField(def.fields, attrs, event.target);
+          if (!hit) return;
+          event.stopPropagation();
+          if (hit.field.type === 'image') {
+            pickImage(function (url) { props.setAttributes(writePath(attrs, hit.path, url)); });
+            return;
+          }
+          var rect = hit.el.getBoundingClientRect();
+          setPop({ path: hit.path, field: hit.field, anchor: { getBoundingClientRect: function () { return rect; }, ownerDocument: hit.el.ownerDocument } });
+        }
+
+        var blockProps = BE.useBlockProps({ className: 'kas-block-preview', onClickCapture: props.isSelected ? onPreviewClick : undefined });
         return el(Fragment, null,
           el(BE.InspectorControls, null,
             el(C.PanelBody, { title: 'Content', initialOpen: true },
@@ -117,8 +200,17 @@
             el(C.PanelBody, { title: 'Style', initialOpen: false },
               style.map(function (f) { return control(f, attrs[f.key], set(f.key), f.key); }))),
           el('div', blockProps,
-            el('div', { className: 'kas-block-preview__tag' }, def.label + ' — edit it in the panel on the right'),
-            el(ServerSideRender, { block: name, attributes: attrs, httpMethod: 'POST' })));
+            el('div', { className: 'kas-block-preview__tag' },
+              props.isSelected ? 'Click any text or photo to change it' : def.label + ' — click to edit'),
+            el(ServerSideRender, { block: name, attributes: attrs, httpMethod: 'POST' }),
+            pop ? el(C.Popover, { anchor: pop.anchor, placement: 'bottom-start', onClose: function () { setPop(null); }, focusOnMount: 'firstElement' },
+              el('div', { className: 'kas-inline-edit', style: { display: 'grid', gap: '8px', width: 'min(360px, 80vw)', padding: '12px' } },
+                el(C.TextareaControl, {
+                  label: pop.field.label, rows: pop.field.type === 'textarea' ? 5 : 2,
+                  value: readPath(attrs, pop.path) || '',
+                  onChange: function (v) { props.setAttributes(writePath(attrs, pop.path, v)); },
+                }),
+                el(C.Button, { variant: 'primary', onClick: function () { setPop(null); } }, 'Done'))) : null));
       },
       save: function () { return null; },
     });

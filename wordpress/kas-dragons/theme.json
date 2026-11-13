@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schemas.wp.org/wp/6.6/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": false,
+    "layout": { "contentSize": "82rem", "wideSize": "82rem" },
+    "spacing": { "blockGap": null, "margin": true, "padding": true },
+    "color": {
+      "defaultPalette": false,
+      "defaultGradients": false,
+      "defaultDuotone": false,
+      "palette": [
+        { "slug": "school-red", "name": "School red", "color": "#d43429" },
+        { "slug": "school-blue", "name": "School blue", "color": "#1863dc" },
+        { "slug": "night", "name": "Night", "color": "#121418" },
+        { "slug": "paper", "name": "Paper", "color": "#f4f1eb" },
+        { "slug": "white", "name": "White", "color": "#ffffff" }
+      ]
+    },
+    "typography": {
+      "defaultFontSizes": false,
+      "fontFamilies": [
+        { "slug": "headline", "name": "Barlow Condensed (headlines)", "fontFamily": "'Barlow Condensed', 'Arial Narrow', sans-serif" },
+        { "slug": "text", "name": "Barlow (text)", "fontFamily": "'Barlow', system-ui, sans-serif" }
+      ],
+      "fontSizes": [
+        { "slug": "small", "name": "Small", "size": "0.9rem" },
+        { "slug": "medium", "name": "Normal", "size": "1.1rem" },
+        { "slug": "large", "name": "Large", "size": "1.45rem" },
+        { "slug": "x-large", "name": "Big title", "size": "3.2rem" },
+        { "slug": "huge", "name": "Huge title", "size": "clamp(3.2rem, 1rem + 9vw, 9.5rem)" }
+      ]
+    }
+  }
+}

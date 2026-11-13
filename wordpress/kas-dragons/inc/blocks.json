@@ -2275,5 +2275,54 @@
         "url": ""
       }
     }
+  },
+  "templates": {
+    "blank": {
+      "label": "Blank",
+      "hint": "Just a page title",
+      "blocks": [
+        "pageHeader"
+      ]
+    },
+    "spotlight": {
+      "label": "Team spotlight",
+      "hint": "Banner, story, photos and a quote",
+      "blocks": [
+        "heroSplit",
+        "textImage",
+        "gallery",
+        "quote",
+        "cta"
+      ]
+    },
+    "recap": {
+      "label": "Event recap",
+      "hint": "Banner, write-up, video and photos",
+      "blocks": [
+        "hero",
+        "text",
+        "video",
+        "gallery"
+      ]
+    },
+    "announcement": {
+      "label": "Announcement",
+      "hint": "Heading, details and a button",
+      "blocks": [
+        "pageHeader",
+        "text",
+        "cta"
+      ]
+    },
+    "results": {
+      "label": "Results page",
+      "hint": "Games, scores and season links",
+      "blocks": [
+        "pageHeader",
+        "results",
+        "upcomingGames",
+        "seasonTiles"
+      ]
+    }
   }
 }

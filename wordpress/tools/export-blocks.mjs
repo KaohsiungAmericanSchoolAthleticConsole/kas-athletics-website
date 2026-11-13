@@ -6,7 +6,7 @@
 // Run it again whenever src/blocks.js changes.
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { BLOCKS, BLOCK_GROUPS, COMMON_FIELDS, newBlock } from '../../src/blocks.js';
+import { BLOCKS, BLOCK_GROUPS, COMMON_FIELDS, PAGE_TEMPLATES, newBlock } from '../../src/blocks.js';
 
 const out = fileURLToPath(new URL('../kas-dragons/inc/blocks.json', import.meta.url));
 
@@ -18,5 +18,5 @@ const blocks = Object.fromEntries(Object.entries(BLOCKS).map(([type, def]) => [t
   defaults: newBlock(type),
 }]));
 
-await writeFile(out, `${JSON.stringify({ groups: BLOCK_GROUPS, blocks }, null, 2)}\n`);
+await writeFile(out, `${JSON.stringify({ groups: BLOCK_GROUPS, blocks, templates: PAGE_TEMPLATES }, null, 2)}\n`);
 console.log(`Wrote ${Object.keys(blocks).length} sections to ${out}`);

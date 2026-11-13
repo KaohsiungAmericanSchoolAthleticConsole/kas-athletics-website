@@ -360,6 +360,92 @@ why. Version numbers are this project's own: minor = feature, patch = fix.
 To see or restore any version: `git log --oneline`, then
 `git switch -c look-at-old <commit>` (safe) or `git revert <commit>`.
 
+### v2.4 — 2026-11-13 — Home page made of ordinary WordPress blocks
+The owner wants staff to customize the site freely, starting with the Home page.
+- `inc/home-blocks.php`: the banner, numbers, the AD's message and the big statement
+  are now WordPress's own blocks (group, heading, paragraph, image, buttons) with
+  classes such as `kas-hero`, `kas-stats`, `kas-director` and `kas-statement`.
+  Staff click text to type, replace photos from the image toolbar, and add, copy,
+  move or delete anything. Sections that fill themselves in from data stay as KAS
+  blocks: upcoming games, season tiles, scrolling words, video and calendar.
+  Home sections are no longer locked.
+- `assets/css/home-blocks.css` gives them the original look. The site's buttons
+  now style every WordPress button, with a "Glass (on photos)" button style.
+- `theme.json` (settings only): school colors and fonts in the editor's pickers.
+  It also stops WordPress adding an extra inner wrapper around group contents,
+  which broke the grid layouts. `global-styles` is no longer removed on the front end.
+- `front-page.php` wraps Home in `.kas-blocks` (site column width; "full width"
+  blocks span the screen). The importer builds Home this way
+  (`kas_import_home_section`).
+- Checked on Local: Home looks like before at 1280px (banner, numbers, AD
+  message, statement); every other page returns 200 with no PHP or console
+  errors. Not checked: opening Home in the block editor (it needs a signed-in browser).
+- The Local test site folder now has its own git repo with a database copy
+  (`~/Local Sites/kas-athletics-test`, `sh snapshot.sh "message"`).
+
+### v2.3 — 2026-11-13 — Quick edit screen for staff
+Asked for by the team: staff only need to change players, coaches, Contact us and
+cover photos, with a clear handover before graduation.
+- `inc/quick-edit.php`: a **Quick edit** screen (first in the menu) with cards for
+  Players (every team by season, with player counts), Coaches, Contact us, Cover
+  photos (Home banner, season photos) and Scores. Staff who aren't administrators
+  land here after signing in, skip the WordPress dashboard, and get a short menu
+  (no Posts, Comments, Tools, Appearance or Dashboard).
+- **Contact us form**: school phone, email and address plus a people table. It
+  replaces the "Name | Role | Email | Phone" text box. Editors and Coaches can use
+  it without access to the other settings. Input is cleaned: invalid emails are
+  dropped, HTML is stripped, `|` is removed, and at most 30 people are kept.
+- Tested on Local as an administrator and as a Coach (cards, login redirect,
+  menu, contact save with messy input).
+- Local note: the Local site's theme had been replaced by an installed copy
+  (from the zip), so it no longer saw project edits. The copy was moved to
+  `~/Local Sites/kas-athletics-test/theme-backup-kas-dragons-2026-11-13` and the
+  link to `wordpress/kas-dragons` was restored.
+
+### v2.2 — 2026-11-11 — automatic games, scores page, Coach role, roster sheet, easier editing
+- **Games from Google Calendar** (`inc/calendar-parse.php`, `inc/calendar-sync.php`):
+  hourly WP-Cron reads the school's public iCal feed (current school year)
+  and creates or updates games. It works out home/away, team (abbreviations BB/VB/FB,
+  G7/G8 → middle school, AISA/TISSA and season month to tell teams apart),
+  opponent, time and CXL → cancelled. It never overwrites scores or staff edits.
+  Hand-made games on the same day for the same team are adopted (no duplicates).
+  Unclear ones are listed under "Needs a team". On the real calendar it matched
+  158 of 184 events last year; the rest are banquets and multi-sport meets.
+  The importer fills in the iCal link from the home page's calendar embed.
+- **Enter scores** page (`inc/scores-admin.php`): one screen, Save all, phone layout.
+- **Coach role** (`inc/roles.php`): teams, games and coaches use their own
+  `kas_item` capabilities. Coaches can't edit pages, menus or settings.
+- **Rosters from a Google Sheet**: REST `kas/v1/teams` and `kas/v1/rosters` (GET and POST,
+  Application Password auth, input limits) plus `wordpress/apps-script/roster-sync.gs`
+  (menu, setup pre-filled from the site, hourly trigger).
+- **Easier editing**: click text or photos in a section's preview to edit them in
+  place; page layouts from `PAGE_TEMPLATES` registered as block patterns; Home
+  page sections locked (only admins can unlock).
+- Tests: `wordpress/tests/run.php` (43 checks, plain PHP). Checked on Local: two
+  syncs in a row (71 games, no duplicates), roster API as a Coach and logged out
+  (401), every admin page renders, public pages 200 with no PHP errors.
+  Not checked: clicking in the block editor (no browser access to the signed-in
+  editor) and the Apps Script inside Google (it was only syntax-checked here).
+- Local note: on the Mac the sync runs through `local-setup.sh` (WP-CLI),
+  because the Local site blocks outside requests (v2.1 note).
+
+### v2.1 — 2026-11-11 — upload-ready WordPress zip with an Import button
+- The importer moved into the theme (`inc/importer.php`). New dashboard page
+  **KAS Athletics → Import content**: an admin-only button (nonce-checked)
+  imports the content packed in the theme. `wordpress/import/import-content.php`
+  is now a thin WP-CLI wrapper around the same code.
+- `wordpress/tools/build-zip.sh` builds `wordpress/dist/kas-dragons.zip`: the
+  theme plus `import-data/` (copies of `data/content.json` and `data/uploads/`).
+  The zip itself is gitignored.
+- The block editor preview now loads the site's fonts (`enqueue_block_assets`).
+- Tested: installed the zip on a brand-new WordPress with WordPress's own theme
+  installer, ran the import twice (no duplicates: 21 teams, 5 games, 65
+  photos), and every page type returned 200 with no PHP errors.
+- Local test site note: on this macOS version Local's PHP crashes (502) when
+  WordPress calls wordpress.org from `/wp-admin`. The Local site's
+  `wp-config.php` has `WP_HTTP_BLOCK_EXTERNAL` set to `true` as a workaround.
+  It's not part of the theme. Never copy it to the real site.
+
 ### v2.0 — 2026-11-10 — WordPress theme "KAS Dragons"
 **The owner decided to host the site on WordPress** (WP Engine), tested first
 in the Local app. New folder `wordpress/` (the Node site is unchanged):

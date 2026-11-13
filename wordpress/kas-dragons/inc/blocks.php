@@ -85,6 +85,13 @@ add_action('after_setup_theme', function (): void {
     add_editor_style(array('assets/css/site.css', 'assets/css/motion.css', 'assets/css/editor.css'));
 });
 
+/** The site's fonts inside the editor preview (loaded by the browser, not the server). */
+add_action('enqueue_block_assets', function (): void {
+    if (is_admin()) {
+        wp_enqueue_style('kas-editor-fonts', 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,800&family=Barlow:wght@400;500;600&display=swap', array(), null);
+    }
+});
+
 /** Keep the inserter focused: KAS sections plus a few useful core blocks. */
 add_filter('allowed_block_types_all', function ($allowed, $context) {
     if (!isset($context->post) || $context->post->post_type !== 'page') {
@@ -93,3 +100,42 @@ add_filter('allowed_block_types_all', function ($allowed, $context) {
     $core = array('core/paragraph', 'core/heading', 'core/list', 'core/list-item', 'core/image', 'core/buttons', 'core/button', 'core/embed', 'core/group', 'core/columns', 'core/column', 'core/separator', 'core/spacer', 'core/shortcode', 'core/block');
     return array_merge(array_values(array_map('kas_block_name', array_keys(kas_block_library()['blocks']))), $core);
 }, 10, 2);
+
+/** Block markup for a section with its starting text, for layouts. */
+function kas_block_markup(string $type, array $attrs = array()): string
+{
+    $def = kas_block_library()['blocks'][$type] ?? null;
+    if (!$def) {
+        return '';
+    }
+    $defaults = $def['defaults'];
+    unset($defaults['type']);
+    return serialize_block(array(
+        'blockName' => kas_block_name($type), 'attrs' => array_merge($defaults, $attrs),
+        'innerBlocks' => array(), 'innerHTML' => '', 'innerContent' => array(),
+    ));
+}
+
+/**
+ * Ready-made page layouts ("Team spotlight", "Event recap"…). WordPress offers them
+ * when someone creates a new page, and under Patterns → KAS layouts in the inserter.
+ */
+add_action('init', function (): void {
+    register_block_pattern_category('kas-layouts', array('label' => 'KAS layouts'));
+    foreach (kas_block_library()['templates'] ?? array() as $id => $tpl) {
+        register_block_pattern('kas/layout-' . $id, array(
+            'title' => $tpl['label'],
+            'description' => $tpl['hint'],
+            'categories' => array('kas-layouts'),
+            'blockTypes' => array('core/post-content'),
+            'postTypes' => array('page'),
+            'content' => implode("\n\n", array_map('kas_block_markup', $tpl['blocks'])),
+        ));
+    }
+});
+
+/** Only administrators can unlock sections that are locked in place (e.g. on the Home page). */
+add_filter('block_editor_settings_all', function (array $settings): array {
+    $settings['canLockBlocks'] = current_user_can('manage_options');
+    return $settings;
+});

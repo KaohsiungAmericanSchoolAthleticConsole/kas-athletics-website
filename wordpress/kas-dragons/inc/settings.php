@@ -36,6 +36,10 @@ function kas_settings_fields(): array
             'address' => array('label' => 'Address', 'type' => 'area'),
             'contactPeople' => array('label' => 'Contact people', 'type' => 'area', 'help' => 'One per line: Name | Role | Email | Phone'),
         ),
+        'Games calendar' => array(
+            'calendarIcs' => array('label' => 'Google Calendar public iCal link (ends in .ics)', 'type' => 'url', 'help' => 'Games are copied from this calendar every hour. In Google Calendar: Settings → the calendar → "Public address in iCal format".'),
+            'calendarSync' => array('label' => 'Copy games from the calendar automatically', 'type' => 'select', 'options' => array('on' => 'Yes, every hour', 'off' => 'No')),
+        ),
         'Social and links' => array(
             'instagramUrl' => array('label' => 'Instagram link', 'type' => 'url'),
             'instagramHandle' => array('label' => 'Instagram handle (e.g. @kas_athletic_council)', 'type' => 'text'),

@@ -1,0 +1,73 @@
+/* The Home page built from ordinary WordPress blocks (see inc/home-blocks.php).
+   Same look as the original sections, keyed on class names staff never need to touch. */
+
+/* ---------- Page width: blocks sit in the site's column; "full width" blocks span the screen ---------- */
+.kas-blocks > :where(:not(.blk):not(.alignfull)) { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); box-sizing: border-box; }
+.kas-blocks > :where(:not(.blk):not(:first-child)) { margin-top: var(--space-section); }
+.kas-blocks > .kas-stats { margin-top: 0; }
+
+/* ---------- Buttons (every WordPress button on the site) ---------- */
+.wp-block-buttons.kas-buttons { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
+.kas-site .wp-block-button__link, .editor-styles-wrapper .wp-block-button__link {
+  display: inline-flex; align-items: center; gap: 0.55em; min-height: 3rem; padding: 0.7em 1.35em;
+  border-radius: var(--radius-sm); border: 0; background: var(--accent); color: var(--accent-ink);
+  font: 600 var(--text-base) / 1 var(--font-body); text-decoration: none;
+  transition: background-color var(--duration-fast), transform var(--duration-fast);
+}
+.kas-site .wp-block-button__link:hover { background: color-mix(in oklab, var(--accent) 88%, black); }
+.kas-site .wp-block-button__link:active { transform: scale(0.97); }
+.wp-block-button.is-style-kas-glass .wp-block-button__link { background: rgb(255 255 255 / 0.14); color: #fff; backdrop-filter: blur(10px); }
+.wp-block-button.is-style-kas-glass .wp-block-button__link:hover { background: rgb(255 255 255 / 0.24); }
+
+/* ---------- Small text above titles ---------- */
+.kas-eyebrow, .kas-kicker { display: block; margin: 0 0 var(--space-4); font: 600 var(--text-sm) / 1.2 var(--font-body); letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+.kas-kicker { margin-bottom: 0.45em; }
+.kas-section-title { font-size: var(--text-2xl); }
+
+/* ---------- Big banner ---------- */
+.kas-hero { position: relative; isolation: isolate; display: grid; align-content: end; min-height: min(88vh, 54rem); margin: 0; color: #fff; overflow: hidden; }
+.kas-hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(0 0 0 / 0.55), transparent 60%), linear-gradient(180deg, rgb(0 0 0 / 0.15) 0%, var(--hero-shade) 75%); pointer-events: none; }
+.kas-hero::after { content: ''; position: absolute; z-index: -1; right: -8%; bottom: -30%; width: 42%; height: 160%; background: var(--accent); opacity: 0.85; transform: skewX(-18deg); mix-blend-mode: multiply; pointer-events: none; }
+:root[data-theme='contrast'] .kas-hero::after { display: none; }
+.kas-hero .kas-hero__bg { position: absolute; inset: 0; z-index: -2; margin: 0; max-width: none; }
+.kas-hero .kas-hero__bg img { width: 100%; height: 100%; object-fit: cover; }
+.kas-hero__inner { width: 100%; max-width: var(--max); margin: 0 auto; padding: var(--space-8) var(--gutter) var(--space-7); box-sizing: border-box; }
+.kas-hero .kas-eyebrow { color: #fff; opacity: 0.85; }
+.kas-hero__title { margin: 0; font-size: var(--text-hero); line-height: 0.86; max-width: 11ch; text-wrap: balance; text-shadow: 0 4px 40px rgb(0 0 0 / 0.35); color: #fff; }
+.kas-hero__subtitle { max-width: 40ch; margin-top: var(--space-5); font-size: var(--text-lg); color: rgb(255 255 255 / 0.88); }
+
+/* ---------- Numbers band (right under the banner) ---------- */
+.kas-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); margin: 0; padding: 0 max(var(--gutter), (100% - var(--max)) / 2); background: #0b0c10; color: #fff; }
+.kas-stat { padding: var(--space-5) var(--gutter); border-right: 1px solid rgb(255 255 255 / 0.14); }
+.kas-stat:last-child { border-right: 0; }
+.kas-stat > p { margin: 0; }
+.kas-stat__value { font: 800 clamp(2rem, 1.4rem + 2vw, 3.2rem) / 1 var(--font-display); text-transform: uppercase; }
+.kas-stat__label { font-size: var(--text-sm); opacity: 0.8; text-transform: uppercase; letter-spacing: 0.12em; }
+
+/* ---------- Message with a photo (e.g. from the Athletic Director) ---------- */
+.kas-director { display: grid; gap: var(--space-6); align-items: center; }
+@media (min-width: 52rem) { .kas-director { grid-template-columns: 5fr 7fr; gap: var(--space-8); } }
+.kas-director__figure { position: relative; isolation: isolate; margin: 0; }
+.kas-director__figure::before { content: ''; position: absolute; inset: 1.5rem -1.5rem -1.5rem 1.5rem; border: 2px solid var(--accent); border-radius: var(--radius-lg); z-index: -1; pointer-events: none; }
+.kas-director__photo { margin: 0; }
+.kas-director__photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius-lg); }
+.kas-director__caption { position: absolute; left: var(--space-4); bottom: var(--space-4); display: grid; padding: var(--space-3) var(--space-4); background: var(--surface); color: var(--ink); border-radius: var(--radius); box-shadow: var(--shadow); }
+.kas-director__caption p { margin: 0; }
+.kas-director__name { font-weight: 700; }
+.kas-director__role { font-size: var(--text-sm); color: var(--ink-2); }
+.kas-director__body .kas-section-title { margin-bottom: var(--space-5); }
+.kas-director__quote { font-size: var(--text-lg); line-height: 1.55; }
+.kas-director__quote:first-of-type { position: relative; }
+.kas-director__quote:first-of-type::before { content: '“'; position: absolute; left: -0.15em; top: -0.55em; font: 800 8rem/1 var(--font-display); color: var(--accent); opacity: 0.25; pointer-events: none; }
+
+/* ---------- Big statement (dark band) ---------- */
+.kas-statement { margin-top: var(--space-section); background: var(--ink); color: var(--bg); }
+:root[data-theme='dragon'] .kas-statement { background: var(--accent); color: var(--accent-ink); }
+:root[data-theme='contrast'] .kas-statement { background: #000; color: #fff; border-block: 2px solid #fff; }
+.kas-statement__inner { display: grid; gap: var(--space-6); max-width: var(--max); margin: 0 auto; padding: var(--space-section) var(--gutter); box-sizing: border-box; }
+@media (min-width: 52rem) { .kas-statement__inner { grid-template-columns: 1fr 1.2fr; } }
+.kas-statement__title { margin: 0; font-size: clamp(3rem, 1rem + 6vw, 7rem); line-height: 0.88; text-wrap: balance; color: inherit; }
+.kas-statement__body { font-size: var(--text-lg); opacity: 0.88; align-self: end; }
+
+/* ---------- Inside the block editor: show every part at once ---------- */
+.editor-styles-wrapper .kas-hero { min-height: 36rem; }

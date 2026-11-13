@@ -32,4 +32,11 @@ fi
 
 wp theme activate kas-dragons
 wp eval-file "$HERE/import/import-content.php" "$HERE/../data/content.json"
+
+# Copy games from the school's Google Calendar. On a Mac the Local site blocks
+# outside downloads (see DEVELOPER.md v2.1), so the sync runs from here instead.
+wp --exec="define('WP_ACCESSIBLE_HOSTS', 'calendar.google.com');" eval '
+$r = kas_calendar_sync();
+echo isset($r["error"]) ? "Calendar sync: " . $r["error"] . "\n"
+  : sprintf("Calendar sync: %d events, %d new, %d updated, %d need a team.\n", $r["seen"], $r["created"], $r["updated"], $r["needsTeam"]);'
 echo "Done. Open: $(wp option get home)"

@@ -7,11 +7,19 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-const KAS_VERSION = '2.0.0';
+const KAS_VERSION = '2.4.0';
 
-foreach (array('helpers', 'content-types', 'admin-fields', 'settings', 'data', 'parts', 'captain', 'sections', 'blocks', 'scores', 'layout') as $kas_file) {
+foreach (array('helpers', 'content-types', 'admin-fields', 'settings', 'data', 'parts', 'captain', 'sections', 'blocks', 'scores', 'layout', 'importer', 'roles', 'calendar-sync', 'scores-admin', 'roster-sync', 'quick-edit', 'home-blocks') as $kas_file) {
     require_once __DIR__ . '/inc/' . $kas_file . '.php';
 }
+
+// Team, game and season web addresses (/teams/…, /events/, /sports/…) are created by
+// this theme, so refresh the saved rules whenever it is switched on. Without this the
+// saved rules from the previous theme stay in place and those pages 404 until someone
+// re-saves Settings → Permalinks.
+add_action('after_switch_theme', function (): void {
+    flush_rewrite_rules();
+});
 
 add_action('after_setup_theme', function (): void {
     add_theme_support('title-tag');
@@ -32,8 +40,6 @@ add_action('wp_enqueue_scripts', function (): void {
     $site = kas_site();
     wp_add_inline_style('kas-site', sprintf(':root{--brand:%s;--brand-2:%s}', $site['brandColor'], $site['brandColor2']));
     wp_enqueue_script('kas-site', $dir . '/js/site.js', array(), KAS_VERSION, array('in_footer' => true, 'strategy' => 'defer'));
-    // The site's own look replaces the default WordPress block styles on the public pages.
-    wp_dequeue_style('global-styles');
 });
 
 add_filter('language_attributes', function (string $attrs): string {
